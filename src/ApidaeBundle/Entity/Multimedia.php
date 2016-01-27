@@ -24,7 +24,7 @@ class Multimedia
     /**
      * @var string
      *
-     * @ORM\Column(name="mulLibelle", type="string", length=255)
+     * @ORM\Column(name="mulLibelle", type="string", length=255, nullable=true)
      */
     private $mulLibelle;
 

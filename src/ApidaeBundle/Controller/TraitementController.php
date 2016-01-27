@@ -32,7 +32,7 @@ class TraitementController extends Controller
     	//Parcours API
     	$apiKey = '4oqV1oVV';
 		$projetId = '1464'; //sera $id
-		$objId = '114156';
+		$objId = '379730';
 		$requete = array();
 		$requete['apiKey'] = $apiKey;
 		$requete['projetId'] = $projetId;
@@ -51,6 +51,7 @@ class TraitementController extends Controller
 		//379730
 		//102916
 		//113292
+		//114156
 
 		//récupération des données :
 		//-------------------- ObjetApidae ----------------------
@@ -121,23 +122,27 @@ class TraitementController extends Controller
 		//Ajoute l'objet au dico de l'adresse
 		$adresse->addObjetApidae($objetApidae);
 
-		//----------------------------------- Traduction -----------------------------------------
+		//------------------------------------------------ Traduction --------------------------------------------------
 		$traduction = new TraductionObjetApidae();
 		$traduction->setTraNom($data->nom);
 
 		//Presentation
-		if($presentation = isset($data->presentation)) {
-			if(isset($presentation->descriptifCourt)) {
-				$traduction->setTraDescriptionCourte($presentation->descriptifCourt);
+		if(isset($data->presentation)) {
+			$presentation = $data->presentation;
+			if(isset($presentation->descriptifCourt->libelleFr)) {
+				$traduction->setTraDescriptionCourte($presentation->descriptifCourt->libelleFr);
 			}
-			if(isset($presentation->descriptifLong)) {
+			if(isset($presentation->descriptifDetaille->libelleFr)) {
 				//TODO voir "description"
-				$traduction->setTraDescriptionLongue($presentation->descriptifDetaillee);
+				$traduction->setTraDescriptionLongue($presentation->descriptifDetaille->libelleFr);
+				print($traduction->getTraDescriptionLongue());
 			} else {
 				$traduction->setTraDescriptionLongue(null);
 			}
 		}
 		$traduction->setTraDescriptionPersonnalisee(null);
+		//TODO check type de public
+		$traduction->setTraTypePublic();
 
 		//TODO persist Traduction / ObjetApidae
 		//-------------------- Moyens de Communication ----------------------
@@ -217,6 +222,7 @@ class TraitementController extends Controller
 			}
 		}
 		//TODO mode de paiement
+		//TODO handicap
 
 		//-------------------- Labels ----------------------
 		if(isset($data->$chaineInformations->labels)) {
@@ -282,9 +288,26 @@ class TraitementController extends Controller
 		}
 
 		//-------------------- Multimedias ----------------------
-		//TODO multimedias
 		if(isset($data->illustrations)) {
-			print("illu");
+			for($i = 0; $i < count($data->illustrations); $i++) {
+				$multi = new Multimedia();
+				if(isset($data->illustrations[$i]->nom->libelleFr)) {
+					$multi->setMulLibelle($data->illustrations[$i]->nom->libelleFr);
+				} else {
+					$multi->setMulLibelle(null);
+				}
+				$multi->setMulLocked($data->illustrations[$i]->locked);
+				$multi->setMulType($data->illustrations[$i]->type);
+				$multi->setMulUrlListe($data->illustrations[$i]->traductionFichiers[0]->urlListe);
+				$multi->setMulUrlFiche($data->illustrations[$i]->traductionFichiers[0]->urlFiche);
+				$multi->setMulUrlDiapo($data->illustrations[$i]->traductionFichiers[0]->urlDiaporama);
+				//Associe le media à la traduction :
+				$multi->setTraduction($traduction);
+				//Ajoute le média au dico de la traduction :
+				$traduction->addMultimedia($multi);
+				//print($multi->getMulLibelle()."</br>");
+				//$this->em->persist($multi);
+			}
 		}
 
 
@@ -300,8 +323,8 @@ class TraitementController extends Controller
 		//TODO selectionApidae
 
 
-		//--------------------Langue ----------------------
 
+		//--------------------Langue ----------------------
 		//TODO revoir enregistrement des langues avant
 		$langue = new Langue();
 		$langue->setLanLibelle("Français");
