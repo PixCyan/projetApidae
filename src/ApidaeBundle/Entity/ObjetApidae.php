@@ -58,7 +58,7 @@ class ObjetApidae
     /**
      * @var bool
      *
-     * @ORM\Column(name="obj_Suggestion", type="boolean", nullable=true)
+     * @ORM\Column(name="obj_Suggestion", type="boolean")
      */
     private $objSuggestion;
 
@@ -86,7 +86,7 @@ class ObjetApidae
     private $labelsQualite;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets")
      * @ORM\JoinTable(name="objetHascategories")
      */
     private $categories;
@@ -252,8 +252,6 @@ class ObjetApidae
 
     /**
      * Set adresse
-     *
-     * @param string $adresse
      *
      * @return ObjetApidae
      */

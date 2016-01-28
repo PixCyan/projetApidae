@@ -90,37 +90,37 @@ class TraductionObjetApidae
     private $langue;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Equipement", mappedBy="traduction")
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Equipement", mappedBy="traduction", cascade={"persist"})
      */
     private $equipements;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Service", mappedBy="traduction")
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Service", mappedBy="traduction", cascade={"persist"})
      */
     private $services;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\MoyenCommunication", mappedBy="traduction")
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\MoyenCommunication", mappedBy="traduction", cascade={"persist"})
      */
     private $moyensCommunications;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Multimedia", mappedBy="traduction")
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Multimedia", mappedBy="traduction", cascade={"persist"})
      */
     private $multimedias;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Tarif", mappedBy="traduction")
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Tarif", mappedBy="traduction", cascade={"persist"})
      */
     private $tarifs;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Ouverture", mappedBy="traduction")
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Ouverture", mappedBy="traduction", cascade={"persist"})
      */
     private $ouvertures;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TypePublic", mappedBy="traduction")
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TypePublic", mappedBy="traduction", cascade={"persist"})
      */
     private $typesPublic;
 
@@ -449,57 +449,33 @@ class TraductionObjetApidae
     }
 
     /**
-     * Set traTypePublic
-     *
-     * @param string $traTypePublic
-     *
-     * @return TraductionObjetApidae
-     */
-    public function setTraTypePublic($traTypePublic)
-    {
-        $this->traTypePublic = $traTypePublic;
-
-        return $this;
-    }
-
-    /**
-     * Get traTypePublic
-     *
-     * @return string
-     */
-    public function getTraTypePublic()
-    {
-        return $this->traTypePublic;
-    }
-
-    /**
      * Set objIdObjet
      *
-     * @param integer $objIdObjet
+     * @param ObjetApidae $obj
      *
      * @return TraductionObjetApidae
      */
-    public function setObjIdObjet($objIdObjet)
+    public function setObjet(ObjetApidae $obj)
     {
-        $this->objIdObjet = $objIdObjet;
+        $this->objet = $obj;
 
         return $this;
     }
 
     /**
-     * Get objIdObjet
+     * Get o
      *
-     * @return int
+     * @return ObjetApidae
      */
-    public function getObjIdObjet()
+    public function getObjet()
     {
-        return $this->objIdObjet;
+        return $this->objet;
     }
 
     /**
      * Set lanIdLangue
      *
-     * @param integer $lanIdLangue
+     * @param Langue $langue
      *
      * @return TraductionObjetApidae
      */
@@ -523,8 +499,8 @@ class TraductionObjetApidae
     /**
      *@return un tableau contenant les equipements liés à la traduction
      */
-    public function getElements() {
-        return $this->elements;
+    public function getEquipements() {
+        return $this->equipements;
     }
 
     /**
