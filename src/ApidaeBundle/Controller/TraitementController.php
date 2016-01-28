@@ -34,7 +34,7 @@ class TraitementController extends Controller
     	//Parcours API
     	$apiKey = '4oqV1oVV';
 		$projetId = '1464'; //sera $id
-		$objId = '105051';
+		$objId = '113292';
 		$requete = array();
 		$requete['apiKey'] = $apiKey;
 		$requete['projetId'] = $projetId;
@@ -427,6 +427,7 @@ class TraitementController extends Controller
 						$ouverture = new Ouverture();
 						$ouverture->setOuvDateDebut($tab->periodesOuvertures[$i]->dateDebut);
 						$ouverture->setOuvDateFin($tab->periodesOuvertures[$i]->dateFin);
+						//TODO attention libelle pas toujours en FR...
 						if(isset($tab->periodesOuvertures[$i]->complementHoraire)) {
 							$ouverture->setSerInfosSup($tab->periodesOuvertures[$i]->complementHoraire->libelleFr);
 						}
@@ -438,7 +439,6 @@ class TraitementController extends Controller
 					}
 				}
 			}
-
 
 			//-------------------- Multimedias ----------------------
 			if(isset($data->illustrations)) {
@@ -462,7 +462,6 @@ class TraitementController extends Controller
 					$this->em->persist($multi);
 				}
 			}
-
 
 			//-------------------- ObjetsLies ----------------------
 			//TODO objetsLies
