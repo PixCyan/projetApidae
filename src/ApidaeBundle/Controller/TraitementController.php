@@ -16,12 +16,13 @@ use ApidaeBundle\Entity\MoyenCommunication;
 use ApidaeBundle\Entity\Multimedia;
 use ApidaeBundle\Entity\Tarif;
 use ApidaeBundle\Entity\Ouverture;
+use ApidaeBundle\Entity\TypePublic;
 
 class TraitementController extends Controller
 {
 	private $em;
 
-    /**
+    /**lin
      * @Route("/traitement")
      */
     public function traitementAction()
@@ -32,7 +33,7 @@ class TraitementController extends Controller
     	//Parcours API
     	$apiKey = '4oqV1oVV';
 		$projetId = '1464'; //sera $id
-		$objId = '379730';
+		$objId = '119635';
 		$requete = array();
 		$requete['apiKey'] = $apiKey;
 		$requete['projetId'] = $projetId;
@@ -52,6 +53,7 @@ class TraitementController extends Controller
 		//102916
 		//113292
 		//114156
+		//119635
 
 		//récupération des données :
 		//-------------------- ObjetApidae ----------------------
@@ -133,18 +135,42 @@ class TraitementController extends Controller
 				$traduction->setTraDescriptionCourte($presentation->descriptifCourt->libelleFr);
 			}
 			if(isset($presentation->descriptifDetaille->libelleFr)) {
-				//TODO voir "description"
 				$traduction->setTraDescriptionLongue($presentation->descriptifDetaille->libelleFr);
-				print($traduction->getTraDescriptionLongue());
 			} else {
 				$traduction->setTraDescriptionLongue(null);
 			}
 		}
 		$traduction->setTraDescriptionPersonnalisee(null);
-		//TODO check type de public
-		$traduction->setTraTypePublic();
 
-		//TODO persist Traduction / ObjetApidae
+		//-------------------- Types de Public ----------------------
+		if(isset($data->prestations->typesClientele)) {
+			$tab = $data->prestations;
+			for($i = 0; $i < count($tab->typesClientele); $i++) {
+				$typeClient = new TypePublic();
+				$typeClient->setTypLibelle($tab->typesClientele[$i]->libelleFr);
+				if(isset($tab->typesClientele[$i]->familleCritere->libelleFr)) {
+					$typeClient->setFamilleCritere($tab->typesClientele[$i]->familleCritere->libelleFr);
+				} else {
+					$typeClient->setFamilleCritere(null);
+				}
+				if(isset($tab->typesClientele[$i]->tailleGroupeMax)) {
+					$typeClient->setMax($tab->typesClientele[$i]->tailleGroupeMax);
+				} else {
+					$typeClient->setMax(null);
+				}
+				if(isset($tab->typesClientele[$i]->tailleGroupeMin)) {
+					$typeClient->setMin($tab->typesClientele[$i]->tailleGroupeMin);
+				} else {
+					$typeClient->setMin(null);
+				}
+				//Associe la traduction au type de public
+				$typeClient->setTraduction($traduction);
+				//Ajoute le type de client au dico de la traduction :
+				$traduction->addTypePublic($typeClient);
+				//$em->persist($typeClient);
+			}
+		}
+
 		//-------------------- Moyens de Communication ----------------------
 		if(isset($data->informations->moyensCommunication)) {
 			$tab = $data->informations;
@@ -208,7 +234,12 @@ class TraitementController extends Controller
 			for($i = 0; $i < count($tab->services); $i++) {
 				$service = new Service();
 				$service->setSerLibelle($tab->services[$i]->libelleFr);
-				$service->setSerType($tab->services[$i]->familleCritere->libelleFr);
+				$service->setSerType($tab->services[$i]->elementReferenceType);
+				if(isset($tab->services[$i]->familleCritere->libelleFr)) {
+					$service->setSerFamilleCritere($tab->services[$i]->familleCritere->libelleFr);
+				} else {
+					$service->setSerFamilleCritere(null);
+				}
 				if(isset($tab->services[$i]->description)) {
 					$service->setSerInfosSup($tab->services[$i]->description);
 				} else {
@@ -221,8 +252,34 @@ class TraitementController extends Controller
 				//$this->em->persist($service);
 			}
 		}
-		//TODO mode de paiement
+		//modes de paiement :
+		if(isset($data->descriptionTarif->modesPaiement)) {
+			$tab = $data->descriptionTarif;
+			for($i = 0; $i < count($tab->modesPaiement); $i++) {
+				$service = new Service();
+				$service->setSerLibelle($tab->modesPaiement[$i]->libelleFr);
+				$service->setSerType($tab->modesPaiement[$i]->elementReferenceType);
+				if(isset($tab->modesPaiement[$i]->familleCritere)) {
+					$service->setSerFamilleCritere($tab->modesPaiement[$i]->familleCritere->libelleFr);
+				} else {
+					$service->setSerFamilleCritere(null);
+				}
+				if($cond = isset($tab->modesPaiement[$i]->conditions) && ($tab->modesPaiement[$i]->conditions != null)) {
+					$service->setSerInfosSup($tab->modesPaiement[$i]->conditions->libelleFr);
+				} else {
+					$service->setSerInfosSup(null);
+				}
+				//Associe le service à la traduction :
+				$service->setTraduction($traduction);
+				//Ajoute le service au dico de la traduction :
+				$traduction->addService($service);
+				//$this->em->persist($service);
+			}
+		}
+
 		//TODO handicap
+
+		//TODO ?Langues parlées
 
 		//-------------------- Labels ----------------------
 		if(isset($data->$chaineInformations->labels)) {
@@ -251,8 +308,16 @@ class TraitementController extends Controller
 				for($i = 0; $i < count($tab->periodes[0]->tarifs); $i++) {
 					$tarif = new Tarif();
 					$tarif->setTarDevise($tarifs->tarifs[$i]->devise);
-					$tarif->setTarMax($tarifs->tarifs[$i]->maximum);
-					$tarif->setTarMin($tarifs->tarifs[$i]->minimum);
+					if(isset($tarifs->tarifs[$i]->maximum)) {
+						$tarif->setTarMax($tarifs->tarifs[$i]->maximum);
+					} else {
+						$tarif->setTarMax(null);
+					}
+					if(isset($tarifs->tarifs[$i]->minimum)) {
+						$tarif->setTarMin($tarifs->tarifs[$i]->minimum);
+					} else {
+						$tarif->setTarMin(null);
+					}
 					$tarif->setTarLibelle($tarifs->tarifs[$i]->type->libelleFr);
 					$tarif->setTarIndication($tab->indicationTarif);
 					//Associe le tarif à la traduction :
@@ -311,6 +376,10 @@ class TraitementController extends Controller
 		}
 
 
+		//-------------------- ObjetsLies ----------------------
+		//TODO objetsLies
+
+
 		//-------------------- Capacite ----------------------
 		//TODO capacite
 
@@ -341,6 +410,8 @@ class TraitementController extends Controller
 		//---
         return $this->render('ApidaeBundle:Default:traitement.html.twig', array('url' => $data->$chaineInformations));
     }
+
+	//TODO persist Traduction / ObjetApidae
 
 	private function traitementLabelsQualite($label) {
 		if($this->em->getRepository(LabelQualite::class)->findOneByLabLibelle($label) == null) {

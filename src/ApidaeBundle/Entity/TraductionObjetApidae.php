@@ -77,14 +77,6 @@ class TraductionObjetApidae
      */
     private $tarTarifEnClair;
 
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="tra_TypePublic", type="string", length=255, nullable=true)
-     */
-    private $traTypePublic;
-
     /**
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="traductions")
      * @ORM\JoinColumn(nullable = false)
@@ -127,6 +119,11 @@ class TraductionObjetApidae
      */
     private $ouvertures;
 
+    /**
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TypePublic", mappedBy="traduction")
+     */
+    private $typesPublic;
+
 
     public function _construct() {
         //initialisation des collections
@@ -136,6 +133,22 @@ class TraductionObjetApidae
         $this->multimedias = new ArrayCollection();
         $this->tarifs = new ArrayCollection();
         $this->ouvertures = new ArrayCollection();
+        $this->typesPublic = new ArrayCollection();
+    }
+
+    /**
+     * Ajoute/lie un type de public à l'objet
+     */
+    public function addTypePublic(TypePublic $type) {
+        $this->typesPublic[] = $type;
+
+    }
+
+    /**
+     * Supprime un type de public lié à l'objet
+     */
+    public function removeTypePublic(TypePublic $type) {
+        $this->typesPublic->removeElement($type);
     }
 
     /**

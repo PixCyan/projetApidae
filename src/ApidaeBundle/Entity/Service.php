@@ -38,9 +38,16 @@ class Service
     /**
      * @var string
      *
-     * @ORM\Column(name="serType", type="string", length=255)
+     * @ORM\Column(name="serType", type="string", length=255, nullable=true)
      */
     private $serType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="serFamilleCritere", type="string", length=255, nullable=true)
+     */
+    private $serFamilleCritere;
 
     /**
     * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", inversedBy="services")
@@ -134,9 +141,32 @@ class Service
     }
 
     /**
+     * Set serType
+     *
+     * @param string $serType
+     *
+     * @return Service
+     */
+    public function setSerFamilleCritere($serType)
+    {
+        $this->serFamilleCritere = $serType;
+
+        return $this;
+    }
+
+    /**
+     * Get serFamilleCritere
+     *
+     * @return string
+     */
+    public function getSerFamilleCritere()
+    {
+        return $this->serFamilleCritere;
+    }
+
+    /**
      * Set traIdTraduction
      *
-     * @param integer $traduction
      *
      * @return Equipement
      */
