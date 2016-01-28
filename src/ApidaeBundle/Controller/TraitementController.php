@@ -34,7 +34,7 @@ class TraitementController extends Controller
     	//Parcours API
     	$apiKey = '4oqV1oVV';
 		$projetId = '1464'; //sera $id
-		$objId = '613431';
+		$objId = '105051';
 		$requete = array();
 		$requete['apiKey'] = $apiKey;
 		$requete['projetId'] = $projetId;
@@ -123,8 +123,11 @@ class TraitementController extends Controller
 			$adresse->setCodePostal($adr->codePostal);
 			$adresse->setCommune($adr->commune->nom);
 			$adresse->setCodeCommune($adr->commune->code);
-			if(isset($adr->adresse1)) {
-				$adresse->setAdresse($adr->adresse1);
+			if(isset($adr->adresse2)) {
+				//TODO adresse1 / 2 ...
+				$adresse->setAdresse($adr->adresse2);
+			} else {
+				$adresse->setAdresse(" ");
 			}
 		}
 
@@ -173,7 +176,6 @@ class TraitementController extends Controller
 				}
 				if(isset($presentation->descriptifDetaille->libelleFr)) {
 					$traduction->setTraDescriptionLongue($presentation->descriptifDetaille->libelleFr);
-					print($presentation->descriptifDetaille->libelleFr);
 				} else {
 					$traduction->setTraDescriptionLongue(null);
 				}
@@ -228,22 +230,22 @@ class TraitementController extends Controller
 					$this->em->flush();
 				}
 			}
-/*
+
 			//-------------------- Moyens de Communication ----------------------
 			if(isset($data->informations->moyensCommunication)) {
 				$tab = $data->informations;
 				for($i = 0; $i < count($tab->moyensCommunication); $i++) {
 					$com = new MoyenCommunication();
 					$com->setMoyComLibelle($tab->moyensCommunication[$i]->type->libelleFr);
-					$com->setMoyComCoordonnees($tab->moyensCommunication[$i]->coordonnees);
+					$com->setMoyComCoordonnees($tab->moyensCommunication[$i]->coordonnees->fr);
 					//associe la traduction à l'objet
 					$com->setTraduction($traduction);
 					//Ajoute le moyen de communication au dico de la traduction :
 					$traduction->addMoyenCommunication($com);
 					$em->persist($com);
+					$this->em->flush();
 				}
 			}
-
 			//-------------------- Equipements ----------------------
 			if(isset($data->prestations->conforts)) {
 				$tab = $data->prestations;
@@ -437,6 +439,7 @@ class TraitementController extends Controller
 				}
 			}
 
+
 			//-------------------- Multimedias ----------------------
 			if(isset($data->illustrations)) {
 				for($i = 0; $i < count($data->illustrations); $i++) {
@@ -458,7 +461,7 @@ class TraitementController extends Controller
 					//print($multi->getMulLibelle()."</br>");
 					$this->em->persist($multi);
 				}
-			}*/
+			}
 
 
 			//-------------------- ObjetsLies ----------------------
