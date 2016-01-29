@@ -36,32 +36,29 @@ class LabelQualite
     private $labClassement;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="labelsQualite")
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="labelsQualite")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $objets;
-
+    private $traductions;
 
 
     public function _construct() {
-        $this->objets = new ArrayCollection();
+        $this->traductions = new ArrayCollection();
     }
 
     /**
-     * Ajoute/lie un objetApidae à la categorie
+     * Ajoute/lie une traduction au label
      */
-    public function addObjet(ObjetApidae $objet) {
-        $this->objets[] = $objet;
-
+    public function addTraduction(TraductionObjetApidae $trad) {
+        $this->traductions[] = $trad;
     }
 
     /**
-     * Supprime objetApidae de la categorie
+     * Supprime traduction du label
      */
-    public function removeObjet(ObjetApidae $objet) {
-        $this->objets->removeElement($objet);
+    public function removeTraduction(TraductionObjetApidae $trad) {
+        $this->traductions->removeElement($trad);
     }
-
 
     //---------------------- Getter & Setter ----------------------//
 
@@ -126,8 +123,8 @@ class LabelQualite
     /**
      *@return un tableau 
      */
-    public function getObjets() {
-        return $this->objets;
+    public function getTraductions() {
+        return $this->traductions;
     }
 }
 

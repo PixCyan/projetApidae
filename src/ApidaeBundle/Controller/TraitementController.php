@@ -50,25 +50,6 @@ class TraitementController extends Controller
 		$data = json_decode($content);
 
 		//récupération des données :
-		//-------------------- ObjetApidae ----------------------
-		//TODO vérifier l'existence de l'objet (id)
-		$objetApidae = new ObjetApidae();
-		$objetApidae->setIdObjet($data->id);
-		if(isset($data->geolocalisation)) {
-			$geo = $data->geolocalisation;
-			//TODO formater geolocalisation
-			//$objetApidae->setObjGeolocalisation(isset($geo->geoJson->coordinates));
-			$objetApidae->setObjGeolocalisation(null);
-		} else {
-			$objetApidae->setObjGeolocalisation(null);
-		}
-		$objetApidae->setObjSuggestion(false);
-		$objetApidae->setObjDateSuggestion(null);
-		$objetApidae->setObjTypeApidae($data->type);
-		//TODO look classement étoile
-		$objetApidae->setObjEtoile(null);
-
-		//-------------------- Categories ----------------------
 		//Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
 		$type = $data->type;
 		$chaineExplode = explode("_",$type);
@@ -85,6 +66,31 @@ class TraitementController extends Controller
 			$chaineType = implode($tab)."Type";
 		}
 
+		//-------------------- ObjetApidae ----------------------
+		//TODO vérifier l'existence de l'objet (id)
+		$objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($data->id);
+		/*$cat = $objetApidae->getCategories();
+		foreach($cat as $value) {
+			print("test : ".$value->getCatLibelle());
+		}*/
+		if($objetApidae == null) {
+			$objetApidae = new ObjetApidae();
+
+			$objetApidae->setIdObjet($data->id);
+			if(isset($data->geolocalisation)) {
+				$geo = $data->geolocalisation;
+				//TODO formater geolocalisation
+				//$objetApidae->setObjGeolocalisation(isset($geo->geoJson->coordinates));
+				$objetApidae->setObjGeolocalisation(null);
+			} else {
+				$objetApidae->setObjGeolocalisation(null);
+			}
+			$objetApidae->setObjSuggestion(false);
+			$objetApidae->setObjDateSuggestion(null);
+			$objetApidae->setObjTypeApidae($data->type);
+		}
+
+		//-------------------- Categories ----------------------
 		//Récupération de la/des catégorie(s)
 		$em = $this->getDoctrine()->getManager();
 		if(isset($data->$chaineInformations->$chaineType->libelleFr)) {
@@ -121,17 +127,14 @@ class TraitementController extends Controller
 					break;
 				}
 			}
-
 		}
-
 		//Associe l'adresse à l'objet
 		$objetApidae->setObjAdresse($adresse);
 		//Ajoute l'objet au dico de l'adresse
 		$adresse->addObjetApidae($objetApidae);
 		$this->em->persist($adresse);
-
-		$this->em->persist($objetApidae);
-		$this->em->flush();
+		$this->em->merge($objetApidae);
+		//$this->em->flush();
 
 
 		//--------------------Langue ----------------------
@@ -142,7 +145,6 @@ class TraitementController extends Controller
 			$shortCut = $value[0] . $value[1];
 			$lan = $this->em->getRepository(Langue::class)->findOneByLanLibelle($value);
 			if($lan == null) {
-				print("langue : ".$value);
 				$langue = new Langue();
 				$langue->setCodeLangue($i);
 				$langue->setLanLibelle($value);
@@ -200,7 +202,7 @@ class TraitementController extends Controller
 
 			//TODO persist Traduction / ObjetApidae
 			$this->em->persist($traduction);
-			$this->em->flush();
+			//$this->em->flush();
 
 			//-------------------- Types de Public ----------------------
 			if(isset($data->prestations->typesClientele)) {
@@ -234,7 +236,7 @@ class TraitementController extends Controller
 					//Ajoute le type de client au dico de la traduction :
 					$traduction->addTypePublic($typeClient);
 					$em->persist($typeClient);
-					$this->em->flush();
+					//$this->em->flush();
 				}
 			}
 
@@ -254,7 +256,7 @@ class TraitementController extends Controller
 					//Ajoute le moyen de communication au dico de la traduction :
 					$traduction->addMoyenCommunication($com);
 					$em->persist($com);
-					$this->em->flush();
+					//$this->em->flush();
 				}
 			}
 			//-------------------- Equipements ----------------------
@@ -413,18 +415,35 @@ class TraitementController extends Controller
 
 			//TODO ?Langues parlées
 			//-------------------- Labels ----------------------
+			//labelsQualité
 			if(isset($data->$chaineInformations->labels)) {
 				$tab = $data->$chaineInformations;
 				for($i = 0; $i < count($tab->labels); $i++) {
 					//print($tab->labels[$i]->typeLabel->libelleFr);
 					$label = new LabelQualite();
-					$label->setLabClassement($tab->labels[$i]->libelleFr);
-					$label->setLabLibelle($tab->labels[$i]->typeLabel->libelleFr);
-					//Ajoute l'objet apidae au dico du label
-					$label->addObjet($objetApidae);
-					//Ajoute le label au dico de l'objet apidae
-					$objetApidae->addLabelQualite($label);
+					if(isset($tab->labels[$i]->$chaineLangue)) {
+						$label->setLabClassement($tab->labels[$i]->$chaineLangue);
+					} else {
+						$label->setLabClassement($tab->labels[$i]->libelleFr);
+					}
+					if(isset($tab->labels[$i]->typeLabel->$chaineLangue)) {
+						$label->setLabLibelle($tab->labels[$i]->typeLabel->$chaineLangue);
+					} else {
+						$label->setLabLibelle($tab->labels[$i]->typeLabel->libelleFr);
+					}
+					//Ajoute la traduction au dico du label
+					$label->addTraduction($traduction);
+					//Ajoute le label au dico de la traduction
+					$traduction->addLabelQualite($label);
 					$this->traitementLabelsQualite($label);
+				}
+			}
+			//étoiles
+			if(isset($data->$chaineInformations->classement)) {
+				if(isset($data->$chaineInformations->classement->$chaineLangue)) {
+					$objetApidae->setObjEtoile($data->$chaineInformations->classement->$chaineLangue);
+				} else if($data->$chaineInformations->classement->libelleFr) {
+					$objetApidae->setObjEtoile($data->$chaineInformations->classement->libelleFr);
 				}
 			}
 
@@ -566,7 +585,7 @@ class TraitementController extends Controller
 			$objetApidae->addCategorie($categorie);
 			//Ajout de lobjet à la catégorie :
 			$categorie->addObjet($objetApidae);
-			$this->em->persist($categorie);
+			$this->em->merge($categorie);
 		} else {
 			//Associe la catégorie à l'objet
 			$objetApidae->addCategorie($catExist);

@@ -24,9 +24,9 @@ class ObjetApidae
     /**
      * @var int
      *
-     * @ORM\Column(name="id_obj", type="integer")
+     * @ORM\Column(name="id_obj", type="integer", unique=true)
      */
-    private $id_obj;
+    private $idObj;
 
     /**
      * @var string
@@ -36,7 +36,7 @@ class ObjetApidae
     private $objEtoile;
 
     /**
-     * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\Adresse", inversedBy="objetsApidae")
+     * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\Adresse", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinColumn(nullable = false)
      */
     private $adresse;
@@ -80,13 +80,7 @@ class ObjetApidae
     private $objetsLies;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\LabelQualite", inversedBy="objets", cascade={"persist"})
-     * @ORM\JoinTable(name="objetHasLabelQualite")
-     */
-    private $labelsQualite;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets")
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets", cascade={"merge"})
      * @ORM\JoinTable(name="objetHascategories")
      */
     private $categories;
@@ -108,7 +102,6 @@ class ObjetApidae
         //initialisation des collections
         $this->traductions = new ArrayCollection();
         $this->objetsLies = new ArrayCollection();
-        $this->labelsQualite = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->paniers = new ArrayCollection();
         $this->selectionsApidae = new ArrayColleciton();
@@ -142,21 +135,6 @@ class ObjetApidae
      */
     public function removeObjetLie(ObjetApidae $objetApidae) {
         $this->objetsLies->removeElement($objetApidae);
-    }
-
-    /**
-     * Ajoute/lie un label de qualite à l'objet 
-     */
-    public function addLabelQualite(LabelQualite $labelQualite) {
-        $this->labelsQualite[] = $labelQualite;
-
-    }
-
-    /**
-     * Supprime un label de qualite à l'objet 
-     */
-    public function removeLabelQualite(LabelQualite $labelQualite) {
-        $this->labelsQualite->removeElement($labelQualite);
     }
 
     /**
@@ -219,11 +197,11 @@ class ObjetApidae
     }
 
     public function getIdObjet() {
-        return $this->id_obj;
+        return $this->idObj;
     }
 
     public function setIdObjet($id) {
-        $this->id_obj = $id;
+        $this->idObj = $id;
     }
 
     /**

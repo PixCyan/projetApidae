@@ -51,7 +51,7 @@ class Adresse
 
     /**
      *
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae",  mappedBy="adresse")
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae",  mappedBy="adresse", cascade={"persist"})
      * @ORM\JoinColumn(name="idObjet", referencedColumnName="id", nullable=false)
      */
     private $objetsApidae;

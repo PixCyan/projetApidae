@@ -124,6 +124,11 @@ class TraductionObjetApidae
      */
     private $typesPublic;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\LabelQualite", inversedBy="traductions", cascade={"persist"})
+     * @ORM\JoinTable(name="traductionHasLabelQualite")
+     */
+    private $labelsQualite;
 
     public function _construct() {
         //initialisation des collections
@@ -134,6 +139,21 @@ class TraductionObjetApidae
         $this->tarifs = new ArrayCollection();
         $this->ouvertures = new ArrayCollection();
         $this->typesPublic = new ArrayCollection();
+        $this->labelsQualite = new ArrayCollection();
+    }
+
+    /**
+     * Ajoute/lie un label de qualite à l'objet
+     */
+    public function addLabelQualite(LabelQualite $labelQualite) {
+        $this->labelsQualite[] = $labelQualite;
+    }
+
+    /**
+     * Supprime un label de qualite à l'objet
+     */
+    public function removeLabelQualite(LabelQualite $labelQualite) {
+        $this->labelsQualite->removeElement($labelQualite);
     }
 
     /**
@@ -362,7 +382,6 @@ class TraductionObjetApidae
     public function setTraDescriptionPersonnalisee($traDescriptionPersonnalisee)
     {
         $this->traDescriptionPersonnalisee = $traDescriptionPersonnalisee;
-
         return $this;
     }
 
@@ -536,6 +555,13 @@ class TraductionObjetApidae
      */
     public function getOuvertures() {
         return $this->ouvertures;
+    }
+
+    /**
+     *@return un tableau contenant les labelsQualite liés à la traduction
+     */
+    public function getLabelsQualite() {
+        return $this->labelsQualite;
     }
 }
 
