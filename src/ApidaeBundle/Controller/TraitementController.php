@@ -34,7 +34,7 @@ class TraitementController extends Controller
     	//Parcours API
     	$apiKey = '4oqV1oVV';
 		$projetId = '1464'; //sera $id
-		$objId = '113292';
+		$objId = '105051';
 		$requete = array();
 		$requete['apiKey'] = $apiKey;
 		$requete['projetId'] = $projetId;
@@ -43,23 +43,15 @@ class TraitementController extends Controller
 		$url .= '?';
 		$url .= 'apiKey='.urlencode($apiKey);
 		$url .= '&projetId='.urlencode($projetId);
-		$url .= "&responseFields=@all";
+		$url .= "&responseFields=@all&locales=fr,en";
 		//$url .= 'query='.urlencode(json_encode($requete));
 
 		$content = file_get_contents($url);
 		$data = json_decode($content);
-		//613431
-		//376104
-		//379730
-		//102916
-		//113292
-		//114156
-		//119635
-
 
 		//récupération des données :
 		//-------------------- ObjetApidae ----------------------
-		//TODO vérifier l'existence de l'objet
+		//TODO vérifier l'existence de l'objet (id)
 		$objetApidae = new ObjetApidae();
 		$objetApidae->setIdObjet($data->id);
 		if(isset($data->geolocalisation)) {
@@ -77,7 +69,7 @@ class TraitementController extends Controller
 		$objetApidae->setObjEtoile(null);
 
 		//-------------------- Categories ----------------------
-		//Traitement de la chaine "type" (différente selon le typeApidae)
+		//Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
 		$type = $data->type;
 		$chaineExplode = explode("_",$type);
 		foreach ($chaineExplode as $value) {
@@ -86,7 +78,6 @@ class TraitementController extends Controller
 			$tab[] = $str;
 		}
 		$chaineInformations = "informations".implode($tab);
-
 		if($data->type == "FETE_ET_MANIFESTATION") {
 			$chaineType = "typesManifestation";
 		} else {
@@ -123,12 +114,14 @@ class TraitementController extends Controller
 			$adresse->setCodePostal($adr->codePostal);
 			$adresse->setCommune($adr->commune->nom);
 			$adresse->setCodeCommune($adr->commune->code);
-			if(isset($adr->adresse2)) {
-				//TODO adresse1 / 2 ...
-				$adresse->setAdresse($adr->adresse2);
-			} else {
-				$adresse->setAdresse(" ");
+			for($i = 1; $i < 5; $i++) {
+				$chaine = "adresse".$i;
+				if(isset($adr->$chaine)) {
+					$adresse->setAdresse($adr->$chaine);
+					break;
+				}
 			}
+
 		}
 
 		//Associe l'adresse à l'objet
@@ -142,17 +135,17 @@ class TraitementController extends Controller
 
 
 		//--------------------Langue ----------------------
-		//TODO revoir
+		//TODO finir
 		$i = 0;
 		$langueTrad= "";
 		foreach($languesSite as $key => $value) {
+			$shortCut = $value[0] . $value[1];
 			$lan = $this->em->getRepository(Langue::class)->findOneByLanLibelle($value);
 			if($lan == null) {
 				print("langue : ".$value);
 				$langue = new Langue();
 				$langue->setCodeLangue($i);
 				$langue->setLanLibelle($value);
-				$shortCut = $value[0] . $value[1];
 				$langue->setLanShortCut($shortCut);
 				$langue->setLanIso("?");
 				$this->em->persist($langue);
@@ -160,21 +153,29 @@ class TraitementController extends Controller
 			} else {
 				$langueTrad = $lan;
 			}
-
+			$chaineLangue = "libelle".$shortCut;
 
 			//------------------------------------------------ Traduction --------------------------------------------------
 			$traduction = new TraductionObjetApidae();
-			$traduction->setTraNom($data->nom->libelleFr);
-
+			if($chaineLangue != "libelleFr" && !isset($data->nom->$chaineLangue)) {
+				$traduction->setTraNom($data->nom->libelleFr);
+			} else {
+				$traduction->setTraNom($data->nom->$chaineLangue);
+			}
 			//Presentation
 			if(isset($data->presentation)) {
 				$presentation = $data->presentation;
-				if(isset($presentation->descriptifCourt->libelleFr)) {
+				if(isset($presentation->descriptifCourt->$chaineLangue)) {
+					$traduction->setTraDescriptionCourte($presentation->descriptifCourt->$chaineLangue);
+				}else if(isset($presentation->descriptifCourt->libelleFr)) {
+					//Par défaut si n'existe pas dans la langue demandée
 					$traduction->setTraDescriptionCourte($presentation->descriptifCourt->libelleFr);
 				} else {
 					$traduction->setTraDescriptionCourte(null);
 				}
-				if(isset($presentation->descriptifDetaille->libelleFr)) {
+				if(isset($presentation->descriptifDetaille->$chaineLangue)) {
+					$traduction->setTraDescriptionLongue($presentation->descriptifDetaille->$chaineLangue);
+				}else if(isset($presentation->descriptifDetaille->libelleFr)) {
 					$traduction->setTraDescriptionLongue($presentation->descriptifDetaille->libelleFr);
 				} else {
 					$traduction->setTraDescriptionLongue(null);
@@ -206,8 +207,14 @@ class TraitementController extends Controller
 				$tab = $data->prestations;
 				for($i = 0; $i < count($tab->typesClientele); $i++) {
 					$typeClient = new TypePublic();
-					$typeClient->setTypLibelle($tab->typesClientele[$i]->libelleFr);
-					if(isset($tab->typesClientele[$i]->familleCritere->libelleFr)) {
+					if(isset($tab->typesClientele[$i]->$chaineLangue)) {
+						$typeClient->setTypLibelle($tab->typesClientele[$i]->$chaineLangue);
+					} else {
+						$typeClient->setTypLibelle($tab->typesClientele[$i]->libelleFr);
+					}
+					if(isset($tab->typesClientele[$i]->familleCritere->$chaineLangue)) {
+						$typeClient->setFamilleCritere($tab->typesClientele[$i]->familleCritere->$chaineLangue);
+					} else if(isset($tab->typesClientele[$i]->familleCritere->libelleFr)) {
 						$typeClient->setFamilleCritere($tab->typesClientele[$i]->familleCritere->libelleFr);
 					} else {
 						$typeClient->setFamilleCritere(null);
@@ -236,7 +243,11 @@ class TraitementController extends Controller
 				$tab = $data->informations;
 				for($i = 0; $i < count($tab->moyensCommunication); $i++) {
 					$com = new MoyenCommunication();
-					$com->setMoyComLibelle($tab->moyensCommunication[$i]->type->libelleFr);
+					if(isset($tab->moyensCommunication[$i]->type->$chaineLangue)) {
+						$com->setMoyComLibelle($tab->moyensCommunication[$i]->type->$chaineLangue);
+					} else {
+						$com->setMoyComLibelle($tab->moyensCommunication[$i]->type->libelleFr);
+					}
 					$com->setMoyComCoordonnees($tab->moyensCommunication[$i]->coordonnees->fr);
 					//associe la traduction à l'objet
 					$com->setTraduction($traduction);
@@ -251,9 +262,17 @@ class TraitementController extends Controller
 				$tab = $data->prestations;
 				for($i = 0; $i < count($tab->conforts); $i++) {
 					$equipement = new Equipement();
-					$equipement->setEquLibelle($tab->conforts[$i]->libelleFr);
+					if(isset($tab->conforts[$i]->$chaineLangue)) {
+						$equipement->setEquLibelle($tab->conforts[$i]->$chaineLangue);
+					} else {
+						$equipement->setEquLibelle($tab->conforts[$i]->libelleFr);
+					}
 					if(isset($tab->conforts[$i]->familleCritere)) {
-						$equipement->setEquType($tab->conforts[$i]->familleCritere->libelleFr);
+						if(isset($tab->conforts[$i]->familleCritere->$chaineLangue)) {
+							$equipement->setEquType($tab->conforts[$i]->familleCritere->$chaineLangue);
+						} else if($tab->conforts[$i]->familleCritere->libelleFr) {
+							$equipement->setEquType($tab->conforts[$i]->familleCritere->libelleFr);
+						}
 					}
 					if(isset($tab->conforts[$i]->description)) {
 						$equipement->setEquInfosSup($tab->conforts[$i]->description);
@@ -271,9 +290,17 @@ class TraitementController extends Controller
 				$tab = $data->prestations;
 				for($i = 0; $i < count($tab->equipements); $i++) {
 					$equipement = new Equipement();
-					$equipement->setEquLibelle($tab->equipements[$i]->libelleFr);
+					if(isset($tab->equipements[$i]->$chaineLangue)) {
+						$equipement->setEquLibelle($tab->equipements[$i]->$chaineLangue);
+					} else {
+						$equipement->setEquLibelle($tab->equipements[$i]->libelleFr);
+					}
 					if(isset($tab->equipements[$i]->familleCritere)) {
-						$equipement->setEquType($tab->equipements[$i]->familleCritere->libelleFr);
+						if(isset($tab->equipements[$i]->familleCritere->$chaineLangue)) {
+							$equipement->setEquType($tab->equipements[$i]->familleCritere->$chaineLangue);
+						} else if($tab->equipements[$i]->familleCritere->libelleFr) {
+							$equipement->setEquType($tab->equipements[$i]->familleCritere->libelleFr);
+						}
 					}
 					if(isset($tab->equipements[$i]->description)) {
 						$equipement->setEquInfosSup($tab->equipements[$i]->description);
@@ -294,10 +321,18 @@ class TraitementController extends Controller
 				$tab = $data->prestations;
 				for($i = 0; $i < count($tab->services); $i++) {
 					$service = new Service();
-					$service->setSerLibelle($tab->services[$i]->libelleFr);
+					if(isset($tab->services[$i]->$chaineLangue)) {
+						$service->setSerLibelle($tab->services[$i]->$chaineLangue);
+					} else {
+						$service->setSerLibelle($tab->services[$i]->libelleFr);
+					}
 					$service->setSerType($tab->services[$i]->elementReferenceType);
-					if(isset($tab->services[$i]->familleCritere->libelleFr)) {
-						$service->setSerFamilleCritere($tab->services[$i]->familleCritere->libelleFr);
+					if(isset($tab->services[$i]->familleCritere->$chaineLangue)) {
+						if(isset($tab->services[$i]->familleCritere->$chaineLangue)) {
+							$service->setSerFamilleCritere($tab->services[$i]->familleCritere->$chaineLangue);
+						} else if(isset($tab->services[$i]->familleCritere->libelleFr)) {
+							$service->setSerFamilleCritere($tab->services[$i]->familleCritere->libelleFr);
+						}
 					} else {
 						$service->setSerFamilleCritere(null);
 					}
@@ -319,15 +354,23 @@ class TraitementController extends Controller
 				$tab = $data->descriptionTarif;
 				for($i = 0; $i < count($tab->modesPaiement); $i++) {
 					$service = new Service();
-					$service->setSerLibelle($tab->modesPaiement[$i]->libelleFr);
+					if(isset($tab->modesPaiement[$i]->$chaineLangue)) {
+						$service->setSerLibelle($tab->modesPaiement[$i]->$chaineLangue);
+					} else {
+						$service->setSerLibelle($tab->modesPaiement[$i]->libelleFr);
+					}
 					$service->setSerType($tab->modesPaiement[$i]->elementReferenceType);
 					if(isset($tab->modesPaiement[$i]->familleCritere)) {
-						$service->setSerFamilleCritere($tab->modesPaiement[$i]->familleCritere->libelleFr);
+						if(isset($tab->modesPaiement[$i]->familleCritere->$chaineLangue)) {
+							$service->setSerFamilleCritere($tab->modesPaiement[$i]->familleCritere->$chaineLangue);
+						} else if(isset($tab->modesPaiement[$i]->familleCritere->libelleFr)) {
+							$service->setSerFamilleCritere($tab->modesPaiement[$i]->familleCritere->libelleFr);
+						}
 					} else {
 						$service->setSerFamilleCritere(null);
 					}
 					if($cond = isset($tab->modesPaiement[$i]->conditions) && ($tab->modesPaiement[$i]->conditions != null)) {
-						$service->setSerInfosSup($tab->modesPaiement[$i]->conditions->libelleFr);
+						$service->setSerInfosSup($tab->modesPaiement[$i]->conditions->$chaineLangue);
 					} else {
 						$service->setSerInfosSup(null);
 					}
@@ -344,10 +387,14 @@ class TraitementController extends Controller
 				$tab = $data->prestations;
 				for($i = 0; $i < count($tab->tourismesAdaptes); $i++) {
 					$service = new Service();
-					$service->setSerLibelle($tab->tourismesAdaptes[$i]->libelleFr);
+					$service->setSerLibelle($tab->tourismesAdaptes[$i]->$chaineLangue);
 					$service->setSerType($tab->tourismesAdaptes[$i]->elementReferenceType);
 					if(isset($tab->tourismesAdaptes[$i]->familleCritere)) {
-						$service->setSerFamilleCritere($tab->tourismesAdaptes[$i]->familleCritere->libelleFr);
+						if(isset($tab->tourismesAdaptes[$i]->familleCritere->$chaineLangue)) {
+							$service->setSerFamilleCritere($tab->tourismesAdaptes[$i]->familleCritere->$chaineLangue);
+						} else if(isset($tab->tourismesAdaptes[$i]->familleCritere->libelleFr)) {
+							$service->setSerFamilleCritere($tab->tourismesAdaptes[$i]->familleCritere->libelleFr);
+						}
 					} else {
 						$service->setSerFamilleCritere(null);
 					}
@@ -385,7 +432,11 @@ class TraitementController extends Controller
 			if(isset($data->descriptionTarif)) {
 				$tab = $data->descriptionTarif;
 				if(isset($tab->tarifsEnClair)) {
-					$traduction->setTraTarifrEnClair($tab->tarifsEnClair->libelleFr);
+					if(isset($tab->tarifsEnClair->$chaineLangue)) {
+						$traduction->setTraTarifrEnClair($tab->tarifsEnClair->$chaineLangue);
+					} else {
+						$traduction->setTraTarifrEnClair($tab->tarifsEnClair->libelleFr);
+					}
 				}
 				if(isset($tab->periodes[0]->tarifs)) {
 					$tarifs = $tab->periodes[0];
@@ -402,7 +453,9 @@ class TraitementController extends Controller
 						} else {
 							$tarif->setTarMin(null);
 						}
-						if(isset($tarifs->tarifs[$i]->type->libelleFr)) {
+						if(isset($tarifs->tarifs[$i]->type->$chaineLangue)) {
+							$tarif->setTarLibelle($tarifs->tarifs[$i]->type->$chaineLangue);
+						} else if(isset($tarifs->tarifs[$i]->type->libelleFr)) {
 							$tarif->setTarLibelle($tarifs->tarifs[$i]->type->libelleFr);
 						}
 
@@ -419,7 +472,11 @@ class TraitementController extends Controller
 			//-------------------- Ouvertures ----------------------
 			if(isset($data->ouverture)) {
 				if(isset($data->ouverture->periodeEnClair)) {
-					$traduction->setTraDateEnClair($data->ouverture->periodeEnClair->libelleFr);
+					if(isset($data->ouverture->periodeEnClair->$chaineLangue)) {
+						$traduction->setTraDateEnClair($data->ouverture->periodeEnClair->$chaineLangue);
+					} else {
+						$traduction->setTraDateEnClair($data->ouverture->periodeEnClair->libelleFr);
+					}
 				}
 				if(isset($data->ouverture->periodesOuvertures)) {
 					$tab = $data->ouverture;
@@ -427,9 +484,14 @@ class TraitementController extends Controller
 						$ouverture = new Ouverture();
 						$ouverture->setOuvDateDebut($tab->periodesOuvertures[$i]->dateDebut);
 						$ouverture->setOuvDateFin($tab->periodesOuvertures[$i]->dateFin);
-						//TODO attention libelle pas toujours en FR...
 						if(isset($tab->periodesOuvertures[$i]->complementHoraire)) {
-							$ouverture->setSerInfosSup($tab->periodesOuvertures[$i]->complementHoraire->libelleFr);
+							if(isset($tab->periodesOuvertures[$i]->complementHoraire->$chaineLangue)) {
+								$ouverture->setSerInfosSup($tab->periodesOuvertures[$i]->complementHoraire->$chaineLangue);
+							} else if(isset($tab->periodesOuvertures[$i]->complementHoraire->libelleFR)) {
+								$ouverture->setSerInfosSup($tab->periodesOuvertures[$i]->complementHoraire->libelleFr);
+							} else {
+								$ouverture->setSerInfosSup(null);
+							}
 						}
 						//Associe l'ouverture à la traduction :
 						$ouverture->setTraduction($traduction);
@@ -444,8 +506,8 @@ class TraitementController extends Controller
 			if(isset($data->illustrations)) {
 				for($i = 0; $i < count($data->illustrations); $i++) {
 					$multi = new Multimedia();
-					if(isset($data->illustrations[$i]->nom->libelleFr)) {
-						$multi->setMulLibelle($data->illustrations[$i]->nom->libelleFr);
+					if(isset($data->illustrations[$i]->nom->$chaineLangue)) {
+						$multi->setMulLibelle($data->illustrations[$i]->nom->$chaineLangue);
 					} else {
 						$multi->setMulLibelle(null);
 					}
