@@ -51,7 +51,7 @@ class TraitementController extends Controller
 		$data = json_decode($content);*/
 		//-------------------------------------
 		//Récupération fichiers :
-		$export = file_get_contents("/exportInitial/selections.json");
+		$export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
 		$selections_data = json_decode($export);
 		foreach($selections_data as $value) {
 			$selectionApidae = $value->nom;
@@ -59,7 +59,7 @@ class TraitementController extends Controller
 				//=> recup id
 				$id = $val->id;
 				//=> $data = aller chercher le bon fichier dans objetsModifies
-				$data = json_decode(file_get_contents("/exportInitial/objets_modifies-".$id));
+				$data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies-".$id));
 
 
 
