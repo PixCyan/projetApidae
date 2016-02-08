@@ -24,7 +24,7 @@ class Equipement
     /**
      * @var string
      *
-     * @ORM\Column(name="equLibelle", type="string", length=255)
+     * @ORM\Column(name="equLibelle", type="string", length=255, nullable=true)
      */
     private $equLibelle;
 

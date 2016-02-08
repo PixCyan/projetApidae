@@ -24,7 +24,7 @@ class TypePublic
     /**
      * @var string
      *
-     * @ORM\Column(name="typLibelle", type="string", length=255)
+     * @ORM\Column(name="typLibelle", type="string", length=255, nullable=true)
      */
     private $typLibelle;
 

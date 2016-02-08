@@ -36,7 +36,7 @@ class SelectionApidae
     private $selLibelle;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="selectionsApidae")
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="selectionsApidae", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $objets;
@@ -47,17 +47,17 @@ class SelectionApidae
     }
 
     /**
-     * Ajoute/lie un objetApidae à la categorie
+     * Ajoute/lie un objetApidae
      */
-    public function addTraduction(ObjetApidae $objet) {
+    public function addObjetApidae(ObjetApidae $objet) {
         $this->objets[] = $objet;
 
     }
 
     /**
-     * Supprime objetApidae de la categorie
+     * Supprime objetApidae
      */
-    public function removeTraduction(ObjetApidae $objet) {
+    public function removeObjetApidae(ObjetApidae $objet) {
         $this->objets->removeElement($objet);
     }
 

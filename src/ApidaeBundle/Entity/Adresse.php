@@ -38,7 +38,7 @@ class Adresse
     /**
      * @var string
      *
-     * @ORM\Column(name="commune", type="string", length=255)
+     * @ORM\Column(name="commune", type="string", length=255, nullable=true)
      */
     private $commune;
 

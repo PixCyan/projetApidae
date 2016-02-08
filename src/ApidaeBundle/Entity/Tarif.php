@@ -38,7 +38,7 @@ class Tarif
     /**
      * @var string
      *
-     * @ORM\Column(name="tarIndication", type="string", length=255)
+     * @ORM\Column(name="tarIndication", type="string", length=255, nullable=true)
      */
     private $tarIndication;
 
