@@ -33,57 +33,58 @@ class TraitementController extends Controller
 		$languesSite[1] = "English";
 
 		//Récupération fichiers :
-		$export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
-		$selections_data = json_decode($export);
-		foreach($selections_data as $value) {
-			$selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneBySelLibelle($value->libelle->libelleFr);
-			if($selectionApidae == null) {
-				$selectionApidae = new SelectionApidae();
-				$selectionApidae->setIdSelectionApidae($value->id);
-				$selectionApidae->setSelLibelle($value->nom);
-				$this->em->persist($selectionApidae);
-			} else {
-				print($selectionApidae->getSelLibelle()."</br>");
-				$this->em->merge($selectionApidae);
-			}
-
-			foreach($value->objetsTouristiques as $val) {
-				print($val->id."</br>");
-				//=> $data = aller chercher le bon fichier dans objetsModifies
-				$data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-".$val->id.".json"));
-
-				//récupération des données :
-				//Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
-				$type = $data->type;
-				$chaineExplode = explode("_",$type);
-				$tab = null;
-				foreach ($chaineExplode as $value) {
-					$str = strtolower($value);
-					$str[0] = strtoupper($str[0]);
-					$tab[] = $str;
-				}
-				$typeObj = implode($tab);
-				$chaineInformations = "informations".$typeObj;
-				if($data->type == "FETE_ET_MANIFESTATION") {
-					$chaineType = "typesManifestation";
+		try {
+			$export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
+			$selections_data = json_decode($export);
+			foreach ($selections_data as $value) {
+				$selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneBySelLibelle($value->libelle->libelleFr);
+				if ($selectionApidae == null) {
+					$selectionApidae = new SelectionApidae();
+					$selectionApidae->setIdSelectionApidae($value->id);
+					$selectionApidae->setSelLibelle($value->nom);
+					$this->em->persist($selectionApidae);
 				} else {
-					$tab[0] = strtolower($tab[0]);
-					$chaineType = implode($tab)."Type";
+					print($selectionApidae->getSelLibelle() . "</br>");
+					$this->em->merge($selectionApidae);
 				}
 
-				$this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite, $typeObj);
+				foreach ($value->objetsTouristiques as $val) {
+					print($val->id . "</br>");
+					//=> $data = aller chercher le bon fichier dans objetsModifies
+					$data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
 
+					//récupération des données :
+					//Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
+					$type = $data->type;
+					$chaineExplode = explode("_", $type);
+					$tab = null;
+					foreach ($chaineExplode as $value) {
+						$str = strtolower($value);
+						$str[0] = strtoupper($str[0]);
+						$tab[] = $str;
+					}
+					$typeObj = implode($tab);
+					$chaineInformations = "informations" . $typeObj;
+					if ($data->type == "FETE_ET_MANIFESTATION") {
+						$chaineType = "typesManifestation";
+					} else {
+						$tab[0] = strtolower($tab[0]);
+						$chaineType = implode($tab) . "Type";
+					}
+					$this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite, $typeObj);
+				}
 			}
+			//---
+			return $this->render('ApidaeBundle:Default:traitement.html.twig', array('url' => $data->$chaineInformations));
+		} catch(Exception $e) {
+			print("Problème : ".$e->getMessage());
 		}
-		//---
-        return $this->render('ApidaeBundle:Default:traitement.html.twig', array('url' => $data->$chaineInformations));
     }
 
 	private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite, $typeObj) {
 		$fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json"));
 
 		//-------------------- ObjetApidae ----------------------
-		//TODO vérifier l'existence de l'objet (id)
 		$objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($data->id);
 		if($objetApidae == null) {
 			$objetApidae = new ObjetApidae();
@@ -178,9 +179,6 @@ class TraitementController extends Controller
 			$this->em->persist($adresse);
 			$this->em->merge($objetApidae);
 			$this->em->flush();
-
-
-
 
 			//------------------------------------------------ Traduction --------------------------------------------------
 			$traduction = new TraductionObjetApidae();
@@ -362,7 +360,7 @@ class TraitementController extends Controller
 					$this->em->persist($equipement);
 				}
 			}
-//TODO libelle service
+
 			//-------------------- Services ----------------------
 			//services
 			if(isset($data->prestations->services)) {
@@ -423,7 +421,6 @@ class TraitementController extends Controller
 				for($i = 0; $i < count($tab->labels); $i++) {
 					$label = new LabelQualite();
 					if(isset($tab->labels)) {
-						//TODO changer labels
 						foreach($fichierRef as $v) {
 							if($v->elementReferenceType == $tab->labels[$i]->elementReferenceType
 								&& $v->id == $tab->labels[$i]->id) {
@@ -454,6 +451,7 @@ class TraitementController extends Controller
 						if($v->elementReferenceType == $typeObj."Classement" &&
 							$v->id == $data->$chaineInformations->classement->id) {
 							$objetApidae->setObjEtoile($v->$chaineLangue);
+							break;
 						}
 					}
 				}
@@ -591,7 +589,11 @@ class TraitementController extends Controller
 						if($objetlie != null) {
 							$objetApidae->addObjetLie($objetlie);
 							//TODO vérifier
-							//$objetlie->addObjetLies($objetApidae);
+							$objetlie->addObjetLies($objetApidae);
+							$em->merge($objetApidae);
+							$em->merge($objetlie);
+							$em->flush();
+							print("Objet Lié");
 						} else {
 							$data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-".$data->liens->objetTouristique[$i]->id.".json"));
 							//$this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
@@ -631,19 +633,27 @@ class TraitementController extends Controller
 			if($v->elementReferenceType == "PrestationService"
 				&& isset($tab->services[$i]->id)
 				&& $v->id == $tab->services[$i]->id) {
-				$service->setSerLibelle($v->$chaineLangue);
+				$this->traitementServiceLibelle($v, $service, $chaineLangue);
 				$this->traitementServiceDetails($service, $v, $fichierRef, $chaineLangue);
 			} else if($v->elementReferenceType == "ModePaiement"
 				&& isset($tab->modesPaiement[$i]->id)
 				&& $v->id == $tab->modesPaiement[$i]->id) {
-				$service->setSerLibelle($v->$chaineLangue);
+				$this->traitementServiceLibelle($v, $service, $chaineLangue);
 				$this->traitementServiceDetails($service, $v, $fichierRef, $chaineLangue);
 			} else if($v->elementReferenceType == "TourismeAdapte"
 				&& isset($tab->tourismesAdaptes[$i]->id)
 				&& $v->id == $tab->tourismesAdaptes[$i]->id) {
-				$service->setSerLibelle($v->$chaineLangue);
+				$this->traitementServiceLibelle($v, $service, $chaineLangue);
 				$this->traitementServiceDetails($service, $v, $fichierRef, $chaineLangue);
 			}
+		}
+	}
+
+	private function traitementServiceLibelle($v, $service, $chaineLangue) {
+		if(isset($v->$chaineLangue)) {
+			$service->setSerLibelle($v->$chaineLangue);
+		} else if(isset($v->libelleFr)) {
+			$service->setSerLibelle($v->libelleFr);
 		}
 	}
 
@@ -685,5 +695,4 @@ class TraitementController extends Controller
 			$this->em->merge($catExist);
 		}
 	}
-
 }
