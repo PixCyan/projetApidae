@@ -29,10 +29,9 @@ class Categorie
     private $catLibelle;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="categories", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="categories")
      */
     private $objets;
-
 
 
     public function _construct() {
@@ -44,7 +43,6 @@ class Categorie
      */
     public function addObjet(ObjetApidae $objet) {
         $this->objets[] = $objet;
-
     }
 
     /**

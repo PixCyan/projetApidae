@@ -38,17 +38,14 @@ class TraitementController extends Controller
 		foreach($selections_data as $value) {
 			$selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneBySelLibelle($value->libelle->libelleFr);
 			if($selectionApidae == null) {
-				print($selectionApidae->getSelLibelle());
-				//TODO vérif existance sélection
 				$selectionApidae = new SelectionApidae();
 				$selectionApidae->setIdSelectionApidae($value->id);
 				$selectionApidae->setSelLibelle($value->nom);
 				$this->em->persist($selectionApidae);
 			} else {
-				print($selectionApidae->getSelLibelle());
+				print($selectionApidae->getSelLibelle()."</br>");
 				$this->em->merge($selectionApidae);
 			}
-
 
 			foreach($value->objetsTouristiques as $val) {
 				print($val->id."</br>");
@@ -81,7 +78,6 @@ class TraitementController extends Controller
 		//---
         return $this->render('ApidaeBundle:Default:traitement.html.twig', array('url' => $data->$chaineInformations));
     }
-
 
 	private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite, $typeObj) {
 		$fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json"));
@@ -127,80 +123,74 @@ class TraitementController extends Controller
 			}
 			$chaineLangue = "libelle".$shortCut;
 
-		//-------------------- Categories ----------------------
-		//Récupération de la/des catégorie(s)
-		$em = $this->getDoctrine()->getManager();
-		if(isset($data->$chaineInformations->$chaineType->libelleFr)) {
-			//Accès à libelle "simpelement"
-			$cat = $data->$chaineInformations->$chaineType->libelleFr;
-			$this->traitementCategorie($cat, $objetApidae);
-		} else if (isset($data->$chaineInformations->categories[0]->id)){
-			//Accès à libelles dans des tableaux
+			//-------------------- Categories ----------------------
+			//Récupération de la/des catégorie(s)
+			$em = $this->getDoctrine()->getManager();
+			if(isset($data->$chaineInformations->$chaineType->libelleFr)) {
+				//Accès à libelle "simpelement"
+				$cat = $data->$chaineInformations->$chaineType->libelleFr;
+				$this->traitementCategorie($cat, $objetApidae);
+			} else if (isset($data->$chaineInformations->categories[0]->id)){
+				foreach($fichierRef as $v) {
+					//print("Cat = ".$typeObj."Categorie. id = ".$data->$chaineInformations->categories[0]->id);
+					if($v->elementReferenceType == $typeObj."Categorie"
+						&& $v->id == $data->$chaineInformations->categories[0]->id) {
+						$this->traitementCategorie($v->$chaineLangue, $objetApidae);
+					}
+					if($v->elementReferenceType == "FeteEtManifestationType"
+						&& isset($data->$chaineInformations->typesManifestation[0]->id)
+						&& $v->id == $data->$chaineInformations->typesManifestation[0]->id) {
+						$this->traitementCategorie($v->$chaineLangue, $objetApidae);
+					}
+					if(isset($data->$chaineInformations->categories[0]->familleCritere)) {
+						$famille = $data->$chaineInformations->categories[0]->familleCritere->$chaineLangue;
+						$this->traitementCategorie($famille, $objetApidae);
+					}
+				}
+				//$cat = $data->$chaineInformations->categories[0]->libelleFr;
+				//$this->traitementCategorie($cat, $objetApidae);
 
-			//TODO CAT  chaineType pas ok
-			foreach($fichierRef as $v) {
-				//print("Cat = ".$typeObj."Categorie. id = ".$data->$chaineInformations->categories[0]->id);
-				if($v->elementReferenceType == $typeObj."Categorie"
-					&& $v->id == $data->$chaineInformations->categories[0]->id) {
-					$this->traitementCategorie($v->$chaineLangue, $objetApidae);
-					print($v->$chaineLangue);
-				}
-				if($v->elementReferenceType == "FeteEtManifestationType"
-					&& isset($data->$chaineInformations->typesManifestation[0]->id)
-					&& $v->id == $data->$chaineInformations->typesManifestation[0]->id) {
-					$this->traitementCategorie($v->$chaineLangue, $objetApidae);
-					print($v->$chaineLangue);
-				}
-				if(isset($data->$chaineInformations->categories[0]->familleCritere)) {
-					$famille = $data->$chaineInformations->categories[0]->familleCritere->$chaineLangue;
+				/*if(isset($data->$chaineInformations->categories[0]->familleCritere)) {
+					$famille = $data->$chaineInformations->categories[0]->familleCritere->libelleFr;
 					$this->traitementCategorie($famille, $objetApidae);
-					print($v->$chaineLangue);
 				}
+
+				//$chaineType .= "[0]";
+				if(isset($data->$chaineInformations->typesManifestation[0]->libelleFr)) {
+					$type = $data->$chaineInformations->typesManifestation[0]->libelleFr;
+					$this->traitementCategorie($type, $objetApidae);
+				}*/
 			}
-			//$cat = $data->$chaineInformations->categories[0]->libelleFr;
-			//$this->traitementCategorie($cat, $objetApidae);
 
-			/*if(isset($data->$chaineInformations->categories[0]->familleCritere)) {
-				$famille = $data->$chaineInformations->categories[0]->familleCritere->libelleFr;
-				$this->traitementCategorie($famille, $objetApidae);
-			}
-
-			//$chaineType .= "[0]";
-			if(isset($data->$chaineInformations->typesManifestation[0]->libelleFr)) {
-				$type = $data->$chaineInformations->typesManifestation[0]->libelleFr;
-				$this->traitementCategorie($type, $objetApidae);
-			}*/
-		}
-
-		//-------------------- Adresse ----------------------
-		$adresse = new Adresse();
-		if($adr = $data->localisation->adresse) {
-			$adresse->setCodePostal($adr->codePostal);
-			if(isset($adr->commune->id)) {
-				$communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
-				foreach($communes as $commune) {
-					if($commune->id == $adr->commune->id) {
-						$adresse->setCommune($commune->nom);
-						$adresse->setCodeCommune($commune->code);
+			//-------------------- Adresse ----------------------
+			$adresse = new Adresse();
+			if($adr = $data->localisation->adresse) {
+				$adresse->setCodePostal($adr->codePostal);
+				if(isset($adr->commune->id)) {
+					$communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
+					foreach($communes as $commune) {
+						if($commune->id == $adr->commune->id) {
+							$adresse->setCommune($commune->nom);
+							$adresse->setCodeCommune($commune->code);
+							break;
+						}
+					}
+				}
+				for($i = 1; $i < 5; $i++) {
+					$chaine = "adresse".$i;
+					if(isset($adr->$chaine)) {
+						$adresse->setAdresse($adr->$chaine);
 						break;
 					}
 				}
 			}
-			for($i = 1; $i < 5; $i++) {
-				$chaine = "adresse".$i;
-				if(isset($adr->$chaine)) {
-					$adresse->setAdresse($adr->$chaine);
-					break;
-				}
-			}
-		}
-		//Associe l'adresse à l'objet
-		$objetApidae->setObjAdresse($adresse);
-		//Ajoute l'objet au dico de l'adresse
-		$adresse->addObjetApidae($objetApidae);
-		$this->em->persist($adresse);
-		$this->em->merge($objetApidae);
-		$this->em->flush();
+			//Associe l'adresse à l'objet
+			$objetApidae->setObjAdresse($adresse);
+			//Ajoute l'objet au dico de l'adresse
+			$adresse->addObjetApidae($objetApidae);
+			$this->em->persist($adresse);
+			$this->em->merge($objetApidae);
+			$this->em->flush();
 
 
 
@@ -339,13 +329,16 @@ class TraitementController extends Controller
 					} else {
 						$equipement->setEquLibelle(null);
 					}
-					if(isset($tab->conforts[$i]->familleCritere)) {
-						//TODO ne peuvent pas être null, changer chemin
-						if(isset($tab->conforts[$i]->familleCritere->$chaineLangue)) {
-							$equipement->setEquType($tab->conforts[$i]->familleCritere->$chaineLangue);
-						} else if($tab->conforts[$i]->familleCritere->libelleFr) {
-							$equipement->setEquType($tab->conforts[$i]->familleCritere->libelleFr);
+					if(isset($tab->conforts)) {
+						foreach($fichierRef as $v) {
+							if($v->elementReferenceType == "PrestationConfort"
+								&& isset($tab->conforts[$i]->id)
+								&& $v->id == $tab->conforts[$i]->id) {
+								$equipement->setEquLibelle($v->$chaineLangue);
+								$equipement->setEquType("Confort");
+							}
 						}
+						print("Confort");
 					}
 					if(isset($tab->conforts[$i]->description)) {
 						$equipement->setEquInfosSup($tab->conforts[$i]->description);
@@ -365,28 +358,12 @@ class TraitementController extends Controller
 					$equipement = new Equipement();
 					foreach($fichierRef as $v) {
 						if($v->elementReferenceType == "PrestationEquipement"
-							&& isset($tab->equipements[$i]->$chaineLangue->id)
-							&& $v->id == $tab->equipements[$i]->$chaineLangue->id) {
+							&& isset($tab->equipements[$i]->id)
+							&& $v->id == $tab->equipements[$i]->id) {
 							$equipement->setEquLibelle($v->$chaineLangue);
-							$lib = $this->traitementFamilleCritere($tab->equipements[$i]->$chaineLangue->id,$fichierRef, $chaineLangue);
-							$equipement->setEquType($lib);
+							$equipement->setEquType("Equipement");
 						}
 					}
-
-					/*if(isset($tab->equipements[$i]->$chaineLangue)) {
-						$equipement->setEquLibelle($tab->equipements[$i]->$chaineLangue);
-					} else if(isset($tab->equipements[$i]->libelleFr)) {
-						$equipement->setEquLibelle($tab->equipements[$i]->libelleFr);
-					} else {
-						$equipement->setEquLibelle(null);
-					}
-					if(isset($tab->equipements[$i]->familleCritere)) {
-						if(isset($tab->equipements[$i]->familleCritere->$chaineLangue)) {
-							$equipement->setEquType($tab->equipements[$i]->familleCritere->$chaineLangue);
-						} else {
-							$equipement->setEquType($tab->equipements[$i]->familleCritere->libelleFr);
-						}
-					}*/
 					if(isset($tab->equipements[$i]->description)) {
 						$equipement->setEquInfosSup($tab->equipements[$i]->description);
 					} else {
@@ -522,7 +499,6 @@ class TraitementController extends Controller
 					} else {
 						foreach($fichierRef as $v) {
 							if($v->elementReferenceType == $chaineType."Classement" && $v->id == $tab->labels[$i]->id) {
-								print($v->$chaineLangue);
 								$label->setLabLibelle($v->$chaineLangue);
 							}
 						}
@@ -540,10 +516,10 @@ class TraitementController extends Controller
 					$objetApidae->setObjEtoile($data->$chaineInformations->classement->$chaineLangue);
 				} else {
 					foreach($fichierRef as $v) {
-						if($v->elementReferenceType == $chaineType."Label" &&
+						if($v->elementReferenceType == $typeObj."Label" &&
 							$v->id == $data->$chaineInformations->classement->id) {
 							$objetApidae->setObjEtoile($data->$chaineInformations->classement->$chaineLangue);
-							print($data->$chaineInformations->classement->$chaineLangue);
+							//print($data->$chaineInformations->classement->$chaineLangue);
 						}
 					}
 				}
@@ -730,11 +706,12 @@ class TraitementController extends Controller
 			$objetApidae->addCategorie($categorie);
 			//Ajout de lobjet à la catégorie :
 			$categorie->addObjet($objetApidae);
-			$this->em->merge($categorie);
-		} else {
+			$this->em->persist($categorie);
+		} else if($this->em->getRepository(ObjetApidae::class)->findOneByIdObj($objetApidae->getIdObjet()) != $objetApidae){
 			//Associe la catégorie à l'objet
 			$objetApidae->addCategorie($catExist);
 			$catExist->addObjet($objetApidae);
+			$this->em->merge($catExist);
 		}
 	}
 

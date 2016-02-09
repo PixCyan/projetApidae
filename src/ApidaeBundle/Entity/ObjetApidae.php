@@ -80,7 +80,7 @@ class ObjetApidae
     private $objetsLies;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets", cascade={"merge"})
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHascategories")
      */
     private $categories;
