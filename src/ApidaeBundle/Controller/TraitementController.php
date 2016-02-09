@@ -147,19 +147,6 @@ class TraitementController extends Controller
 						$this->traitementCategorie($famille, $objetApidae);
 					}
 				}
-				//$cat = $data->$chaineInformations->categories[0]->libelleFr;
-				//$this->traitementCategorie($cat, $objetApidae);
-
-				/*if(isset($data->$chaineInformations->categories[0]->familleCritere)) {
-					$famille = $data->$chaineInformations->categories[0]->familleCritere->libelleFr;
-					$this->traitementCategorie($famille, $objetApidae);
-				}
-
-				//$chaineType .= "[0]";
-				if(isset($data->$chaineInformations->typesManifestation[0]->libelleFr)) {
-					$type = $data->$chaineInformations->typesManifestation[0]->libelleFr;
-					$this->traitementCategorie($type, $objetApidae);
-				}*/
 			}
 
 			//-------------------- Adresse ----------------------
@@ -338,7 +325,6 @@ class TraitementController extends Controller
 								$equipement->setEquType("Confort");
 							}
 						}
-						print("Confort");
 					}
 					if(isset($tab->conforts[$i]->description)) {
 						$equipement->setEquInfosSup($tab->conforts[$i]->description);
@@ -383,28 +369,10 @@ class TraitementController extends Controller
 				$tab = $data->prestations;
 				for($i = 0; $i < count($tab->services); $i++) {
 					$service = new Service();
-					if(isset($tab->services[$i]->$chaineLangue)) {
-						$service->setSerLibelle($tab->services[$i]->$chaineLangue);
-					} else if(isset($tab->services[$i]->libelleFr)) {
-						$service->setSerLibelle($tab->services[$i]->libelleFr);
-					} else {
-						$service->setSerLibelle(null);
+					if(isset($tab->services)) {
+						$this->traitementServices($tab, $i, $service, $fichierRef, $chaineLangue);
 					}
 					$service->setSerType($tab->services[$i]->elementReferenceType);
-					if(isset($tab->services[$i]->familleCritere->$chaineLangue)) {
-						if(isset($tab->services[$i]->familleCritere->$chaineLangue)) {
-							$service->setSerFamilleCritere($tab->services[$i]->familleCritere->$chaineLangue);
-						} else if(isset($tab->services[$i]->familleCritere->libelleFr)) {
-							$service->setSerFamilleCritere($tab->services[$i]->familleCritere->libelleFr);
-						}
-					} else {
-						$service->setSerFamilleCritere(null);
-					}
-					if(isset($tab->services[$i]->description)) {
-						$service->setSerInfosSup($tab->services[$i]->description);
-					} else {
-						$service->setSerInfosSup(null);
-					}
 					//Associe le service à la traduction :
 					$service->setTraduction($traduction);
 					//Ajoute le service au dico de la traduction :
@@ -418,28 +386,10 @@ class TraitementController extends Controller
 				$tab = $data->descriptionTarif;
 				for($i = 0; $i < count($tab->modesPaiement); $i++) {
 					$service = new Service();
-					if(isset($tab->modesPaiement[$i]->$chaineLangue)) {
-						$service->setSerLibelle($tab->modesPaiement[$i]->$chaineLangue);
-					} else if(isset($tab->modesPaiement[$i]->libelleFr)) {
-						$service->setSerLibelle($tab->modesPaiement[$i]->libelleFr);
-					} else {
-						$service->setSerLibelle(null);
+					if(isset($tab->modesPaiement)) {
+						$this->traitementServices($tab, $i, $service, $fichierRef, $chaineLangue);
 					}
 					$service->setSerType($tab->modesPaiement[$i]->elementReferenceType);
-					if(isset($tab->modesPaiement[$i]->familleCritere)) {
-						if(isset($tab->modesPaiement[$i]->familleCritere->$chaineLangue)) {
-							$service->setSerFamilleCritere($tab->modesPaiement[$i]->familleCritere->$chaineLangue);
-						} else if(isset($tab->modesPaiement[$i]->familleCritere->libelleFr)) {
-							$service->setSerFamilleCritere($tab->modesPaiement[$i]->familleCritere->libelleFr);
-						}
-					} else {
-						$service->setSerFamilleCritere(null);
-					}
-					if($cond = isset($tab->modesPaiement[$i]->conditions) && ($tab->modesPaiement[$i]->conditions != null)) {
-						$service->setSerInfosSup($tab->modesPaiement[$i]->conditions->$chaineLangue);
-					} else {
-						$service->setSerInfosSup(null);
-					}
 					//Associe le service à la traduction :
 					$service->setTraduction($traduction);
 					//Ajoute le service au dico de la traduction :
@@ -453,26 +403,10 @@ class TraitementController extends Controller
 				$tab = $data->prestations;
 				for($i = 0; $i < count($tab->tourismesAdaptes); $i++) {
 					$service = new Service();
-					if(isset($tab->tourismesAdaptes[$i]->$chaineLangue)) {
-						$service->setSerLibelle($tab->tourismesAdaptes[$i]->$chaineLangue);
-					} else {
-						$service->setSerLibelle(null);
+					if(isset($tab->tourismesAdaptes)) {
+						$this->traitementServices($tab, $i, $service, $fichierRef, $chaineLangue);
 					}
 					$service->setSerType($tab->tourismesAdaptes[$i]->elementReferenceType);
-					if(isset($tab->tourismesAdaptes[$i]->familleCritere)) {
-						if(isset($tab->tourismesAdaptes[$i]->familleCritere->$chaineLangue)) {
-							$service->setSerFamilleCritere($tab->tourismesAdaptes[$i]->familleCritere->$chaineLangue);
-						} else if(isset($tab->tourismesAdaptes[$i]->familleCritere->libelleFr)) {
-							$service->setSerFamilleCritere($tab->tourismesAdaptes[$i]->familleCritere->libelleFr);
-						}
-					} else {
-						$service->setSerFamilleCritere(null);
-					}
-					if(isset($tab->tourismesAdaptes[$i]->familleCritere->description)) {
-						$service->setSerInfosSup($tab->tourismesAdaptes[$i]->familleCritere->description);
-					} else {
-						$service->setSerInfosSup(null);
-					}
 					//Associe le service à la traduction :
 					$service->setTraduction($traduction);
 					//Ajoute le service au dico de la traduction :
@@ -488,18 +422,21 @@ class TraitementController extends Controller
 				$tab = $data->$chaineInformations;
 				for($i = 0; $i < count($tab->labels); $i++) {
 					$label = new LabelQualite();
-					if(isset($tab->labels[$i]->$chaineLangue)) {
-						//TODO voir classement
-						//$label->setLabClassement($tab->labels[$i]->$chaineLangue);
-					} else {
-						//$label->setLabClassement($tab->labels[$i]->libelleFr);
-					}
-					if(isset($tab->labels[$i]->typeLabel->$chaineLangue)) {
-						$label->setLabLibelle($tab->labels[$i]->typeLabel->$chaineLangue);
-					} else {
+					if(isset($tab->labels)) {
+						//TODO changer labels
 						foreach($fichierRef as $v) {
-							if($v->elementReferenceType == $chaineType."Classement" && $v->id == $tab->labels[$i]->id) {
-								$label->setLabLibelle($v->$chaineLangue);
+							if($v->elementReferenceType == $tab->labels[$i]->elementReferenceType
+								&& $v->id == $tab->labels[$i]->id) {
+								$label->setLabClassement($v->$chaineLangue);
+								//libelle du label :
+								foreach($fichierRef as $value) {
+									if($value->elementReferenceType == $v->typeLabel->elementReferenceType
+										&& $value->id == $v->typeLabel->id) {
+										$label->setLabLibelle($value->$chaineLangue);
+										break;
+									}
+								}
+								break;
 							}
 						}
 					}
@@ -512,14 +449,11 @@ class TraitementController extends Controller
 			}
 			//étoiles
 			if(isset($data->$chaineInformations->classement)) {
-				if(isset($data->$chaineInformations->classement->$chaineLangue)) {
-					$objetApidae->setObjEtoile($data->$chaineInformations->classement->$chaineLangue);
-				} else {
+				if(isset($data->$chaineInformations->classement)) {
 					foreach($fichierRef as $v) {
-						if($v->elementReferenceType == $typeObj."Label" &&
+						if($v->elementReferenceType == $typeObj."Classement" &&
 							$v->id == $data->$chaineInformations->classement->id) {
-							$objetApidae->setObjEtoile($data->$chaineInformations->classement->$chaineLangue);
-							//print($data->$chaineInformations->classement->$chaineLangue);
+							$objetApidae->setObjEtoile($v->$chaineLangue);
 						}
 					}
 				}
@@ -666,8 +600,6 @@ class TraitementController extends Controller
 				}
 			}
 
-
-
 			//-------------------- Capacite ----------------------
 			//TODO capacite
 
@@ -683,11 +615,51 @@ class TraitementController extends Controller
 		foreach($fichierRef as $v) {
 			if($v->elementReferenceType == "FamilleCritere" &&
 				$v->id == $id) {
-				return $v->$chaineLangue;
+				if(isset($v->$chaineLangue)) {
+					return $v->$chaineLangue;
+				} else if (isset($v->libelleFr)) {
+					return $v->libelleFr;
+				} else {
+					return "Pas de libelle disponible";
+				}
 			}
 		}
 	}
 
+	private function traitementServices($tab, $i, $service, $fichierRef, $chaineLangue) {
+		foreach($fichierRef as $v) {
+			if($v->elementReferenceType == "PrestationService"
+				&& isset($tab->services[$i]->id)
+				&& $v->id == $tab->services[$i]->id) {
+				$service->setSerLibelle($v->$chaineLangue);
+				$this->traitementServiceDetails($service, $v, $fichierRef, $chaineLangue);
+			} else if($v->elementReferenceType == "ModePaiement"
+				&& isset($tab->modesPaiement[$i]->id)
+				&& $v->id == $tab->modesPaiement[$i]->id) {
+				$service->setSerLibelle($v->$chaineLangue);
+				$this->traitementServiceDetails($service, $v, $fichierRef, $chaineLangue);
+			} else if($v->elementReferenceType == "TourismeAdapte"
+				&& isset($tab->tourismesAdaptes[$i]->id)
+				&& $v->id == $tab->tourismesAdaptes[$i]->id) {
+				$service->setSerLibelle($v->$chaineLangue);
+				$this->traitementServiceDetails($service, $v, $fichierRef, $chaineLangue);
+			}
+		}
+	}
+
+	private function traitementServiceDetails($service, $v, $fichierRef, $chaineLangue) {
+		if(isset($v->familleCritere)) {
+			$type = $this->traitementFamilleCritere($v->familleCritere->id, $fichierRef, $chaineLangue);
+			$service->setSerFamilleCritere($type);
+		} else {
+			$service->setSerFamilleCritere(null);
+		}
+		if(isset($v->description)) {
+			$service->setSerInfosSup($v->description);
+		} else {
+			$service->setSerInfosSup(null);
+		}
+	}
 
 	private function traitementLabelsQualite($label) {
 		if($this->em->getRepository(LabelQualite::class)->findOneByLabLibelle($label) == null) {
@@ -697,7 +669,6 @@ class TraitementController extends Controller
 
 	private function traitementCategorie($cat, $objetApidae) {
 		//On vérifie si la catégorie existe déjà
-		//TODO vérifier :
 		$catExist = $this->em->getRepository(Categorie::class)->findOneByCatLibelle($cat);
 		if($catExist == null) {
 			$categorie = new Categorie();
