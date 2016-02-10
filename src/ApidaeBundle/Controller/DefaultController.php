@@ -4,14 +4,12 @@ namespace ApidaeBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use ApidaeBundle\Entity\ObjetApidae;
 
 class DefaultController extends Controller
 {
     private $em;
 
-    /**
-     * @Route("/test")
-     */
     public function indexAction()
     {
 
@@ -35,14 +33,14 @@ class DefaultController extends Controller
         return $this->render('ApidaeBundle:Default:donnees.html.twig', array('url' => $url, 'data' => $data));
     }
 
-    /**
-     * @Route("/offre")
-     */
-    public function offreAction()
+    public function offreAction($id)
     {
-        //Test objetLie
+        if($id == 0) {
+            $id = 119635;
+        }
+        //Test affichage obet
         $this->em = $this->getDoctrine()->getManager();
-        $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj(119889);
+        $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($id);
         $trad = null;
         if($objetApidae != null) {
             $traductions = $objetApidae->getTraductions();

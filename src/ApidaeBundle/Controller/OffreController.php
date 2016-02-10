@@ -5,7 +5,6 @@ namespace ApidaeBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use ApidaeBundle\Entity\ObjetApidae;
-use ApidaeBundle\Entity\TraductionObjetApidae;
 
 class OffreController extends Controller
 {
