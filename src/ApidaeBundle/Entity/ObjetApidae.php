@@ -125,16 +125,15 @@ class ObjetApidae
     /**
      * Ajoute/lie un objetApidae à l'objet 
      */
-    public function addObjetLie(ObjetApidae $objetApidae) {
-        $this->objetsLies[] = $objetApidae;
-
+    public function addObjetLie(ObjetLie $objetLie) {
+        $this->objetsLies[] = $objetLie;
     }
 
     /**
      * Supprime un objetApidae à l'objet 
      */
-    public function removeObjetLie(ObjetApidae $objetApidae) {
-        $this->objetsLies->removeElement($objetApidae);
+    public function removeObjetLie(ObjetLie $objetLie) {
+        $this->objetsLies->removeElement($objetLie);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace ApidaeBundle\Command;
 
+use ApidaeBundle\Entity\ObjetLie;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -275,7 +276,7 @@ class Traitement extends ContainerAwareCommand {
                     $typeClient->setTraduction($traduction);
                     //Ajoute le type de client au dico de la traduction :
                     $traduction->addTypePublic($typeClient);
-                    $em->persist($typeClient);
+                    $this->em->persist($typeClient);
                     $this->em->flush();
                 }
             }
@@ -300,7 +301,7 @@ class Traitement extends ContainerAwareCommand {
                     $com->setTraduction($traduction);
                     //Ajoute le moyen de communication au dico de la traduction :
                     $traduction->addMoyenCommunication($com);
-                    $em->persist($com);
+                    $this->em->persist($com);
                     $this->em->flush();
                 }
             }
@@ -582,28 +583,6 @@ class Traitement extends ContainerAwareCommand {
                 }
             }
 
-            //-------------------- ObjetsLies ----------------------
-            //TODO objetsLies
-            if(isset($data->liens)) {
-                for ($i = 0; $i < count($data->liens); $i++) {
-                    if(isset($data->liens->liensObjetsTouristiquesTypes->objetTouristique[$i]->id)) {
-                        $objetlie = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($data->liens->liensObjetsTouristiquesTypes->objetTouristique[$i]->id);
-                        if($objetlie != null) {
-                            //TODO vérifier
-                            $objetApidae->addObjetLie($objetlie);
-                            $objetlie->addObjetLies($objetApidae);
-                            $em->merge($objetApidae);
-                            $em->merge($objetlie);
-                            //$em->flush();
-                            print("Objet Lié");
-                        } else {
-                            $data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-".$data->liens->objetTouristique[$i]->id.".json"));
-                            //$this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
-                        }
-                    }
-                }
-            }
-
             //-------------------- Capacite ----------------------
             //TODO capacite
 
@@ -611,8 +590,37 @@ class Traitement extends ContainerAwareCommand {
             //-------------------- Duree ----------------------
             //TODO duree
 
-            $i++;
 
+            $i++;
+        }
+
+        //-------------------- ObjetsLies ----------------------
+        //TODO objetsLies
+        if(isset($data->liens)) {
+            for ($i = 0; $i < count($data->liens); $i++) {
+                //print("boucle for");
+                if(isset($data->liens->liensObjetsTouristiquesTypes[$i]->objetTouristique->id)) {
+                    $objetlieExist = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($data->liens->liensObjetsTouristiquesTypes[$i]->objetTouristique->id);
+                    if($objetlieExist != null) {
+                        $objetlie1 = new ObjetLie();
+                        $objetlie1->setObjetLie($objetlieExist);
+                        $objetlie2 = new ObjetLie();
+                        $objetlie2->setObjetLie($objetApidae);
+                        //TODO vérifier
+                        $objetApidae->addObjetLie($objetlie1);
+                        $objetlieExist->addObjetLie($objetlie2);
+                        $this->em->merge($objetApidae);
+                        $this->em->merge($objetlieExist);
+                        //this->$em->flush();
+
+                        print("Objet Lié");
+                    } else {
+                        print("Objet lié non créé");
+                        //$data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-".$data->liens->liensObjetsTouristiquesTypes[$i]->objetTouristique->id.".json"));
+                        //$this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
+                    }
+                }
+            }
         }
     }
 

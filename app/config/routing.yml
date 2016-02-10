@@ -1,12 +1,16 @@
 apidae:
     path : /
-    defaults :  { _controller: ApidaeBundle:Default:index }
+    defaults :  { _controller: ApidaeBundle:Index:index }
     prefix : /
 
 test:
     path : /test
-    defaults: { _controller: ApidaeBundle:Index:index }
+    defaults: { _controller: ApidaeBundle:Default:index }
 
 traitement:
     path: /traitement
     defaults: { _controller: ApidaeBundle:Traitement:traitement }
+
+traitement:
+    path: /offre
+    defaults: { _controller: ApidaeBundle:Default:offre }

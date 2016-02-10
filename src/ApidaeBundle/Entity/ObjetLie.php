@@ -25,9 +25,8 @@ class ObjetLie
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="objetsLies")
      * @ORM\JoinColumn(nullable = false)
      */
-    private $objet;
-    //id de l'objet auquel il est lié
-
+    private $objetLie;
+    //l'objet lié
 
     /**
      * Get id
@@ -39,14 +38,14 @@ class ObjetLie
         return $this->id;
     }
 
-    public function getObjet()
+    public function getObjetLie()
     {
-        return $this->objet;
+        return $this->objetLie;
     }
 
-    public function setObjet(ObjetApidae $objet)
+    public function setObjetLie(ObjetApidae $objet)
     {
-        return $this->objet = $objet;
+        return $this->objetLie = $objet;
     }
 }
 
