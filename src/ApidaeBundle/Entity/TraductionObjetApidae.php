@@ -90,12 +90,14 @@ class TraductionObjetApidae
     private $langue;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Equipement", mappedBy="traduction", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Equipement", inversedBy="traductions", cascade={"persist"})
+     * @ORM\JoinTable(name="traductionHasEquipements")
      */
     private $equipements;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Service", mappedBy="traduction", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Service", inversedBy="traductions", cascade={"persist"})
+     * @ORM\JoinTable(name="traductionHasServices")
      */
     private $services;
 
@@ -120,7 +122,7 @@ class TraductionObjetApidae
     private $ouvertures;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TypePublic", mappedBy="traduction", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TypePublic", mappedBy="traductions", cascade={"persist"})
      */
     private $typesPublic;
 

@@ -36,7 +36,7 @@ class DefaultController extends Controller
     {
         //phpinfo();
         if($id == 0) {
-            $id = 105051;
+            $id = 48925;
         }
         //Test affichage obet
         $this->em = $this->getDoctrine()->getManager();

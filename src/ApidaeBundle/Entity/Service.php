@@ -22,9 +22,15 @@ class Service
     private $id;
 
     /**
+     * @var int
+     * @ORM\Column(name="serId", type="integer", unique=true)
+     */
+    private $serId;
+
+    /**
      * @var string
      *
-     * @ORM\Column(name="serLibelle", type="string", length=255, nullable=true)
+     * @ORM\Column(name="serLibelle", type="string", length=255)
      */
     private $serLibelle;
 
@@ -50,13 +56,46 @@ class Service
     private $serFamilleCritere;
 
     /**
-    * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", inversedBy="services")
+    * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="services", cascade={"merge"})
     * @ORM\JoinColumn(nullable=false)
     */
-    private $traduction;
+    private $traductions;
+
+    public function _construct() {
+        //initialisation des collections
+        $this->traductions = new ArrayCollection();
+    }
+
+    /**
+     * Ajoute/lie un objetApidae à la categorie
+     */
+    public function addTraduction(TraductionObjetApidae $tradObjet) {
+        $this->traductions[] = $tradObjet;
+    }
+
+    /**
+     * Supprime objetApidae de la categorie
+     */
+    public function removeObjet(TraductionObjetApidae $tradObjet) {
+        $this->traductions->removeElement($tradObjet);
+    }
 
     //---------------------- Getter & Setter ----------------------//
+    /**
+     * @return int
+     */
+    public function getSerId()
+    {
+        return $this->serId;
+    }
 
+    /**
+     * @param int $serId
+     */
+    public function setSerId($serId)
+    {
+        $this->serId = $serId;
+    }
 
     /**
      * Get id
@@ -186,5 +225,15 @@ class Service
     {
         return $this->traduction;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTraductions()
+    {
+        return $this->traductions;
+    }
+
+
 }
 

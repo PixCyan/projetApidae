@@ -22,6 +22,12 @@ class Equipement
     private $id;
 
     /**
+     * @var int
+     * @ORM\Column(name="equId", type="integer", unique=true)
+     */
+    private $equId;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="equLibelle", type="string", length=255, nullable=true)
@@ -43,10 +49,29 @@ class Equipement
     private $equType;
 
     /**
-    * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", inversedBy="equipements")
+    * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="equipements", cascade={"merge"})
     * @ORM\JoinColumn(nullable=false)
     */
-    private $traduction;
+    private $traductions;
+
+    public function _construct() {
+        //initialisation des collections
+        $this->traductions = new ArrayCollection();
+    }
+
+    /**
+     * Ajoute/lie un objetApidae à la categorie
+     */
+    public function addTraduction(TraductionObjetApidae $tradObjet) {
+        $this->traductions[] = $tradObjet;
+    }
+
+    /**
+     * Supprime objetApidae de la categorie
+     */
+    public function removeObjet(TraductionObjetApidae $tradObjet) {
+        $this->traductions->removeElement($tradObjet);
+    }
 
     //---------------------- Getter & Setter ----------------------//
 
@@ -155,5 +180,23 @@ class Equipement
     {
         return $this->traduction;
     }
+
+    /**
+     * @return int
+     */
+    public function getEquId()
+    {
+        return $this->equId;
+    }
+
+    /**
+     * @param int $equId
+     */
+    public function setEquId($equId)
+    {
+        $this->equId = $equId;
+    }
+
+
 }
 

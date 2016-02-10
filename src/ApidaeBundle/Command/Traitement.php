@@ -234,52 +234,63 @@ class Traitement extends ContainerAwareCommand {
             if(isset($data->prestations->typesClientele)) {
                 $tab = $data->prestations;
                 for($i = 0; $i < count($tab->typesClientele); $i++) {
-                    $typeClient = new TypePublic();
-                    if(isset($tab->typesClientele[$i]->$chaineLangue)) {
-                        $typeClient->setTypLibelle($tab->typesClientele[$i]->$chaineLangue);
-                    } else {
-                        foreach($fichierRef as $v) {
-                            if($v->elementReferenceType == "TypeClientele"
-                                && $v->id == $tab->typesClientele[$i]->id) {
-                                if(isset($v->$chaineLangue)) {
-                                    $typeClient->setTypLibelle($v->$chaineLangue);
-                                } else {
-                                    $typeClient->setTypLibelle(null);
+                    $typeClient = $this->em->getRepository(TypePublic::class)->findOneByTypId(($tab->typesClientele[$i]->id));
+                    if($typeClient == null) {
+                        $typeClient = new TypePublic();
+                        $typeClient->setTypId($tab->typesClientele[$i]->id);
+                        if(isset($tab->typesClientele[$i]->$chaineLangue)) {
+                            $typeClient->setTypLibelle($tab->typesClientele[$i]->$chaineLangue);
+                        } else {
+                            foreach($fichierRef as $v) {
+                                if($v->elementReferenceType == "TypeClientele"
+                                    && $v->id == $tab->typesClientele[$i]->id) {
+                                    if(isset($v->$chaineLangue)) {
+                                        $typeClient->setTypLibelle($v->$chaineLangue);
+                                    } else {
+                                        $typeClient->setTypLibelle(null);
+                                    }
                                 }
                             }
                         }
-                    }
-                    if(isset($tab->typesClientele[$i]->familleCritere->$chaineLangue)) {
-                        $typeClient->setFamilleCritere($tab->typesClientele[$i]->familleCritere->$chaineLangue);
-                    } else {
-                        foreach($fichierRef as $v) {
-                            if($v->elementReferenceType == "FamilleCritere"
-                                && $v->id == $tab->typesClientele[$i]->id) {
-                                if(isset($v->$chaineLangue)) {
-                                    print("FamilleCritere :: ".$v->$chaineLangue);
-                                    $typeClient->setFamilleCritere($v->$chaineLangue);
-                                } else {
-                                    $typeClient->setFamilleCritere(null);
+                        if(isset($tab->typesClientele[$i]->familleCritere->$chaineLangue)) {
+                            $typeClient->setFamilleCritere($tab->typesClientele[$i]->familleCritere->$chaineLangue);
+                        } else {
+                            foreach($fichierRef as $v) {
+                                if($v->elementReferenceType == "FamilleCritere"
+                                    && $v->id == $tab->typesClientele[$i]->id) {
+                                    if(isset($v->$chaineLangue)) {
+                                        print("FamilleCritere :: ".$v->$chaineLangue);
+                                        $typeClient->setFamilleCritere($v->$chaineLangue);
+                                    } else {
+                                        $typeClient->setFamilleCritere(null);
+                                    }
                                 }
                             }
                         }
+                        if(isset($tab->typesClientele[$i]->tailleGroupeMax)) {
+                            $typeClient->setMax($tab->typesClientele[$i]->tailleGroupeMax);
+                        } else {
+                            $typeClient->setMax(null);
+                        }
+                        if(isset($tab->typesClientele[$i]->tailleGroupeMin)) {
+                            $typeClient->setMin($tab->typesClientele[$i]->tailleGroupeMin);
+                        } else {
+                            $typeClient->setMin(null);
+                        }
+                        //Associe la traduction au type de public
+                        $typeClient->setTraduction($traduction);
+                        //Ajoute le type de client au dico de la traduction :
+                        $traduction->addTypePublic($typeClient);
+                        $this->em->persist($typeClient);
+                        $this->em->flush();
+                    } else if($this->em->getRepository(TypePublic::class)->findOneByTypId(($tab->typesClientele[$i]->id)) != $typeClient) {
+                        //Associe la traduction au type de public
+                        $typeClient->setTraduction($traduction);
+                        //Ajoute le type de client au dico de la traduction :
+                        $traduction->addTypePublic($typeClient);
+                        $this->em->merge($typeClient);
+                        $this->em->flush();
                     }
-                    if(isset($tab->typesClientele[$i]->tailleGroupeMax)) {
-                        $typeClient->setMax($tab->typesClientele[$i]->tailleGroupeMax);
-                    } else {
-                        $typeClient->setMax(null);
-                    }
-                    if(isset($tab->typesClientele[$i]->tailleGroupeMin)) {
-                        $typeClient->setMin($tab->typesClientele[$i]->tailleGroupeMin);
-                    } else {
-                        $typeClient->setMin(null);
-                    }
-                    //Associe la traduction au type de public
-                    $typeClient->setTraduction($traduction);
-                    //Ajoute le type de client au dico de la traduction :
-                    $traduction->addTypePublic($typeClient);
-                    $this->em->persist($typeClient);
-                    $this->em->flush();
                 }
             }
 
@@ -311,58 +322,79 @@ class Traitement extends ContainerAwareCommand {
             if(isset($data->prestations->conforts)) {
                 $tab = $data->prestations;
                 for($i = 0; $i < count($tab->conforts); $i++) {
-                    $equipement = new Equipement();
-                    if(isset($tab->conforts[$i]->$chaineLangue)) {
-                        $equipement->setEquLibelle($tab->conforts[$i]->$chaineLangue);
-                    } else if(isset($tab->conforts[$i]->libelleFr)) {
-                        $equipement->setEquLibelle($tab->conforts[$i]->libelleFr);
-                    } else {
-                        $equipement->setEquLibelle(null);
-                    }
-                    if(isset($tab->conforts)) {
-                        foreach($fichierRef as $v) {
-                            if($v->elementReferenceType == "PrestationConfort"
-                                && isset($tab->conforts[$i]->id)
-                                && $v->id == $tab->conforts[$i]->id) {
-                                $equipement->setEquLibelle($v->$chaineLangue);
-                                $equipement->setEquType("Confort");
+                    $equipement = $this->em->getRepository(Equipement::class)->findOneByEquId(($tab->conforts[$i]->id));
+                    if($equipement == null) {
+                        $equipement = new Equipement();
+                        $equipement->setEquId($tab->conforts[$i]->id);
+                        if(isset($tab->conforts[$i]->$chaineLangue)) {
+                            $equipement->setEquLibelle($tab->conforts[$i]->$chaineLangue);
+                        } else if(isset($tab->conforts[$i]->libelleFr)) {
+                            $equipement->setEquLibelle($tab->conforts[$i]->libelleFr);
+                        } else {
+                            $equipement->setEquLibelle(null);
+                        }
+                        if(isset($tab->conforts)) {
+                            foreach($fichierRef as $v) {
+                                if($v->elementReferenceType == "PrestationConfort"
+                                    && isset($tab->conforts[$i]->id)
+                                    && $v->id == $tab->conforts[$i]->id) {
+                                    $equipement->setEquLibelle($v->$chaineLangue);
+                                    $equipement->setEquType("Confort");
+                                }
                             }
                         }
+                        if(isset($tab->conforts[$i]->description)) {
+                            $equipement->setEquInfosSup($tab->conforts[$i]->description);
+                        } else {
+                            $equipement->setEquInfosSup(null);
+                        }
+                        //Associe l'équipement à la traduction
+                        $equipement->setTraduction($traduction);
+                        //Ajoute l'équipement au dico de la traduction :
+                        $traduction->addEquipement($equipement);
+                        $this->em->persist($equipement);
+                    } else if($this->em->getRepository(Equipement::class)->findOneByEquId(($tab->conforts[$i]->id)) != $equipement) {
+                        //Associe l'équipement à la traduction
+                        $equipement->setTraduction($traduction);
+                        //Ajoute l'équipement au dico de la traduction :
+                        $traduction->addEquipement($equipement);
+                        $this->em->merge($equipement);
                     }
-                    if(isset($tab->conforts[$i]->description)) {
-                        $equipement->setEquInfosSup($tab->conforts[$i]->description);
-                    } else {
-                        $equipement->setEquInfosSup(null);
-                    }
-                    //Associe l'équipement à la traduction
-                    $equipement->setTraduction($traduction);
-                    //Ajoute l'équipement au dico de la traduction :
-                    $traduction->addEquipement($equipement);
-                    $this->em->persist($equipement);
                 }
             }
             if(isset($data->prestations->equipements)) {
                 $tab = $data->prestations;
                 for($i = 0; $i < count($tab->equipements); $i++) {
-                    $equipement = new Equipement();
-                    foreach($fichierRef as $v) {
-                        if($v->elementReferenceType == "PrestationEquipement"
-                            && isset($tab->equipements[$i]->id)
-                            && $v->id == $tab->equipements[$i]->id) {
-                            $equipement->setEquLibelle($v->$chaineLangue);
-                            $equipement->setEquType("Equipement");
+                    $equipement = $this->em->getRepository(Equipement::class)->findOneByEquId(($tab->equipements[$i]->id));
+                    if($equipement == null) {
+                        $equipement = new Equipement();
+                        $equipement->setEquId($tab->equipements[$i]->id);
+                        foreach($fichierRef as $v) {
+                            if($v->elementReferenceType == "PrestationEquipement"
+                                && isset($tab->equipements[$i]->id)
+                                && $v->id == $tab->equipements[$i]->id) {
+                                $equipement->setEquLibelle($v->$chaineLangue);
+                                $equipement->setEquType("Equipement");
+                            }
                         }
+                        if(isset($tab->equipements[$i]->description)) {
+                            $equipement->setEquInfosSup($tab->equipements[$i]->description);
+                        } else {
+                            $equipement->setEquInfosSup(null);
+                        }
+                        //Associe l'équipement à la traduction
+                        $equipement->setTraduction($traduction);
+                        //Ajoute l'équipement au dico de la traduction :
+                        $traduction->addEquipement($equipement);
+                        $this->em->persist($equipement);
+                    } else if($this->em->getRepository(Equipement::class)->findOneByEquId(($tab->equipements[$i]->id)) != $equipement) {
+                        //Associe l'équipement à la traduction
+                        $equipement->setTraduction($traduction);
+                        //Ajoute l'équipement au dico de la traduction :
+                        $traduction->addEquipement($equipement);
+                        $this->em->merge($equipement);
                     }
-                    if(isset($tab->equipements[$i]->description)) {
-                        $equipement->setEquInfosSup($tab->equipements[$i]->description);
-                    } else {
-                        $equipement->setEquInfosSup(null);
-                    }
-                    //Associe l'équipement à la traduction
-                    $equipement->setTraduction($traduction);
-                    //Ajoute l'équipement au dico de la traduction :
-                    $traduction->addEquipement($equipement);
-                    $this->em->persist($equipement);
+
                 }
             }
 
@@ -371,16 +403,26 @@ class Traitement extends ContainerAwareCommand {
             if(isset($data->prestations->services)) {
                 $tab = $data->prestations;
                 for($i = 0; $i < count($tab->services); $i++) {
-                    $service = new Service();
-                    if(isset($tab->services)) {
-                        $this->traitementServices($tab, $i, $service, $fichierRef, $chaineLangue);
+                    $service = $this->em->getRepository(Service::class)->findOneBySerId($tab->services[$i]->id);
+                    if($service == null) {
+                        if(isset($tab->services)) {
+                            $service = new Service();
+                            $service->setSerId($tab->services[$i]->id);
+                            $this->traitementServices($tab, $i, $service, $fichierRef, $chaineLangue);
+                            $service->setSerType($tab->services[$i]->elementReferenceType);
+                        }
+                        //Associe le service à la traduction :
+                        $service->addTraduction($traduction);
+                        //Ajoute le service au dico de la traduction :
+                        $traduction->addService($service);
+                        $this->em->persist($service);
+                    } else if($this->em->getRepository(Service::class)->findOneBySerId($tab->services[$i]->id) != $service){
+                        //Associe le service à la traduction :
+                        $service->addTraduction($traduction);
+                        //Ajoute le service au dico de la traduction :
+                        $traduction->addService($service);
+                        $this->em->merge($service);
                     }
-                    $service->setSerType($tab->services[$i]->elementReferenceType);
-                    //Associe le service à la traduction :
-                    $service->setTraduction($traduction);
-                    //Ajoute le service au dico de la traduction :
-                    $traduction->addService($service);
-                    $this->em->persist($service);
                 }
             }
 
@@ -388,16 +430,26 @@ class Traitement extends ContainerAwareCommand {
             if(isset($data->descriptionTarif->modesPaiement)) {
                 $tab = $data->descriptionTarif;
                 for($i = 0; $i < count($tab->modesPaiement); $i++) {
-                    $service = new Service();
-                    if(isset($tab->modesPaiement)) {
-                        $this->traitementServices($tab, $i, $service, $fichierRef, $chaineLangue);
+                    $service = $this->em->getRepository(Service::class)->findOneBySerId($tab->modesPaiement[$i]->id);
+                    if($service == null) {
+                        if(isset($tab->modesPaiement)) {
+                            $service = new Service();
+                            $service->setSerId($tab->modesPaiement[$i]->id);
+                            $this->traitementServices($tab, $i, $service, $fichierRef, $chaineLangue);
+                            $service->setSerType($tab->modesPaiement[$i]->elementReferenceType);
+                        }
+                        //Associe le service à la traduction :
+                        $service->addTraduction($traduction);
+                        //Ajoute le service au dico de la traduction :
+                        $traduction->addService($service);
+                        $this->em->persist($service);
+                    } else if($this->em->getRepository(Service::class)->findOneBySerId(($tab->modesPaiement[$i]->id)) != $service){
+                        //Associe le service à la traduction :
+                        $service->addTraduction($traduction);
+                        //Ajoute le service au dico de la traduction :
+                        $traduction->addService($service);
+                        $this->em->merge($service);
                     }
-                    $service->setSerType($tab->modesPaiement[$i]->elementReferenceType);
-                    //Associe le service à la traduction :
-                    $service->setTraduction($traduction);
-                    //Ajoute le service au dico de la traduction :
-                    $traduction->addService($service);
-                    $this->em->persist($service);
                 }
             }
 
@@ -405,16 +457,26 @@ class Traitement extends ContainerAwareCommand {
             if(isset($data->prestations->tourismesAdaptes)) {
                 $tab = $data->prestations;
                 for($i = 0; $i < count($tab->tourismesAdaptes); $i++) {
-                    $service = new Service();
-                    if(isset($tab->tourismesAdaptes)) {
-                        $this->traitementServices($tab, $i, $service, $fichierRef, $chaineLangue);
+                    $service = $this->em->getRepository(Service::class)->findOneBySerId($tab->tourismesAdaptes[$i]->id);
+                    if($service == null) {
+                        if(isset($tab->tourismesAdaptes)) {
+                            $service = new Service();
+                            $service->setSerId($tab->tourismesAdaptes[$i]->id);
+                            $this->traitementServices($tab, $i, $service, $fichierRef, $chaineLangue);
+                            $service->setSerType($tab->tourismesAdaptes[$i]->elementReferenceType);
+                        }
+                        //Associe le service à la traduction :
+                        $service->addTraduction($traduction);
+                        //Ajoute le service au dico de la traduction :
+                        $traduction->addService($service);
+                        $this->em->persist($service);
+                    } else if($this->em->getRepository(Service::class)->findOneBySerId($tab->tourismesAdaptes[$i]->id) != $service){
+                        //Associe le service à la traduction :
+                        $service->addTraduction($traduction);
+                        //Ajoute le service au dico de la traduction :
+                        $traduction->addService($service);
+                        $this->em->merge($service);
                     }
-                    $service->setSerType($tab->tourismesAdaptes[$i]->elementReferenceType);
-                    //Associe le service à la traduction :
-                    $service->setTraduction($traduction);
-                    //Ajoute le service au dico de la traduction :
-                    $traduction->addService($service);
-                    $this->em->persist($service);
                 }
             }
 
@@ -605,7 +667,7 @@ class Traitement extends ContainerAwareCommand {
 
         //-------------------- ObjetsLies ----------------------
         //TODO objetsLies
-        if(isset($data->liens)) {
+        /*if(isset($data->liens)) {
             for ($i = 0; $i < count($data->liens); $i++) {
                 //print("boucle for");
                 if(isset($data->liens->liensObjetsTouristiquesTypes[$i]->objetTouristique->id)) {
@@ -630,7 +692,19 @@ class Traitement extends ContainerAwareCommand {
                     }
                 }
             }
+        }*/
+        if(isset($data->liens)) {
+            for ($i = 0; $i < count($data->liens); $i++) {
+                if(isset($data->liens->liensObjetsTouristiquesTypes[$i]->objetTouristique->id)) {
+                    $objetLie = new ObjetLie();
+                    $objetLie->setObjet($objetApidae);
+                    $objetLie->setIdObjetLie($data->liens->liensObjetsTouristiquesTypes[$i]->objetTouristique->id);
+                    $objetApidae->addObjetLie($objetLie);
+                }
+            }
         }
+
+
     }
 
     private function traitementFamilleCritere($id, $fichierRef, $chaineLangue) {
