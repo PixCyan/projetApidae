@@ -3,7 +3,6 @@
 namespace ApidaeBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use ApidaeBundle\Entity\ObjetApidae;
 
 class DefaultController extends Controller
@@ -35,8 +34,9 @@ class DefaultController extends Controller
 
     public function offreAction($id)
     {
+        //phpinfo();
         if($id == 0) {
-            $id = 119635;
+            $id = 105051;
         }
         //Test affichage obet
         $this->em = $this->getDoctrine()->getManager();
@@ -49,10 +49,15 @@ class DefaultController extends Controller
                     $trad = $value;
                 }
             }
-            return $this->render('ApidaeBundle:Default:index.html.twig', array('objet' => $objetApidae, 'trad' => $trad));
+            return $this->render('ApidaeBundle:Default:offre.html.twig', array('objet' => $objetApidae, 'trad' => $trad));
         } else {
-            return $this->render('ApidaeBundle:Default:index.html.twig');
+            return $this->render('ApidaeBundle:Default:offre.html.twig');
         }
+    }
+
+    public function listeAction($type)
+    {
+        //TODO
     }
 
 }

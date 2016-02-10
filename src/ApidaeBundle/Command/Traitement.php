@@ -172,6 +172,8 @@ class Traitement extends ContainerAwareCommand {
                     if(isset($adr->$chaine)) {
                         $adresse->setAdresse($adr->$chaine);
                         break;
+                    } else {
+                        $adresse->setAdresse(" ");
                     }
                 }
             }
@@ -212,7 +214,7 @@ class Traitement extends ContainerAwareCommand {
             $traduction->setTraDescriptionPersonnalisee(null);
             $traduction->setTraBonsPlans(null);
             $traduction->setTraDateEnClair(null);
-            $traduction->setTraTarifrEnClair(null);
+            $traduction->setTraTarifEnClair(null);
             $traduction->setTraInfosSup(null);
 
             //Associe la langue à la traduction
@@ -427,7 +429,13 @@ class Traitement extends ContainerAwareCommand {
                         foreach($fichierRef as $v) {
                             if($v->elementReferenceType == $tab->labels[$i]->elementReferenceType
                                 && $v->id == $tab->labels[$i]->id) {
-                                $label->setLabClassement($v->$chaineLangue);
+                                if(isset($v->$chaineLangue)) {
+                                    $label->setLabClassement($v->$chaineLangue);
+                                } else if(isset($v->libelleFr)) {
+                                    $label->setLabClassement($v->libelleFr);
+                                } else {
+                                    $label->setLabClassement("Pas de libelle disponible");
+                                }
                                 //libelle du label :
                                 foreach($fichierRef as $value) {
                                     if($value->elementReferenceType == $v->typeLabel->elementReferenceType
@@ -465,11 +473,11 @@ class Traitement extends ContainerAwareCommand {
                 $tab = $data->descriptionTarif;
                 if(isset($tab->tarifsEnClair)) {
                     if(isset($tab->tarifsEnClair->$chaineLangue)) {
-                        $traduction->setTraTarifrEnClair($tab->tarifsEnClair->$chaineLangue);
+                        $traduction->setTraTarifEnClair($tab->tarifsEnClair->$chaineLangue);
                     } else if(isset($tab->tarifsEnClair->libelleFr)){
-                        $traduction->setTraTarifrEnClair($tab->tarifsEnClair->libelleFr);
+                        $traduction->setTraTarifEnClair($tab->tarifsEnClair->libelleFr);
                     } else {
-                        $traduction->setTraTarifrEnClair(null);
+                        $traduction->setTraTarifEnClair(null);
                     }
                 }
                 if(isset($tab->periodes[0]->tarifs)) {
@@ -585,6 +593,7 @@ class Traitement extends ContainerAwareCommand {
 
             //-------------------- Capacite ----------------------
             //TODO capacite
+
 
 
             //-------------------- Duree ----------------------

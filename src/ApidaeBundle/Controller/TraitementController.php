@@ -18,6 +18,7 @@ use ApidaeBundle\Entity\Multimedia;
 use ApidaeBundle\Entity\Tarif;
 use ApidaeBundle\Entity\Ouverture;
 use ApidaeBundle\Entity\TypePublic;
+use ApidaeBundle\Entity\ObjetLie;
 
 class TraitementController extends Controller
 {
@@ -169,6 +170,8 @@ class TraitementController extends Controller
 					if(isset($adr->$chaine)) {
 						$adresse->setAdresse($adr->$chaine);
 						break;
+					} else {
+						$adresse->setAdresse(" ");
 					}
 				}
 			}
@@ -209,7 +212,7 @@ class TraitementController extends Controller
 			$traduction->setTraDescriptionPersonnalisee(null);
 			$traduction->setTraBonsPlans(null);
 			$traduction->setTraDateEnClair(null);
-			$traduction->setTraTarifrEnClair(null);
+			$traduction->setTraTarifEnClair(null);
 			$traduction->setTraInfosSup(null);
 
 			//Associe la langue à la traduction
@@ -424,7 +427,13 @@ class TraitementController extends Controller
 						foreach($fichierRef as $v) {
 							if($v->elementReferenceType == $tab->labels[$i]->elementReferenceType
 								&& $v->id == $tab->labels[$i]->id) {
-								$label->setLabClassement($v->$chaineLangue);
+								if(isset($v->$chaineLangue)) {
+									$label->setLabClassement($v->$chaineLangue);
+								} else if(isset($v->libelleFr)) {
+									$label->setLabClassement($v->libelleFr);
+								} else {
+									$label->setLabClassement("Pas de libelle disponible");
+								}
 								//libelle du label :
 								foreach($fichierRef as $value) {
 									if($value->elementReferenceType == $v->typeLabel->elementReferenceType
@@ -462,11 +471,11 @@ class TraitementController extends Controller
 				$tab = $data->descriptionTarif;
 				if(isset($tab->tarifsEnClair)) {
 					if(isset($tab->tarifsEnClair->$chaineLangue)) {
-						$traduction->setTraTarifrEnClair($tab->tarifsEnClair->$chaineLangue);
+						$traduction->setTraTarifEnClair($tab->tarifsEnClair->$chaineLangue);
 					} else if(isset($tab->tarifsEnClair->libelleFr)){
-						$traduction->setTraTarifrEnClair($tab->tarifsEnClair->libelleFr);
+						$traduction->setTraTarifEnClair($tab->tarifsEnClair->libelleFr);
 					} else {
-						$traduction->setTraTarifrEnClair(null);
+						$traduction->setTraTarifEnClair(null);
 					}
 				}
 				if(isset($tab->periodes[0]->tarifs)) {
@@ -601,9 +610,9 @@ class TraitementController extends Controller
 					if($objetlieExist != null) {
 						//TODO vérifier
 						$objetlie1 = new ObjetLie();
-						$objetlie1->setObjet($objetlieExist);
+						$objetlie1->setObjetLie($objetlieExist);
 						$objetlie2 = new ObjetLie();
-						$objetlie2->setObjet($objetApidae);
+						$objetlie2->setObjetLie($objetApidae);
 						//TODO vérifier
 						$objetApidae->addObjetLie($objetlie1);
 						$objetlieExist->addObjetLie($objetlie2);

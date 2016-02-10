@@ -1,75 +1,126 @@
 <!DOCTYPE html>
 <head>
     <!-- completer -->
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}" type="text/css"/>
+    {% endblock %}
 </head>
 
 <html>
     <head>
-        <title>Test d'objet lié</title>
+        <title>Offre</title>
     </head>
     <body>
-        <h2> Index test </h2>
+        <h2> Offre test </h2>
         <section>
-            <div>
-                <h4> Informations principales : </h4>
-                <ul>
-                    <li> Objet Apidae : {{ trad.traNom }} </li>
-                    <li> id : {{objet.idObjet}} </li>
-                </ul>
-            </div>
-
-            <div>
-                <h4> Categories : </h4>
-                <ul>
-                    {% for cat in objet.categories %}
-                        <li>{{ cat.catLibelle }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% if trad.services is not empty %}
-            <div>
-                <h4> Services : </h4>
-                <ul>
-                    {% for service in trad.services %}
-                        <li>{{ service.serLibelle }}
-                        {% if service.serInfosSup is not empty %}
-                        <ul>
-                            <li> {{ service.serInfosSup }} </li>
-                        </ul>
-                        {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-            {% if trad.equipements is not empty %}
-            <div>
-                <h4> Equipements : </h4>
-                <ul>
-                    {% for equipement in trad.equipements %}
-                        <li>{{ equipement.equLibelle }}
-                        {% if equipement.equInfosSup is not empty %}
-                            <ul>
-                                <li> {{ equipement.equInfosSup }} </li>
-                            </ul>
-                        {% endif %}
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-            {% if trad.moyensCommunications is not empty %}
+            <article>
                 <div>
-                    <h4> Moyens de communication : </h4>
+                    <h4> Informations principales : </h4>
                     <ul>
-                        {% for moy in trad.moyensCommunications %}
-                            <li>{{ moy.moyComLibelle }} : {{ moy.moyComCoordonnees }}</li>
+                        <li> Objet Apidae : {{ trad.traNom }} </li>
+                        <li> id : {{objet.idObjet}} </li>
+                        {% if objet.objEtoile is not empty %}
+                            <li>Classement étoile : {{ objet.objEtoile }}</li>
+                        {% endif %}
+                        {% if trad.labelsQualite is not empty %}
+                            {% for label in trad.labelsQualite %}
+                                <li>{{ label.labLibelle }} {{ label.labClassement }}</li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div>
+                    <h4> Categories : </h4>
+                    <ul>
+                        {% for cat in objet.categories %}
+                            <li>{{ cat.catLibelle }}</li>
                         {% endfor %}
                     </ul>
                 </div>
-            {% endif %}
-
-
+            </article>
+            <article>
+                {% if trad.moyensCommunications is not empty %}
+                    <div>
+                        <h4> Moyens de communication : </h4>
+                        <ul>
+                            {% for moy in trad.moyensCommunications %}
+                                <li>{{ moy.moyComLibelle }} : {{ moy.moyComCoordonnees }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </article>
+            <article>
+                {% if trad.services is not empty %}
+                <div>
+                    <h4> Services : </h4>
+                    <ul>
+                        {% for service in trad.services %}
+                            <li>{{ service.serLibelle }}
+                            {% if service.serInfosSup is not empty %}
+                            <ul>
+                                <li> {{ service.serInfosSup }} </li>
+                            </ul>
+                            {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if trad.equipements is not empty %}
+                <div>
+                    <h4> Equipements : </h4>
+                    <ul>
+                        {% for equipement in trad.equipements %}
+                            <li>{{ equipement.equLibelle }}
+                            {% if equipement.equInfosSup is not empty %}
+                                <ul>
+                                    <li> {{ equipement.equInfosSup }} </li>
+                                </ul>
+                            {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if trad.typesPublic is not empty %}
+                    <div>
+                        <h4> Types de public : </h4>
+                        <ul>
+                            {% for type in trad.typesPublic %}
+                                <li>{{ type.typLibelle }}
+                                    <ul>
+                                        {% if type.familleCritere is not empty %}
+                                            <li> {{ type.familleCritere }}  </li>
+                                        {% endif %}
+                                        {% if type.min is not empty %}
+                                            <li> Min : {{ type.min }} / Max : {{ type.max }}</li>
+                                        {% endif %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+                {% if trad.tarifs is not empty %}
+                    <div>
+                        <h4> Tarifs : </h4>
+                        <ul>
+                            {% for tarif in trad.tarifs %}
+                                <li>{{ tarif.tarLibelle }} :
+                                    <ul>
+                                        <li>  {{ trad.traTarifEnClair }}  </li>
+                                        {% if tarif.tarDevise is not empty %}
+                                            <li> {{ tarif.tarDevise }} </li>
+                                        {% endif %}
+                                    </ul>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </article>
         </section>
 
     </body>

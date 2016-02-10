@@ -307,7 +307,7 @@ class TraductionObjetApidae
      *
      * @return Tarif
      */
-    public function setTraTarifrEnClair($tarEnClair)
+    public function setTraTarifEnClair($tarEnClair)
     {
         $this->tarTarifEnClair = $tarEnClair;
 
@@ -319,7 +319,7 @@ class TraductionObjetApidae
      *
      * @return string
      */
-    public function getTraTarifrEnClair()
+    public function getTraTarifEnClair()
     {
         return $this->tarTarifEnClair;
     }
@@ -563,5 +563,17 @@ class TraductionObjetApidae
     public function getLabelsQualite() {
         return $this->labelsQualite;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTypesPublic()
+    {
+        return $this->typesPublic;
+    }
+
+
+
+
 }
 
