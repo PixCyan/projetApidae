@@ -29,7 +29,7 @@ class Categorie
     private $catLibelle;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="categories")
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="categories", cascade={"persist"})
      */
     private $objets;
 

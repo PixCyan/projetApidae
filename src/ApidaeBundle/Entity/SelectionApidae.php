@@ -36,7 +36,7 @@ class SelectionApidae
     private $selLibelle;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="selectionsApidae")
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="selectionsApidae", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $objets;

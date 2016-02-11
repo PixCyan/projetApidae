@@ -98,7 +98,6 @@ class Traitement extends ContainerAwareCommand {
         $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($data->id);
         if($objetApidae == null) {
             $objetApidae = new ObjetApidae();
-
             $objetApidae->setIdObjet($data->id);
             if(isset($data->geolocalisation)) {
                 $geo = $data->geolocalisation;
@@ -175,7 +174,7 @@ class Traitement extends ContainerAwareCommand {
                             if($com->id == $adr->commune->id) {
                                 $commune->setComCode($com->code);
                                 $commune->setComNom($com->nom);
-                                $commune->setIdCommune($com->id);
+                                $commune->setComId($com->id);
                                 break;
                             }
                         }
@@ -197,48 +196,57 @@ class Traitement extends ContainerAwareCommand {
             $this->em->flush();
 
             //------------------------------------------------ Traduction --------------------------------------------------
-            $traduction = new TraductionObjetApidae();
-            if($chaineLangue != "libelleFr" && !isset($data->nom->$chaineLangue)) {
-                $traduction->setTraNom($data->nom->libelleFr);
+            $traduction = $this->em->getRepository(TraductionObjetApidae::class)->findOneByTraNom($data->nom->$chaineLangue);
+            if($traduction != null && ($traduction->getLangue()->getLanLibelle() != $langueTrad->getLanLibelle())) {
+                //AJoute la traduction au dico de la langue
+                $langueTrad->addTraduction($traduction);
+                //Associe la traduction à l'objet
+                $objetApidae->addTraduction($traduction);
+                //Associe l'objet à la traduction :
+                $traduction->setObjet($objetApidae);
+                $this->em->merge($traduction);
             } else {
-                $traduction->setTraNom($data->nom->$chaineLangue);
-            }
-            //Presentation
-            if(isset($data->presentation)) {
-                $presentation = $data->presentation;
-                if(isset($presentation->descriptifCourt->$chaineLangue)) {
-                    $traduction->setTraDescriptionCourte($presentation->descriptifCourt->$chaineLangue);
-                }else if(isset($presentation->descriptifCourt->libelleFr)) {
-                    //Par défaut si n'existe pas dans la langue demandée
-                    $traduction->setTraDescriptionCourte($presentation->descriptifCourt->libelleFr);
+                $traduction = new TraductionObjetApidae();
+                if($chaineLangue != "libelleFr" && !isset($data->nom->$chaineLangue)) {
+                    $traduction->setTraNom($data->nom->libelleFr);
                 } else {
-                    $traduction->setTraDescriptionCourte(null);
+                    $traduction->setTraNom($data->nom->$chaineLangue);
                 }
-                if(isset($presentation->descriptifDetaille->$chaineLangue)) {
-                    $traduction->setTraDescriptionLongue($presentation->descriptifDetaille->$chaineLangue);
-                }else if(isset($presentation->descriptifDetaille->libelleFr)) {
-                    $traduction->setTraDescriptionLongue($presentation->descriptifDetaille->libelleFr);
-                } else {
-                    $traduction->setTraDescriptionLongue(null);
+                //Presentation
+                if(isset($data->presentation)) {
+                    $presentation = $data->presentation;
+                    if(isset($presentation->descriptifCourt->$chaineLangue)) {
+                        $traduction->setTraDescriptionCourte($presentation->descriptifCourt->$chaineLangue);
+                    }else if(isset($presentation->descriptifCourt->libelleFr)) {
+                        //Par défaut si n'existe pas dans la langue demandée
+                        $traduction->setTraDescriptionCourte($presentation->descriptifCourt->libelleFr);
+                    } else {
+                        $traduction->setTraDescriptionCourte(null);
+                    }
+                    if(isset($presentation->descriptifDetaille->$chaineLangue)) {
+                        $traduction->setTraDescriptionLongue($presentation->descriptifDetaille->$chaineLangue);
+                    }else if(isset($presentation->descriptifDetaille->libelleFr)) {
+                        $traduction->setTraDescriptionLongue($presentation->descriptifDetaille->libelleFr);
+                    } else {
+                        $traduction->setTraDescriptionLongue(null);
+                    }
                 }
+                $traduction->setTraDescriptionPersonnalisee(null);
+                $traduction->setTraBonsPlans(null);
+                $traduction->setTraDateEnClair(null);
+                $traduction->setTraTarifEnClair(null);
+                $traduction->setTraInfosSup(null);
+
+                //Associe la langue à la traduction
+                $traduction->setLangue($langueTrad);
+                //AJoute la traduction au dico de la langue
+                $langueTrad->addTraduction($traduction);
+                //Associe la traduction à l'objet
+                $objetApidae->addTraduction($traduction);
+                //Associe l'objet à la traduction :
+                $traduction->setObjet($objetApidae);
+                $this->em->persist($traduction);
             }
-            $traduction->setTraDescriptionPersonnalisee(null);
-            $traduction->setTraBonsPlans(null);
-            $traduction->setTraDateEnClair(null);
-            $traduction->setTraTarifEnClair(null);
-            $traduction->setTraInfosSup(null);
-
-            //Associe la langue à la traduction
-            $traduction->setLangue($langueTrad);
-            //AJoute la traduction au dico de la langue
-            $langueTrad->addTraduction($traduction);
-            //Associe la traduction à l'objet
-            $objetApidae->addTraduction($traduction);
-            //Associe l'objet à la traduction :
-            $traduction->setObjet($objetApidae);
-
-            //TODO persist Traduction / ObjetApidae
-            $this->em->persist($traduction);
             $this->em->flush();
 
             //-------------------- Types de Public ----------------------
@@ -405,7 +413,6 @@ class Traitement extends ContainerAwareCommand {
                         $traduction->addEquipement($equipement);
                         $this->em->merge($equipement);
                     }
-
                 }
             }
 
@@ -700,8 +707,8 @@ class Traitement extends ContainerAwareCommand {
                 && $v->id == $id) {
                 return $v;
             }
-            return false;
         }
+        return false;
     }
 
     private function traitementFamilleCritere($id, $chaineLangue) {
@@ -727,16 +734,18 @@ class Traitement extends ContainerAwareCommand {
         }
 
         if(isset($tab->modesPaiement[$i]->id)) {
+            $v = $this->traitementReference("ModePaiement", $tab->modesPaiement[$i]->id);
             if($v != false) {
-                $v = $this->traitementReference("ModePaiement", $tab->modesPaiement[$i]->id);
                 $this->traitementServiceLibelle($v, $service, $chaineLangue);
                 $this->traitementServiceDetails($service, $v, $chaineLangue);
             }
         }
 
         if(isset($tab->tourismesAdaptes[$i]->id)) {
+            print("tourisme");
+            $v = $this->traitementReference("TourismeAdapte", $tab->tourismesAdaptes[$i]->id);
             if($v != false) {
-                $v = $this->traitementReference("TourismeAdapte", $tab->tourismesAdaptes[$i]->id);
+                print("yep");
                 $this->traitementServiceLibelle($v, $service, $chaineLangue);
                 $this->traitementServiceDetails($service, $v, $chaineLangue);
             }

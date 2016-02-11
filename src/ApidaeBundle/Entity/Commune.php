@@ -81,27 +81,19 @@ class Commune
     }
 
     /**
-     * Set idCommune
-     *
-     * @param integer $idCommune
-     *
-     * @return Commune
+     * @return int
      */
-    public function setIdCommune($idCommune)
+    public function getComId()
     {
-        $this->idCommune = $idCommune;
-
-        return $this;
+        return $this->comId;
     }
 
     /**
-     * Get idCommune
-     *
-     * @return int
+     * @param int $comId
      */
-    public function getIdCommune()
+    public function setComId($comId)
     {
-        return $this->idCommune;
+        $this->comId = $comId;
     }
 
     /**
