@@ -28,18 +28,13 @@ class ObjetApidae
      */
     private $idObj;
 
+    //TODO mettre dans traduction
     /**
      * @var string
      *
      * @ORM\Column(name="obj_Etoile", type="string", length=255, nullable=true)
      */
     private $objEtoile;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\Adresse", inversedBy="objetsApidae", cascade={"persist"})
-     * @ORM\JoinColumn(nullable = false)
-     */
-    private $adresse;
 
     /**
      * @var string
@@ -97,6 +92,30 @@ class ObjetApidae
      */
     private $selectionsApidae;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\Commune", inversedBy="objetsApidae", cascade={"persist"})
+     */
+    private $commune;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="adresse", type="string", length=255)
+     */
+    private $adresse;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="codePostal", type="string", length=255)
+     */
+    private $codePostal;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\LabelQualite", inversedBy="objetsApidae", cascade={"persist"})
+     * @ORM\JoinTable(name="objetHasLabelQualite")
+     */
+    private $labelsQualite;
 
     public function _construct() {
         //initialisation des collections
@@ -105,6 +124,21 @@ class ObjetApidae
         $this->categories = new ArrayCollection();
         $this->paniers = new ArrayCollection();
         $this->selectionsApidae = new ArrayColleciton();
+        $this->labelsQualite = new ArrayCollection();
+    }
+
+    /**
+     * Ajoute/lie un label de qualite à l'objet
+     */
+    public function addLabelQualite(LabelQualite $labelQualite) {
+        $this->labelsQualite[] = $labelQualite;
+    }
+
+    /**
+     * Supprime un label de qualite à l'objet
+     */
+    public function removeLabelQualite(LabelQualite $labelQualite) {
+        $this->labelsQualite->removeElement($labelQualite);
     }
 
     /**
@@ -112,7 +146,6 @@ class ObjetApidae
      */
     public function addTraduction(TraductionObjetApidae $traduction) {
         $this->traductions[] = $traduction;
-
     }
 
     /**
@@ -386,6 +419,57 @@ class ObjetApidae
     public function getSelectionsApidae() {
         return $this->selectionsApidae;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCommune()
+    {
+        return $this->commune;
+    }
+
+    /**
+     * @param mixed $commune
+     */
+    public function setCommune($commune)
+    {
+        $this->commune = $commune;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAdresse()
+    {
+        return $this->adresse;
+    }
+
+    /**
+     * @param mixed $adresse
+     */
+    public function setAdresse($adresse)
+    {
+        $this->adresse = $adresse;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCodePostal()
+    {
+        return $this->codePostal;
+    }
+
+    /**
+     * @param string $codePostal
+     */
+    public function setCodePostal($codePostal)
+    {
+        $this->codePostal = $codePostal;
+    }
+
+
+
 
 }
 

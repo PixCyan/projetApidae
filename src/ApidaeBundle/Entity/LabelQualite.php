@@ -21,6 +21,14 @@ class LabelQualite
      */
     private $id;
 
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="labId", type="integer")
+     */
+    private $labId;
+
     /**
      * @var string
      *
@@ -36,32 +44,32 @@ class LabelQualite
     private $labClassement;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="labelsQualite")
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="labelsQualite")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $traductions;
+    private $objetsApidae;
 
 
     public function _construct() {
-        $this->traductions = new ArrayCollection();
+        //initialisation des collections
+        $this->objetsApidae = new ArrayCollection();
     }
 
     /**
-     * Ajoute/lie une traduction au label
+     * Ajoute/lie un objetApidae
      */
-    public function addTraduction(TraductionObjetApidae $trad) {
-        $this->traductions[] = $trad;
+    public function addObjetApidae(ObjetApidae $objet) {
+        $this->objetsApidae[] = $objet;
     }
 
     /**
-     * Supprime traduction du label
+     * Supprime un objetApidae
      */
-    public function removeTraduction(TraductionObjetApidae $trad) {
-        $this->traductions->removeElement($trad);
+    public function removeObjetApidae(ObjetApidae $objet) {
+        $this->objetsApidae->removeElement($objet);
     }
 
     //---------------------- Getter & Setter ----------------------//
-
     /**
      * Get id
      *
@@ -123,8 +131,26 @@ class LabelQualite
     /**
      *@return un tableau 
      */
-    public function getTraductions() {
-        return $this->traductions;
+    public function getObjetsApidae() {
+        return $this->objetsApidae;
     }
+
+    /**
+     * @return int
+     */
+    public function getLabId()
+    {
+        return $this->labId;
+    }
+
+    /**
+     * @param int $labId
+     */
+    public function setLabId($labId)
+    {
+        $this->labId = $labId;
+    }
+
+
 }
 
