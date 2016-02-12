@@ -87,7 +87,7 @@ class ObjetApidae
     private $paniers;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\SelectionApidae", mappedBy="objets", cascade={"persist"})
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\SelectionApidae", mappedBy="objets", cascade={"merge"})
      * @ORM\JoinTable(name="objetHasSelection")
      */
     private $selectionsApidae;

@@ -21,7 +21,7 @@ use ApidaeBundle\Entity\Tarif;
 use ApidaeBundle\Entity\Ouverture;
 use ApidaeBundle\Entity\TypePublic;
 
-define('SIT_LANGUE', 'fr');
+define('SIT_LANGUE', 'Fr');
 
 class Traitement extends ContainerAwareCommand {
     private $em;
@@ -63,7 +63,6 @@ class Traitement extends ContainerAwareCommand {
                    print($val->id . "\n");
                    //=> $data = aller chercher le bon fichier dans objetsModifies
                    $data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
-
                    //récupération des données :
                    //Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
                    $type = $data->type;
@@ -93,7 +92,7 @@ class Traitement extends ContainerAwareCommand {
        }
     }
 
-    private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite, $typeObj) {
+    private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite) {
         //-------------------- ObjetApidae ----------------------
         $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($data->id);
         if($objetApidae == null) {
@@ -133,31 +132,6 @@ class Traitement extends ContainerAwareCommand {
             }
             $chaineLangue = "libelle".$shortCut;
 
-            //-------------------- Categories ----------------------
-            //Récupération de la/des catégorie(s)
-            if(isset($data->$chaineInformations->$chaineType->libelleFr)) {
-                //Accès à libelle "simpelement"
-                $cat = $data->$chaineInformations->$chaineType->libelleFr;
-                $this->traitementCategorie($cat, $objetApidae);
-            } else if (isset($data->$chaineInformations->categories[0]->id)){
-                foreach($this->fichierRef as $v) {
-                    //print("Cat = ".$typeObj."Categorie. id = ".$data->$chaineInformations->categories[0]->id);
-                    if($v->elementReferenceType == $typeObj."Categorie"
-                        && $v->id == $data->$chaineInformations->categories[0]->id) {
-                        $this->traitementCategorie($v->$chaineLangue, $objetApidae);
-                    }
-                    if($v->elementReferenceType == "FeteEtManifestationType"
-                        && isset($data->$chaineInformations->typesManifestation[0]->id)
-                        && $v->id == $data->$chaineInformations->typesManifestation[0]->id) {
-                        $this->traitementCategorie($v->$chaineLangue, $objetApidae);
-                    }
-                    if(isset($data->$chaineInformations->categories[0]->familleCritere)) {
-                        $famille = $data->$chaineInformations->categories[0]->familleCritere->$chaineLangue;
-                        $this->traitementCategorie($famille, $objetApidae);
-                    }
-                }
-            }
-
             //-------------------- Adresse - Communes ----------------------
             if($adr = $data->localisation->adresse) {
                 $objetApidae->setCodePostal($adr->codePostal);
@@ -192,61 +166,81 @@ class Traitement extends ContainerAwareCommand {
                     }
                 }
             }
-            $this->em->merge($objetApidae);
+            $this->em->persist($objetApidae);
+
+            //-------------------- Categories ----------------------
+            //Récupération de la/des catégorie(s)
+            if(isset($data->$chaineInformations->categories)) {
+                foreach($data->$chaineInformations->categories as $categorie) {
+                    $v = $this->traitementReference($categorie->elementReferenceType,$categorie->id);
+                    $lanLib =$this->traitementLibelleLangues($languesSite, $v);
+                    $this->traitementCategorieDetails($lanLib, $categorie->id, $objetApidae);
+                    if(isset($v->familleCritere)) {
+                        print("cat = famille critère \n");
+                        $val = $this->traitementReference($v->familleCritere->elementReferenceType, $v->familleCritere->id);
+                        $lanLib =$this->traitementLibelleLangues($languesSite, $val);
+                        $this->traitementCategorieDetails($lanLib, $v->familleCritere->id, $objetApidae);
+                    }
+                }
+            } else if(isset($data->$chaineInformations->typesManifestation)) {
+                print("cat = fete \n");
+                $this->traitementTypeCategories($data->$chaineInformations->typesManifestation, $objetApidae, $languesSite);
+            }
+            if(isset($data->$chaineInformations->specialites)) {
+                $this->traitementTypeCategories($data->$chaineInformations->specialites, $objetApidae, $languesSite);
+            } else if(isset($data->$chaineInformations->typesHabitation)) {
+                $this->traitementTypeCategories($data->$chaineInformations->typesHabitation, $objetApidae, $languesSite);
+            }
+            if(isset($data->$chaineInformations->$chaineType)) {
+                //$this->traitementTypeCategories($data->$chaineInformations->$chaineType, $objetApidae, $languesSite);
+                $v = $this->traitementReference($data->$chaineInformations->$chaineType->elementReferenceType, $data->$chaineInformations->$chaineType->id);
+                $lanLib = $this->traitementLibelleLangues($languesSite, $v);
+                $this->traitementCategorieDetails($lanLib, $data->$chaineInformations->$chaineType->id, $objetApidae);
+            }
+
             $this->em->flush();
 
             //------------------------------------------------ Traduction --------------------------------------------------
-            $traduction = $this->em->getRepository(TraductionObjetApidae::class)->findOneByTraNom($data->nom->$chaineLangue);
-            if($traduction != null && ($traduction->getLangue()->getLanLibelle() != $langueTrad->getLanLibelle())) {
-                //AJoute la traduction au dico de la langue
-                $langueTrad->addTraduction($traduction);
-                //Associe la traduction à l'objet
-                $objetApidae->addTraduction($traduction);
-                //Associe l'objet à la traduction :
-                $traduction->setObjet($objetApidae);
-                $this->em->merge($traduction);
+            $traduction = new TraductionObjetApidae();
+            if($chaineLangue != "libelleFr" && !isset($data->nom->$chaineLangue)) {
+                $traduction->setTraNom($data->nom->libelleFr);
             } else {
-                $traduction = new TraductionObjetApidae();
-                if($chaineLangue != "libelleFr" && !isset($data->nom->$chaineLangue)) {
-                    $traduction->setTraNom($data->nom->libelleFr);
-                } else {
-                    $traduction->setTraNom($data->nom->$chaineLangue);
-                }
-                //Presentation
-                if(isset($data->presentation)) {
-                    $presentation = $data->presentation;
-                    if(isset($presentation->descriptifCourt->$chaineLangue)) {
-                        $traduction->setTraDescriptionCourte($presentation->descriptifCourt->$chaineLangue);
-                    }else if(isset($presentation->descriptifCourt->libelleFr)) {
-                        //Par défaut si n'existe pas dans la langue demandée
-                        $traduction->setTraDescriptionCourte($presentation->descriptifCourt->libelleFr);
-                    } else {
-                        $traduction->setTraDescriptionCourte(null);
-                    }
-                    if(isset($presentation->descriptifDetaille->$chaineLangue)) {
-                        $traduction->setTraDescriptionLongue($presentation->descriptifDetaille->$chaineLangue);
-                    }else if(isset($presentation->descriptifDetaille->libelleFr)) {
-                        $traduction->setTraDescriptionLongue($presentation->descriptifDetaille->libelleFr);
-                    } else {
-                        $traduction->setTraDescriptionLongue(null);
-                    }
-                }
-                $traduction->setTraDescriptionPersonnalisee(null);
-                $traduction->setTraBonsPlans(null);
-                $traduction->setTraDateEnClair(null);
-                $traduction->setTraTarifEnClair(null);
-                $traduction->setTraInfosSup(null);
-
-                //Associe la langue à la traduction
-                $traduction->setLangue($langueTrad);
-                //AJoute la traduction au dico de la langue
-                $langueTrad->addTraduction($traduction);
-                //Associe la traduction à l'objet
-                $objetApidae->addTraduction($traduction);
-                //Associe l'objet à la traduction :
-                $traduction->setObjet($objetApidae);
-                $this->em->persist($traduction);
+                $traduction->setTraNom($data->nom->$chaineLangue);
             }
+            //Presentation
+            if(isset($data->presentation)) {
+                $presentation = $data->presentation;
+                if(isset($presentation->descriptifCourt->$chaineLangue)) {
+                    $traduction->setTraDescriptionCourte($presentation->descriptifCourt->$chaineLangue);
+                }else if(isset($presentation->descriptifCourt->libelleFr)) {
+                    //Par défaut si n'existe pas dans la langue demandée
+                    $traduction->setTraDescriptionCourte($presentation->descriptifCourt->libelleFr);
+                } else {
+                    $traduction->setTraDescriptionCourte(null);
+                }
+                if(isset($presentation->descriptifDetaille->$chaineLangue)) {
+                    $traduction->setTraDescriptionLongue($presentation->descriptifDetaille->$chaineLangue);
+                }else if(isset($presentation->descriptifDetaille->libelleFr)) {
+                    $traduction->setTraDescriptionLongue($presentation->descriptifDetaille->libelleFr);
+                } else {
+                    $traduction->setTraDescriptionLongue(null);
+                }
+            }
+            $traduction->setTraDescriptionPersonnalisee(null);
+            $traduction->setTraBonsPlans(null);
+            $traduction->setTraDateEnClair(null);
+            $traduction->setTraTarifEnClair(null);
+            $traduction->setTraInfosSup(null);
+
+            //Associe la langue à la traduction
+            $traduction->setLangue($langueTrad);
+            //AJoute la traduction au dico de la langue
+            $langueTrad->addTraduction($traduction);
+            //Associe la traduction à l'objet
+            $objetApidae->addTraduction($traduction);
+            //Associe l'objet à la traduction :
+            $traduction->setObjet($objetApidae);
+            $this->em->persist($traduction);
             $this->em->flush();
 
             //-------------------- Types de Public ----------------------
@@ -260,25 +254,16 @@ class Traitement extends ContainerAwareCommand {
                         if(isset($tab->typesClientele[$i]->$chaineLangue)) {
                             $typeClient->setTypLibelle($tab->typesClientele[$i]->$chaineLangue);
                         } else {
-                            foreach($this->fichierRef as $v) {
-                                if($v->elementReferenceType == "TypeClientele"
-                                    && $v->id == $tab->typesClientele[$i]->id) {
-                                    if(isset($v->$chaineLangue)) {
-                                        $typeClient->setTypLibelle($v->$chaineLangue);
-                                    } else {
-                                        $typeClient->setTypLibelle(null);
-                                    }
+                            $v = $this->traitementReference($tab->typesClientele[$i]->elementReferenceType, $tab->typesClientele[$i]->id);
+                            if($v != false) {
+                                if(isset($v->$chaineLangue)) {
+                                    $typeClient->setTypLibelle($v->$chaineLangue);
+                                } else {
+                                    $typeClient->setTypLibelle(null);
                                 }
-                            }
-                        }
-                        if(isset($tab->typesClientele[$i]->familleCritere->$chaineLangue)) {
-                            $typeClient->setFamilleCritere($tab->typesClientele[$i]->familleCritere->$chaineLangue);
-                        } else {
-                            foreach($this->fichierRef as $v) {
-                                if($v->elementReferenceType == "FamilleCritere"
-                                    && $v->id == $tab->typesClientele[$i]->id) {
+                                if(isset($v->familleCritere)) {
+                                    $v = $this->traitementReference($v->familleCritere->elementReferenceType, $v->familleCritere->id);
                                     if(isset($v->$chaineLangue)) {
-                                        print("FamilleCritere :: ".$v->$chaineLangue);
                                         $typeClient->setFamilleCritere($v->$chaineLangue);
                                     } else {
                                         $typeClient->setFamilleCritere(null);
@@ -321,11 +306,11 @@ class Traitement extends ContainerAwareCommand {
                     if(isset($tab->moyensCommunication[$i]->type->$chaineLangue)) {
                         $com->setMoyComLibelle($tab->moyensCommunication[$i]->type->$chaineLangue);
                     } else {
-                        foreach($this->fichierRef as $v) {
-                            if($v->elementReferenceType == "MoyenCommunicationType" &&
-                                $v->id == $tab->moyensCommunication[$i]->type->id) {
-                                $com->setMoyComLibelle($v->$chaineLangue);
-                            }
+                        $v = $this->traitementReference($tab->moyensCommunication[$i]->type->elementReferenceType, $tab->moyensCommunication[$i]->type->id);
+                        if($v != false) {
+                            $com->setMoyComLibelle($v->$chaineLangue);
+                        } else {
+                            $com->setMoyComLibelle("Pas de libelle");
                         }
                     }
                     $com->setMoyComCoordonnees($tab->moyensCommunication[$i]->coordonnees->fr);
@@ -352,15 +337,10 @@ class Traitement extends ContainerAwareCommand {
                         } else {
                             $equipement->setEquLibelle(null);
                         }
-                        if(isset($tab->conforts)) {
-                            foreach($this->fichierRef as $v) {
-                                if($v->elementReferenceType == "PrestationConfort"
-                                    && isset($tab->conforts[$i]->id)
-                                    && $v->id == $tab->conforts[$i]->id) {
-                                    $equipement->setEquLibelle($v->$chaineLangue);
-                                    $equipement->setEquType("Confort");
-                                }
-                            }
+                        if(isset($tab->conforts[$i]->id)) {
+                            $v = $this->traitementReference($tab->conforts[$i]->elementReferenceType, $tab->conforts[$i]->id);
+                            $equipement->setEquLibelle($v->$chaineLangue);
+                            $equipement->setEquType("Confort");
                         }
                         if(isset($tab->conforts[$i]->description)) {
                             $equipement->setEquInfosSup($tab->conforts[$i]->description);
@@ -388,10 +368,9 @@ class Traitement extends ContainerAwareCommand {
                     if($equipement == null) {
                         $equipement = new Equipement();
                         $equipement->setEquId($tab->equipements[$i]->id);
-                        foreach($this->fichierRef as $v) {
-                            if($v->elementReferenceType == "PrestationEquipement"
-                                && isset($tab->equipements[$i]->id)
-                                && $v->id == $tab->equipements[$i]->id) {
+                        if(isset($tab->equipements[$i]->id)) {
+                            $v = $this->traitementReference($tab->equipements[$i]->elementReferenceType, $tab->equipements[$i]->id);
+                            if($v != false) {
                                 $equipement->setEquLibelle($v->$chaineLangue);
                                 $equipement->setEquType("Equipement");
                             }
@@ -426,7 +405,7 @@ class Traitement extends ContainerAwareCommand {
                         if(isset($tab->services)) {
                             $service = new Service();
                             $service->setSerId($tab->services[$i]->id);
-                            $this->traitementServices($tab, $i, $service, $chaineLangue);
+                            $this->traitementServices($tab, $i, $service, $languesSite);
                             $service->setSerType($tab->services[$i]->elementReferenceType);
                         }
                         //Associe le service à la traduction :
@@ -453,7 +432,7 @@ class Traitement extends ContainerAwareCommand {
                         if(isset($tab->modesPaiement)) {
                             $service = new Service();
                             $service->setSerId($tab->modesPaiement[$i]->id);
-                            $this->traitementServices($tab, $i, $service, $chaineLangue);
+                            $this->traitementServices($tab, $i, $service, $languesSite);
                             $service->setSerType($tab->modesPaiement[$i]->elementReferenceType);
                         }
                         //Associe le service à la traduction :
@@ -480,7 +459,7 @@ class Traitement extends ContainerAwareCommand {
                         if(isset($tab->tourismesAdaptes)) {
                             $service = new Service();
                             $service->setSerId($tab->tourismesAdaptes[$i]->id);
-                            $this->traitementServices($tab, $i, $service, $chaineLangue);
+                            $this->traitementServices($tab, $i, $service, $languesSite);
                             $service->setSerType($tab->tourismesAdaptes[$i]->elementReferenceType);
                         }
                         //Associe le service à la traduction :
@@ -505,24 +484,21 @@ class Traitement extends ContainerAwareCommand {
                 foreach($data->$chaineInformations->labels as $v) {
                     $label = $this->em->getRepository(LabelQualite::class)->findOneByLabId($v->id);
                     if($label != null) {
-                        $objetApidae->addLabelQualite($label);
-                        $label->addObjetApidae($objetApidae);
-                        $this->em->merge($objetApidae);
-                        $this->em->merge($label);
+                        if($objetApidae->getLabelsQualite() != null && !$objetApidae->getLabelsQualite()->contains($label)) {
+                            print("Obj :".$objetApidae->getId()."\n");
+                            $objetApidae->addLabelQualite($label);
+                            $label->addObjetApidae($objetApidae);
+                            $this->em->merge($objetApidae);
+                            $this->em->merge($label);
+                        }
                     } else {
-                        $value = $this->traitementReference($v->elementReferenceType, $v->id, $this->fichierRef);
-                        if($value != false) {
-                            $classement = $this->traitementReference($value->elementReferenceType,$value->typeLabel->id);
-                            //pour chaque langue :
-                            $labLibelle= "";
-                            $labClassement = "";
-                            foreach($languesSite as $key => $val) {
-                                $shortCut = $val[0] . $val[1];
-                                $langue = "libelle" . $shortCut;
-                                $lib = $v->langue;
-                                $labLibelle .= '@'.$shortCut.':'.$lib;
-                                $labClassement .= '@'.$shortCut.':'.$lib;
-                            }
+                        $label = new LabelQualite();
+                        $classementLabel = $this->traitementReference($v->elementReferenceType, $v->id, $this->fichierRef);
+                        if($classementLabel != false) {
+                            $typeLabel = $this->traitementReference($classementLabel->typeLabel->elementReferenceType, $classementLabel->typeLabel->id);
+                            $labClassement = $this->traitementLibelleLangues($languesSite, $classementLabel);
+                            $labLibelle = $this->traitementLibelleLangues($languesSite, $typeLabel);
+                            $label->setLabId($classementLabel->id);
                             $label->setLabLibelle($labLibelle);
                             $label->setLabClassement($labClassement);
 
@@ -530,24 +506,18 @@ class Traitement extends ContainerAwareCommand {
                             $label->addObjetApidae($objetApidae);
                             $this->em->persist($objetApidae);
                             $this->em->persist($label);
+                            $this->em->flush();
                         }
                     }
-                    //Ajoute la traduction au dico du label
-                    $label->addObjetApidae($objetApidae);
-                    //Ajoute le label au dico de la traduction
-                    $objetApidae->addLabelQualite($label);
-                    $this->traitementLabelsQualite($label);
                 }
             }
             //étoiles
             if(isset($data->$chaineInformations->classement)) {
                 if(isset($data->$chaineInformations->classement)) {
-                    foreach($this->fichierRef as $v) {
-                        if($v->elementReferenceType == $typeObj."Classement" &&
-                            $v->id == $data->$chaineInformations->classement->id) {
-                            $objetApidae->setObjEtoile($v->$chaineLangue);
-                            break;
-                        }
+                    $v = $this->traitementReference($data->$chaineInformations->classement->elementReferenceType, $data->$chaineInformations->classement->id);
+                    if($v != false) {
+                        $lib = $this->traitementLibelleLangues($languesSite, $v);
+                        $objetApidae->setObjEtoile($lib);
                     }
                 }
             }
@@ -582,11 +552,9 @@ class Traitement extends ContainerAwareCommand {
                         if(isset($tarifs->tarifs[$i]->type->$chaineLangue)) {
                             $tarif->setTarLibelle($tarifs->tarifs[$i]->type->$chaineLangue);
                         } else {
-                            foreach($this->fichierRef as $v) {
-                                if($v->elementReferenceType == "TarifType" &&
-                                    $v->id == $tarifs->tarifs[$i]->type->id) {
-                                    $tarif->setTarLibelle($v->$chaineLangue);
-                                }
+                            $v = $this->traitementReference($tarifs->tarifs[$i]->type->elementReferenceType, $tarifs->tarifs[$i]->type->id);
+                            if($v != false) {
+                                $tarif->setTarLibelle($v->$chaineLangue);
                             }
                         }
                         if(isset($tab->indicationTarif)) {
@@ -594,7 +562,6 @@ class Traitement extends ContainerAwareCommand {
                         } else {
                             $tarif->setTarIndication(null);
                         }
-
                         //Associe le tarif à la traduction :
                         $tarif->setTraduction($traduction);
                         //Ajoute le tarif à la traduction :
@@ -699,6 +666,7 @@ class Traitement extends ContainerAwareCommand {
                 }
             }
         }
+        $this->em->flush();
     }
 
     private function traitementReference($type, $id) {
@@ -711,86 +679,73 @@ class Traitement extends ContainerAwareCommand {
         return false;
     }
 
-    private function traitementFamilleCritere($id, $chaineLangue) {
+    private function traitementFamilleCritere($id, $languesSite) {
         $v = $this->traitementReference("FamilleCritere", $id);
         if($v != false) {
-            if(isset($v->$chaineLangue)) {
-                return $v->$chaineLangue;
-            } else if (isset($v->libelleFr)) {
-                return $v->libelleFr;
-            } else {
-                return "Pas de libelle disponible";
-            }
+            return $this->traitementLibelleLangues($languesSite, $v);
         }
+        return "";
     }
 
-    private function traitementServices($tab, $i, $service, $chaineLangue) {
+    private function traitementServices($tab, $i, $service, $languesSite) {
         if(isset($tab->services[$i]->id)) {
             $v = $this->traitementReference("PrestationService", $tab->services[$i]->id);
             if($v != false) {
-                $this->traitementServiceLibelle($v, $service, $chaineLangue);
-                $this->traitementServiceDetails($service, $v, $chaineLangue);
+                $lib = $this->traitementLibelleLangues($languesSite, $v);
+                $service->setSerLibelle($lib);
+                $this->traitementServiceDetails($service, $v, $languesSite);
             }
         }
 
         if(isset($tab->modesPaiement[$i]->id)) {
             $v = $this->traitementReference("ModePaiement", $tab->modesPaiement[$i]->id);
             if($v != false) {
-                $this->traitementServiceLibelle($v, $service, $chaineLangue);
-                $this->traitementServiceDetails($service, $v, $chaineLangue);
+                $lib = $this->traitementLibelleLangues($languesSite, $v);
+                $service->setSerLibelle($lib);
+                $this->traitementServiceDetails($service, $v, $languesSite);
             }
         }
 
         if(isset($tab->tourismesAdaptes[$i]->id)) {
-            print("tourisme");
             $v = $this->traitementReference("TourismeAdapte", $tab->tourismesAdaptes[$i]->id);
             if($v != false) {
-                print("yep");
-                $this->traitementServiceLibelle($v, $service, $chaineLangue);
-                $this->traitementServiceDetails($service, $v, $chaineLangue);
+                $lib = $this->traitementLibelleLangues($languesSite, $v);
+                $service->setSerLibelle($lib);
+                //$this->traitementServiceLibelle($v, $service, $chaineLangue);
+                $this->traitementServiceDetails($service, $v, $languesSite);
             }
         }
     }
 
-    private function traitementServiceLibelle($v, $service, $chaineLangue) {
-        if(isset($v->$chaineLangue)) {
-            $service->setSerLibelle($v->$chaineLangue);
-        } else if(isset($v->libelleFr)) {
-            $service->setSerLibelle($v->libelleFr);
-        }
+    private function traitementServiceLibelle($v, $service, $languesSite) {
+        $lib = $this->traitementLibelleLangues($languesSite, $v);
+        $service->setSerLibelle($lib);
     }
 
-    private function traitementServiceDetails($service, $v, $chaineLangue) {
+    private function traitementServiceDetails($service, $v, $languesSite) {
         if(isset($v->familleCritere)) {
-            $type = $this->traitementFamilleCritere($v->familleCritere->id, $chaineLangue);
+            $type = $this->traitementFamilleCritere($v->familleCritere->id, $languesSite);
             $service->setSerFamilleCritere($type);
-        } else {
-            $service->setSerFamilleCritere(null);
         }
         if(isset($v->description)) {
-            $service->setSerInfosSup($v->description);
-        } else {
-            $service->setSerInfosSup(null);
+            $descr = $this->traitementLibelleLangues($languesSite, $v->description);
+            $service->setSerInfosSup($descr);
         }
     }
 
-    private function traitementLabelsQualite($label) {
-        if($this->em->getRepository(LabelQualite::class)->findOneByLabLibelle($label) == null) {
-            $this->em->persist($label);
-        }
-    }
-
-    private function traitementCategorie($cat, $objetApidae) {
+    private function traitementCategorieDetails($cat, $id, $objetApidae) {
         //On vérifie si la catégorie existe déjà
-        $catExist = $this->em->getRepository(Categorie::class)->findOneByCatLibelle($cat);
+        $catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($id);
         if($catExist == null) {
             $categorie = new Categorie();
+            $categorie->setCatId($id);
             $categorie->setCatLibelle($cat);
             //Associe la catégorie à l'objet :
             $objetApidae->addCategorie($categorie);
             //Ajout de lobjet à la catégorie :
             $categorie->addObjet($objetApidae);
             $this->em->persist($categorie);
+            $this->em->flush();
         } else if($this->em->getRepository(ObjetApidae::class)->findOneByIdObj($objetApidae->getIdObjet()) != $objetApidae){
             //Associe la catégorie à l'objet
             $objetApidae->addCategorie($catExist);
@@ -799,16 +754,24 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
-    private function getLibelleLang($str, $locale = '') {
-        if (empty ($locale)) {
-            $locale = SIT_LANGUE;
+    private function traitementTypeCategories($tab, $objetApidae, $languesSite) {
+        foreach($tab as $categorie) {
+            $v = $this->traitementReference($categorie->elementReferenceType, $categorie->id);
+            $lanLib =$this->traitementLibelleLangues($languesSite, $v);
+            $this->traitementCategorieDetails($lanLib, $categorie->id, $objetApidae);
         }
-        $debut = strpos($str, '@' . $locale . ':');
-        if ($debut === false) {
-            return $str;
+    }
+
+    private function traitementLibelleLangues($languesSite, $objet) {
+        $chaineFinale= "";
+        //pour chaque langue :
+        foreach($languesSite as $key => $val) {
+            $shortCut = $val[0] . $val[1];
+            $lib = "libelle".$shortCut;
+            if(isset($objet->$lib)) {
+                $chaineFinale .= '@'.$shortCut.':'.$objet->$lib;
+            }
         }
-        $debut += strlen('@' . $locale . ':');
-        $fin = strpos($str, '@', $debut);
-        return substr($str, $debut, $fin - $debut);
+        return $chaineFinale;
     }
 }

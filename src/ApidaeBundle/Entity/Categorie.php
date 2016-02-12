@@ -22,9 +22,16 @@ class Categorie
     private $id;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="catId", type="integer", length=255, unique=true)
+     */
+    private $catId;
+
+    /**
      * @var string
      *
-     * @ORM\Column(name="catLibelle", type="string", length=255, unique=true)
+     * @ORM\Column(name="catLibelle", type="string", length=255)
      */
     private $catLibelle;
 
@@ -94,4 +101,21 @@ class Categorie
     public function getObjets() {
         return $this->objets;
     }
+
+    /**
+     * @return int
+     */
+    public function getCatId()
+    {
+        return $this->catId;
+    }
+
+    /**
+     * @param int $catId
+     */
+    public function setCatId($catId)
+    {
+        $this->catId = $catId;
+    }
+
 }
