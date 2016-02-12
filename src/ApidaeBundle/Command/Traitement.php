@@ -303,15 +303,10 @@ class Traitement extends ContainerAwareCommand {
                 $tab = $data->informations;
                 for($i = 0; $i < count($tab->moyensCommunication); $i++) {
                     $com = new MoyenCommunication();
-                    if(isset($tab->moyensCommunication[$i]->type->$chaineLangue)) {
-                        $com->setMoyComLibelle($tab->moyensCommunication[$i]->type->$chaineLangue);
-                    } else {
+                    if(isset($tab->moyensCommunication[$i])) {
                         $v = $this->traitementReference($tab->moyensCommunication[$i]->type->elementReferenceType, $tab->moyensCommunication[$i]->type->id);
-                        if($v != false) {
-                            $com->setMoyComLibelle($v->$chaineLangue);
-                        } else {
-                            $com->setMoyComLibelle("Pas de libelle");
-                        }
+                        $lib = $this->traitementLibelleLangues($languesSite, $v);
+                        $com->setMoyComLibelle($lib);
                     }
                     $com->setMoyComCoordonnees($tab->moyensCommunication[$i]->coordonnees->fr);
                     //associe la traduction à l'objet
@@ -330,16 +325,10 @@ class Traitement extends ContainerAwareCommand {
                     if($equipement == null) {
                         $equipement = new Equipement();
                         $equipement->setEquId($tab->conforts[$i]->id);
-                        if(isset($tab->conforts[$i]->$chaineLangue)) {
-                            $equipement->setEquLibelle($tab->conforts[$i]->$chaineLangue);
-                        } else if(isset($tab->conforts[$i]->libelleFr)) {
-                            $equipement->setEquLibelle($tab->conforts[$i]->libelleFr);
-                        } else {
-                            $equipement->setEquLibelle(null);
-                        }
-                        if(isset($tab->conforts[$i]->id)) {
+                        if(isset($tab->conforts[$i])) {
                             $v = $this->traitementReference($tab->conforts[$i]->elementReferenceType, $tab->conforts[$i]->id);
-                            $equipement->setEquLibelle($v->$chaineLangue);
+                            $lib = $this->traitementLibelleLangues($languesSite, $v);
+                            $equipement->setEquLibelle($lib);
                             $equipement->setEquType("Confort");
                         }
                         if(isset($tab->conforts[$i]->description)) {
@@ -371,7 +360,8 @@ class Traitement extends ContainerAwareCommand {
                         if(isset($tab->equipements[$i]->id)) {
                             $v = $this->traitementReference($tab->equipements[$i]->elementReferenceType, $tab->equipements[$i]->id);
                             if($v != false) {
-                                $equipement->setEquLibelle($v->$chaineLangue);
+                                $lib = $this->traitementLibelleLangues($languesSite, $v);
+                                $equipement->setEquLibelle($lib);
                                 $equipement->setEquType("Equipement");
                             }
                         }
@@ -527,11 +517,8 @@ class Traitement extends ContainerAwareCommand {
                 $tab = $data->descriptionTarif;
                 if(isset($tab->tarifsEnClair)) {
                     if(isset($tab->tarifsEnClair->$chaineLangue)) {
-                        $traduction->setTraTarifEnClair($tab->tarifsEnClair->$chaineLangue);
-                    } else if(isset($tab->tarifsEnClair->libelleFr)){
-                        $traduction->setTraTarifEnClair($tab->tarifsEnClair->libelleFr);
-                    } else {
-                        $traduction->setTraTarifEnClair(null);
+                        $lib = $this->traitementLibelleLangues($languesSite, $tab->tarifsEnClair);
+                        $traduction->setTraTarifEnClair($lib);
                     }
                 }
                 if(isset($tab->periodes[0]->tarifs)) {
@@ -610,8 +597,9 @@ class Traitement extends ContainerAwareCommand {
             if(isset($data->illustrations)) {
                 for($i = 0; $i < count($data->illustrations); $i++) {
                     $multi = new Multimedia();
-                    if(isset($data->illustrations[$i]->nom->$chaineLangue)) {
-                        $multi->setMulLibelle($data->illustrations[$i]->nom->$chaineLangue);
+                    if(isset($data->illustrations[$i]->nom)) {
+                        $lib = $this->traitementLibelleLangues($languesSite, $data->illustrations[$i]->nom);
+                        $multi->setMulLibelle($lib);
                     } else {
                         $multi->setMulLibelle(null);
                     }
@@ -728,8 +716,7 @@ class Traitement extends ContainerAwareCommand {
             $service->setSerFamilleCritere($type);
         }
         if(isset($v->description)) {
-            $descr = $this->traitementLibelleLangues($languesSite, $v->description);
-            $service->setSerInfosSup($descr);
+            $service->setSerInfosSup($v->description);
         }
     }
 
