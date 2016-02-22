@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 <head>
-    <!-- completer -->
-</head>
+    {% block head %}
+        <!-- completer -->
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}" type="text/css"/>
 
+    {% endblock %}
+</head>
 <html>
     <head>
         <title>Accueil</title>
     </head>
+    {% block header %}
+
+    {% endblock %}
     <body>
-        <h2> Index test </h2>
-        <section>
+    {% block content %}
 
-
-
-        </section>
-
+    {% endblock %}
     </body>
+    {% block footer %}
+
+    {% endblock %}
 </html>

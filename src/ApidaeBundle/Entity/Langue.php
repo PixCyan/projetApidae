@@ -4,12 +4,7 @@ namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * Langue
- *
- * @ORM\Table(name="langue")
- * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\LangueRepository")
- */
+
 class Langue
 {
     /**
@@ -48,19 +43,6 @@ class Langue
      * @ORM\Column(name="lan_Iso", type="string", length=255)
      */
     private $lanIso;
-
-    /**
-    * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="langue")
-    * @ORM\JoinColumn(name="idTrad", referencedColumnName="id", nullable=false)
-    */
-    private $traductions;
-
-
-
-    public function _construct() {
-        //initialisation des collections
-        $this->traductions = new ArrayCollection();
-    }
 
     /**
      * Ajoute/lie une traduction à l'objet

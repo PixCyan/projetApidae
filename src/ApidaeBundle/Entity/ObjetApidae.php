@@ -65,11 +65,6 @@ class ObjetApidae
     private $objDateSuggestion;
 
     /**
-    * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="objet", cascade={"persist"})
-    */
-    private $traductions;
-
-    /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\ObjetLie",  mappedBy="objet", cascade={"persist"})
      */
     private $objetsLies;
@@ -117,6 +112,100 @@ class ObjetApidae
      */
     private $labelsQualite;
 
+    //----------------------------------------- Changements trad -----------------------------------------------------//
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="obj_Nom", type="string", length=255, nullable=true)
+     */
+    private $nom;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="obj_DescriptionCourte", type="string", length=255, nullable=true)
+     */
+    private $descriptionCourte;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="obj_DescriptionLongue", type="string", length=255, nullable=true)
+     */
+    private $descriptionLongue;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="obj_DescriptionPersonnalisee", type="string", length=255, nullable=true)
+     */
+    private $descriptionPersonnalisee;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="obj_BonsPlans", type="string", length=255, nullable=true)
+     */
+    private $bonsPlans;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="obj_InfosSup", type="string", length=255, nullable=true)
+     */
+    private $infosSup;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="obj_DateEnClair", type="string", length=255, nullable=true)
+     */
+    private $dateEnClair;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="obj_TarifEnClair", type="string", length=255, nullable=true)
+     */
+    private $tarifEnClair;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Equipement", inversedBy="objetsApidae", cascade={"persist"})
+     * @ORM\JoinTable(name="objetHasEquipements")
+     */
+    private $equipements;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Service", inversedBy="objetsApidae", cascade={"persist"})
+     * @ORM\JoinTable(name="objetHasServices")
+     */
+    private $services;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\MoyenCommunication", mappedBy="objetApidae", cascade={"persist"})
+     */
+    private $moyensCommunications;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Multimedia", mappedBy="objetApidae", cascade={"persist"})
+     */
+    private $multimedias;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Tarif", mappedBy="objetApidae", cascade={"persist"})
+     */
+    private $tarifs;
+
+    /**
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Ouverture", mappedBy="objetApidae", cascade={"persist"})
+     */
+    private $ouvertures;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TypePublic", mappedBy="objetsApidae", cascade={"persist"})
+     */
+    private $typesPublic;
+
     public function _construct() {
         //initialisation des collections
         $this->traductions = new ArrayCollection();
@@ -125,6 +214,14 @@ class ObjetApidae
         $this->paniers = new ArrayCollection();
         $this->selectionsApidae = new ArrayColleciton();
         $this->labelsQualite = new ArrayCollection();
+        //Ajout
+        $this->equipements = new ArrayCollection();
+        $this->services = new ArrayCollection();
+        $this->moyensCommunications = new ArrayCollection();
+        $this->multimedias = new ArrayCollection();
+        $this->tarifs = new ArrayCollection();
+        $this->ouvertures = new ArrayCollection();
+        $this->typesPublic = new ArrayCollection();
     }
 
     /**
@@ -139,20 +236,6 @@ class ObjetApidae
      */
     public function removeLabelQualite(LabelQualite $labelQualite) {
         $this->labelsQualite->removeElement($labelQualite);
-    }
-
-    /**
-     * Ajoute/lie une traduction à l'objet
-     */
-    public function addTraduction(TraductionObjetApidae $traduction) {
-        $this->traductions[] = $traduction;
-    }
-
-    /**
-     * Supprime une traduction lié à l'objet
-     */
-    public function removeTraduction(TraductionObjetApidae $traduction) {
-        $this->traductions->removeElement($traduction);
     }
 
     /**
@@ -214,7 +297,114 @@ class ObjetApidae
         $this->selectionsApidae->removeElement($selection);
     }
 
+    //-- changements
 
+
+    /**
+     * Ajoute/lie un type de public à l'objet
+     */
+    public function addTypePublic(TypePublic $type) {
+        $this->typesPublic[] = $type;
+
+    }
+
+    /**
+     * Supprime un type de public lié à l'objet
+     */
+    public function removeTypePublic(TypePublic $type) {
+        $this->typesPublic->removeElement($type);
+    }
+
+    /**
+     * Ajoute/lie un equipement à l'objet
+     */
+    public function addEquipement(Equipement $equipement) {
+        $this->equipements[] = $equipement;
+
+    }
+
+    /**
+     * Supprime un equipement lié à l'objet
+     */
+    public function removeEquipement(Equipement $equipement) {
+        $this->equipements->removeElement($equipement);
+    }
+
+    /**
+     * Ajoute/lie un service à l'objet
+     */
+    public function addService(Service $service) {
+        $this->services[] = $service;
+
+    }
+
+    /**
+     * Supprime un service lié à l'objet
+     */
+    public function removeService(Service $service) {
+        $this->services->removeElement($service);
+    }
+
+    /**
+     * Ajoute/lie un  moyen de communication à l'objet
+     */
+    public function addMoyenCommunication(MoyenCommunication $moyenCommunication) {
+        $this->moyensCommunications[] = $moyenCommunication;
+
+    }
+
+    /**
+     * Supprime un moyen de communication lié à l'objet
+     */
+    public function removeMoyenCommunication(MoyenCommunication $moyenCommunication) {
+        $this->moyensCommunications->removeElement($moyenCommunication);
+    }
+
+    /**
+     * Ajoute/lie un media de communication à l'objet
+     */
+    public function addMultimedia(Multimedia $multimedia) {
+        $this->multimedias[] = $multimedia;
+
+    }
+
+    /**
+     * Supprime un media lié à l'objet
+     */
+    public function removeMultimedia(Multimedia $multimedia) {
+        $this->multimedias->removeElement($multimedia);
+    }
+
+    /**
+     * Ajoute/lie un tarif à l'objet
+     */
+    public function addTarif(Tarif $tarif) {
+        $this->tarifs[] = $tarif;
+
+    }
+
+    /**
+     * Supprime un tarif lié à l'objet
+     */
+    public function removeTarif(Tarif $tarif) {
+        $this->tarifs->removeElement($tarif);
+    }
+
+
+    /**
+     * Ajoute/lie une ouverture à l'objet
+     */
+    public function addOuverture(Ouverture $ouverture) {
+        $this->ouvertures[] = $ouverture;
+
+    }
+
+    /**
+     * Supprime une ouverture lié à l'objet
+     */
+    public function removeOuverture(Ouverture $ouverture) {
+        $this->ouvertures->removeElement($ouverture);
+    }
 
     //---------------------- Getter & Setter ----------------------//
 
@@ -468,6 +658,247 @@ class ObjetApidae
         $this->codePostal = $codePostal;
     }
 
+
+    //--- changements
+    /**
+     * @return mixed
+     */
+    public function getDescriptionCourte()
+    {
+        return $this->descriptionCourte;
+    }
+
+    /**
+     * @param mixed $descriptionCourte
+     */
+    public function setDescriptionCourte($descriptionCourte)
+    {
+        $this->descriptionCourte = $descriptionCourte;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescriptionLongue()
+    {
+        return $this->descriptionLongue;
+    }
+
+    /**
+     * @param string $descriptionLongue
+     */
+    public function setDescriptionLongue($descriptionLongue)
+    {
+        $this->descriptionLongue = $descriptionLongue;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescriptionPersonnalisee()
+    {
+        return $this->descriptionPersonnalisee;
+    }
+
+    /**
+     * @param string $descriptionPersonnalisee
+     */
+    public function setDescriptionPersonnalisee($descriptionPersonnalisee)
+    {
+        $this->descriptionPersonnalisee = $descriptionPersonnalisee;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBonsPlans()
+    {
+        return $this->bonsPlans;
+    }
+
+    /**
+     * @param string $bonsPlans
+     */
+    public function setBonsPlans($bonsPlans)
+    {
+        $this->bonsPlans = $bonsPlans;
+    }
+
+    /**
+     * @return string
+     */
+    public function getInfosSup()
+    {
+        return $this->infosSup;
+    }
+
+    /**
+     * @param string $infosSup
+     */
+    public function setInfosSup($infosSup)
+    {
+        $this->infosSup = $infosSup;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDateEnClair()
+    {
+        return $this->dateEnClair;
+    }
+
+    /**
+     * @param string $dateEnClair
+     */
+    public function setDateEnClair($dateEnClair)
+    {
+        $this->dateEnClair = $dateEnClair;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTarifEnClair()
+    {
+        return $this->tarifEnClair;
+    }
+
+    /**
+     * @param string $tarifEnClair
+     */
+    public function setTarifEnClair($tarifEnClair)
+    {
+        $this->tarifEnClair = $tarifEnClair;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEquipements()
+    {
+        return $this->equipements;
+    }
+
+    /**
+     * @param mixed $equipements
+     */
+    public function setEquipements($equipements)
+    {
+        $this->equipements = $equipements;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getServices()
+    {
+        return $this->services;
+    }
+
+    /**
+     * @param mixed $services
+     */
+    public function setServices($services)
+    {
+        $this->services = $services;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMoyensCommunications()
+    {
+        return $this->moyensCommunications;
+    }
+
+    /**
+     * @param mixed $moyensCommunications
+     */
+    public function setMoyensCommunications($moyensCommunications)
+    {
+        $this->moyensCommunications = $moyensCommunications;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMultimedias()
+    {
+        return $this->multimedias;
+    }
+
+    /**
+     * @param mixed $multimedias
+     */
+    public function setMultimedias($multimedias)
+    {
+        $this->multimedias = $multimedias;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTarifs()
+    {
+        return $this->tarifs;
+    }
+
+    /**
+     * @param mixed $tarifs
+     */
+    public function setTarifs($tarifs)
+    {
+        $this->tarifs = $tarifs;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOuvertures()
+    {
+        return $this->ouvertures;
+    }
+
+    /**
+     * @param mixed $ouvertures
+     */
+    public function setOuvertures($ouvertures)
+    {
+        $this->ouvertures = $ouvertures;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTypesPublic()
+    {
+        return $this->typesPublic;
+    }
+
+    /**
+     * @param mixed $typesPublic
+     */
+    public function setTypesPublic($typesPublic)
+    {
+        $this->typesPublic = $typesPublic;
+    }
+
+    /**
+     * @return string
+     */
+    public function getNom()
+    {
+        return $this->nom;
+    }
+
+    /**
+     * @param string $nom
+     */
+    public function setNom($nom)
+    {
+        $this->nom = $nom;
+    }
 
 
 

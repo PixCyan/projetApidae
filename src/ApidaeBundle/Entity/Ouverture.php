@@ -43,10 +43,10 @@ class Ouverture
     private $serInfosSup;
 
     /**
-    * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", inversedBy="ouvertures")
-    * @ORM\JoinColumn(nullable=false)
-    */
-    private $traduction;
+     * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="ouvertures")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $objetApidae;
 
     //---------------------- Getter & Setter ----------------------//
 
@@ -133,28 +133,22 @@ class Ouverture
     }
 
     /**
-     * Set traIdTraduction
-     *
-     * @param integer $traduction
-     *
-     * @return Equipement
+     * @return mixed
      */
-    public function setTraduction(TraductionObjetApidae $traduction)
+    public function getObjetApidae()
     {
-        $this->traduction = $traduction;
-
-        return $this;
+        return $this->objetApidae;
     }
 
     /**
-     * Get traduction
-     *
-     * @return int
+     * @param mixed $objetApidae
      */
-    public function getTraduction()
+    public function setObjetApidae($objetApidae)
     {
-        return $this->traduction;
+        $this->objetApidae = $objetApidae;
     }
+
+
 
 }
 

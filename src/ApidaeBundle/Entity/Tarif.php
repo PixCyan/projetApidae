@@ -57,10 +57,10 @@ class Tarif
     private $tarMax;
 
     /**
-    * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", inversedBy="tarifs")
-    * @ORM\JoinColumn(nullable=false)
-    */
-    private $traduction;
+     * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="tarifs")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $objetApidae;
 
     //---------------------- Getter & Setter ----------------------//
 
@@ -198,27 +198,20 @@ class Tarif
     }
 
     /**
-     * Set traIdTraduction
-     *
-     * @param integer $traduction
-     *
-     * @return Equipement
+     * @return mixed
      */
-    public function setTraduction(TraductionObjetApidae $traduction)
+    public function getObjetApidae()
     {
-        $this->traduction = $traduction;
-
-        return $this;
+        return $this->objetApidae;
     }
 
     /**
-     * Get traduction
-     *
-     * @return int
+     * @param mixed $objetApidae
      */
-    public function getTraduction()
+    public function setObjetApidae($objetApidae)
     {
-        return $this->traduction;
+        $this->objetApidae = $objetApidae;
     }
+
 }
 

@@ -56,28 +56,28 @@ class Service
     private $serFamilleCritere;
 
     /**
-    * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="services", cascade={"merge"})
-    * @ORM\JoinColumn(nullable=false)
-    */
-    private $traductions;
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="services", cascade={"merge"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $objetsApidae;
 
     public function _construct() {
         //initialisation des collections
-        $this->traductions = new ArrayCollection();
+        $this->objetsApidae = new ArrayCollection();
     }
 
     /**
      * Ajoute/lie un objetApidae à la categorie
      */
-    public function addTraduction(TraductionObjetApidae $tradObjet) {
-        $this->traductions[] = $tradObjet;
+    public function addObjetApidae(ObjetApidae $tradObjet) {
+        $this->objetsApidae[] = $tradObjet;
     }
 
     /**
      * Supprime objetApidae de la categorie
      */
-    public function removeObjet(TraductionObjetApidae $tradObjet) {
-        $this->traductions->removeElement($tradObjet);
+    public function removeObjetApidae(ObjetApidae $tradObjet) {
+        $this->objetsApidae->removeElement($tradObjet);
     }
 
     //---------------------- Getter & Setter ----------------------//

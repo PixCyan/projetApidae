@@ -56,28 +56,28 @@ class TypePublic
     private $max;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", inversedBy="typesPublic", cascade={"merge"})
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="typesPublic", cascade={"merge"})
      * @ORM\JoinColumn(nullable=false)
      */
-    private $traductions;
+    private $objetsApidae;
 
     public function _construct() {
         //initialisation des collections
-        $this->traductions = new ArrayCollection();
+        $this->objetsApidae = new ArrayCollection();
     }
 
     /**
      * Ajoute/lie un objetApidae à la categorie
      */
-    public function addTraduction(TraductionObjetApidae $tradObjet) {
-        $this->traductions[] = $tradObjet;
+    public function addObjetApidae(ObjetApidae $tradObjet) {
+        $this->objetsApidae[] = $tradObjet;
     }
 
     /**
      * Supprime objetApidae de la categorie
      */
-    public function removeObjet(TraductionObjetApidae $tradObjet) {
-        $this->traductions->removeElement($tradObjet);
+    public function removeObjetApidae(ObjetApidae $tradObjet) {
+        $this->objetsApidae->removeElement($tradObjet);
     }
 
     //---------------------- Getter & Setter ----------------------//
@@ -201,16 +201,6 @@ class TypePublic
     }
 
     /**
-     * Get traduction
-     *
-     * @return int
-     */
-    public function getTraduction()
-    {
-        return $this->traduction;
-    }
-
-    /**
      * @return int
      */
     public function getTypId()
@@ -230,10 +220,21 @@ class TypePublic
     /**
      * @return mixed
      */
-    public function getTraductions()
+    public function getObjetsApidae()
     {
-        return $this->traductions;
+        return $this->objetsApidae;
     }
+
+    /**
+     * @param mixed $objetsApidae
+     */
+    public function setObjetsApidae($objetsApidae)
+    {
+        $this->objetsApidae = $objetsApidae;
+    }
+
+
+
 
 }
 
