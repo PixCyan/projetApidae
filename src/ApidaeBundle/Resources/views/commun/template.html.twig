@@ -1,22 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-FR">
     <head>
-        <title>Test de données</title>
+        {% block head %}
+            <!-- completer -->
+            <link rel="stylesheet" href="{{ asset('css/style.css') }}" type="text/css"/>
+            <title>{% block title %}{% endblock %}</title>
+        {% endblock %}
     </head>
     <body>
-    <header>
-        {% include "ApidaeBundle:commun:header.html.twig" %}
-    </header>
+        <header>
+            {% include "ApidaeBundle:commun:header.html.twig" %}
+        </header>
 
-    <title>{% block title %}{% endblock %}</title>
-    <article id="content">
-        {% block content %}
-        {% endblock %}
-    </article>
+        <article id="content">
+            {% block content %}
+            {% endblock %}
+        </article>
 
-
-    <footer>
-        {% include "ApidaeBundle:commun:footer.html.twig" %}
-    </footer>
+        <footer>
+            {% include "ApidaeBundle:commun:footer.html.twig" %}
+        </footer>
     </body>
 </html>

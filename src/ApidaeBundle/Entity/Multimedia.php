@@ -21,6 +21,14 @@ class Multimedia
      */
     private $id;
 
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="idMultimedia", type="integer", nullable=true)
+     */
+    private $idMultimedia;
+
     /**
      * @var string
      *
@@ -34,6 +42,13 @@ class Multimedia
      * @ORM\Column(name="mulType", type="string", length=255)
      */
     private $mulType;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mulUrl", type="string", length=255, nullable=true)
+     */
+    private $mulUrl;
 
     /**
      * @var string
@@ -242,6 +257,36 @@ class Multimedia
         $this->objetApidae = $objetApidae;
     }
 
+    /**
+     * @return int
+     */
+    public function getIdMultimedia()
+    {
+        return $this->idMultimedia;
+    }
 
+    /**
+     * @param int $idMultimedia
+     */
+    public function setIdMultimedia($idMultimedia)
+    {
+        $this->idMultimedia = $idMultimedia;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMulUrl()
+    {
+        return $this->mulUrl;
+    }
+
+    /**
+     * @param string $mulUrl
+     */
+    public function setMulUrl($mulUrl)
+    {
+        $this->mulUrl = $mulUrl;
+    }
 }
 

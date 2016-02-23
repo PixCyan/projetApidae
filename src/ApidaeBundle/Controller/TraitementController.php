@@ -79,7 +79,6 @@ class TraitementController extends Controller
 			}
 			//---
 			$output->writeln("Fin de traitement.");
-			return $this->render('ApidaeBundle:Default:traitement.html.twig', array('url' => $data->$chaineInformations));
 		} catch(Exception $e) {
 			$output->writeln("Problème : ".$e->getMessage());
 		}
@@ -90,20 +89,10 @@ class TraitementController extends Controller
 		$objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($data->id);
 		if($objetApidae == null) {
 			$objetApidae = new ObjetApidae();
-			$objetApidae->setIdObjet($data->id);
-			if(isset($data->geolocalisation)) {
-				$geo = $data->geolocalisation;
-				//TODO formater geolocalisation
-				//$objetApidae->setObjGeolocalisation(isset($geo->geoJson->coordinates));
-				$objetApidae->setObjGeolocalisation(null);
-			} else {
-				$objetApidae->setObjGeolocalisation(null);
-			}
-			$objetApidae->setObjSuggestion(false);
-			$objetApidae->setObjDateSuggestion(null);
-			$objetApidae->setObjTypeApidae($data->type);
-			$objetApidae->addSelectionApidae($selectionApidae);
-			$selectionApidae->addObjetApidae($objetApidae);
+			$this->updateObjetApidae($objetApidae, $data, $selectionApidae, false);
+		} else {
+			//update de l'objet
+			$this->updateObjetApidae($objetApidae, $data, $selectionApidae, true);
 		}
 
 		//-------------------- Adresse - Communes ----------------------
@@ -149,7 +138,6 @@ class TraitementController extends Controller
 				$lanLib =$this->traitementLibelleLangues($languesSite, $v);
 				$this->traitementCategorieDetails($lanLib, $categorie->id, $objetApidae);
 				if(isset($v->familleCritere)) {
-					print("cat = famille critère \n");
 					if(!$this->em->getRepository(Categorie::class)->findOneByCatId(($v->familleCritere->id))) {
 						$val = $this->traitementReference($v->familleCritere->elementReferenceType, $v->familleCritere->id);
 						$lanLib =$this->traitementLibelleLangues($languesSite, $val);
@@ -158,7 +146,6 @@ class TraitementController extends Controller
 				}
 			}
 		} else if(isset($data->$chaineInformations->typesManifestation)) {
-			print("cat = fete \n");
 			$this->traitementTypeCategories($data->$chaineInformations->typesManifestation, $objetApidae, $languesSite);
 		}
 		if(isset($data->$chaineInformations->specialites)) {
@@ -169,33 +156,67 @@ class TraitementController extends Controller
 		if(isset($data->$chaineInformations->$chaineType)) {
 			//$this->traitementTypeCategories($data->$chaineInformations->$chaineType, $objetApidae, $languesSite);
 			$tab = $data->$chaineInformations->$chaineType;
-			foreach($tab as $value) {
-				$v = $this->traitementReference($value->elementReferenceType, $value->id);
-				$lanLib = $this->traitementLibelleLangues($languesSite, $v);
-				$this->traitementCategorieDetails($lanLib, $value->id, $objetApidae);
+			if($chaineType == "typesManifestation") {
+				foreach($tab as $value) {
+					$catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($value->id);
+					if($catExist != null) {
+						$v = $this->traitementReference($value->elementReferenceType, $value->id);
+						$lanLib = $this->traitementLibelleLangues($languesSite, $v);
+						$this->traitementCategorieDetails($lanLib, $value->id, $objetApidae);
+					}
+				}
+			} else {
+				$tab = $data->$chaineInformations->$chaineType;
+				$catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($tab->id);
+				if($catExist != null) {
+					$v = $this->traitementReference($tab->elementReferenceType, $tab->id);
+					$lanLib = $this->traitementLibelleLangues($languesSite, $v);
+					$this->traitementCategorieDetails($lanLib, $tab->id, $objetApidae);
+				}
 			}
 		}
 
 		//$this->em->flush();
 
-		//------------------------------------------------ Traduction -------------------------------------------------
-		$nom = $this->traitementLibelleLangues($languesSite, $data->nom);
-		$objetApidae->setNom($nom);
-		$presentation = $data->presentation;
-		if(isset($data->presentation)) {
-			if (isset($presentation->descriptifCourt)) {
-				$objetApidae->setDescriptionCourte($this->traitementLibelleLangues($languesSite, $presentation->descriptifCourt));
+		//--------------------Langue ----------------------
+		$i = 0;
+		$langueTrad= "";
+		foreach($languesSite as $key => $value) {
+			$shortCut = $value[0] . $value[1];
+			$langue = $this->em->getRepository(Langue::class)->findOneByLanLibelle($value);
+			if ($langue == null) {
+				$langue = new Langue();
+				$langue->setCodeLangue($i);
+				$langue->setLanLibelle($value);
+				$langue->setLanShortCut($shortCut);
+				$langue->setLanIso("?");
+				$this->em->persist($langue);
+				$langueTrad = $langue;
+			} else {
+				$langueTrad = $langue;
 			}
-			if(isset($presentation->descriptifDetaille)) {
-				$objetApidae->setDescriptionLongue($this->traitementLibelleLangues($languesSite,$presentation->descriptifDetaille ));
+			$chaineLangue = "libelle" . $shortCut;
+
+			//------------------------------------------------ Traduction -------------------------------------------------
+			//$traduction = new TraductionObjetApidae();
+			$traduction = $this->em->getRepository(TraductionObjetApidae::class)->getTraduction($langue, $objetApidae);
+			if($traduction != null) {
+				print($traduction->getTraDescriptionCourte());
+				$this->updateTraduction($traduction, $data, $chaineLangue, $langueTrad, $objetApidae, true);
+			} else {
+				$traduction = new TraductionObjetApidae();
+				print("No trad");
+				$this->updateTraduction($traduction, $data, $chaineLangue, $langueTrad, $objetApidae, false);
 			}
+			$i++;
 		}
 
-		$objetApidae->setDescriptionPersonnalisee(null);
-		$objetApidae->setBonsPlans(null);
+
+		//--- obj changements
+		$nom = $this->traitementLibelleLangues($languesSite, $data->nom);
+		$objetApidae->setNom($nom);
 		$objetApidae->setDateEnClair(null);
 		$objetApidae->setTarifEnClair(null);
-		$objetApidae->setInfosSup(null);
 
 		//-------------------- Types de Public ----------------------
 		if(isset($data->prestations->typesClientele)) {
@@ -696,5 +717,76 @@ class TraitementController extends Controller
 			}
 		}
 		return $chaineFinale;
+	}
+
+
+	private function updateTraduction($traduction, $data, $chaineLangue, $langueTrad, $objetApidae, $update) {
+		//Presentation
+		if(isset($data->presentation)) {
+			$presentation = $data->presentation;
+			if(isset($presentation->descriptifCourt->$chaineLangue)) {
+				$traduction->setTraDescriptionCourte($presentation->descriptifCourt->$chaineLangue);
+			}else if(isset($presentation->descriptifCourt->libelleFr)) {
+				//Par défaut si n'existe pas dans la langue demandée
+				$traduction->setTraDescriptionCourte($presentation->descriptifCourt->libelleFr);
+			} else {
+				$traduction->setTraDescriptionCourte(null);
+			}
+			if(isset($presentation->descriptifDetaille->$chaineLangue)) {
+				$traduction->setTraDescriptionLongue($presentation->descriptifDetaille->$chaineLangue);
+			}else if(isset($presentation->descriptifDetaille->libelleFr)) {
+				$traduction->setTraDescriptionLongue($presentation->descriptifDetaille->libelleFr);
+			} else {
+				$traduction->setTraDescriptionLongue(null);
+			}
+		}
+		if($update) {
+			$this->em->merge($traduction);
+		} else {
+			$traduction->setTraDescriptionPersonnalisee(null);
+			$traduction->setTraBonsPlans(null);
+			$traduction->setTraInfosSup(null);
+
+			//Associe la langue à la traduction
+			$traduction->setLangue($langueTrad);
+			//AJoute la traduction au dico de la langue
+			$langueTrad->addTraduction($traduction);
+			//Associe la traduction à l'objet
+			$objetApidae->addTraduction($traduction);
+			//Associe l'objet à la traduction :
+			$traduction->setObjet($objetApidae);
+			$this->em->persist($traduction);
+		}
+	}
+
+	private function updateObjetApidae($objetApidae, $data, $selectionApidae, $update) {
+		if(isset($data->geolocalisation)) {
+			$geo = $data->geolocalisation;
+			//TODO formater geolocalisation
+			//$objetApidae->setObjGeolocalisation(isset($geo->geoJson->coordinates));
+			$objetApidae->setObjGeolocalisation(null);
+		} else {
+			$objetApidae->setObjGeolocalisation(null);
+		}
+		$objetApidae->setObjSuggestion(false);
+		$objetApidae->setObjDateSuggestion(null);
+		$objetApidae->setObjTypeApidae($data->type);
+		if(!is_null($selectionApidae->getObjets()) && !$selectionApidae->getObjets()->contains($objetApidae)) {
+			$selectionApidae->addObjetApidae($objetApidae);
+		}
+		if(!is_null($objetApidae->getSelectionsApidae()) && !$objetApidae->getSelectionsApidae()->contains($selectionApidae)) {
+			$objetApidae->addSelectionApidae($selectionApidae);
+		}
+		if($update == true) {
+			$this->em->merge($objetApidae);
+			$this->em->merge($selectionApidae);
+
+		} else {
+			$objetApidae->setIdObjet($data->id);
+			$this->em->persist($objetApidae);
+			if(!is_null($objetApidae->getSelectionsApidae()) && !$selectionApidae->getObjets()->contains($objetApidae)) {
+				$this->em->merge($selectionApidae);
+			}
+		}
 	}
 }

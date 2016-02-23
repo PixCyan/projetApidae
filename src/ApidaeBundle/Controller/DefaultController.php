@@ -43,15 +43,10 @@ class DefaultController extends Controller
         $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($id);
         $trad = null;
         if($objetApidae != null) {
-            $traductions = $objetApidae->getTraductions();
-            foreach($traductions as $value) {
-                if($value->getLangue()->getLanLibelle() == "Français") {
-                    $trad = $value;
-                }
-            }
-            return $this->render('ApidaeBundle:Default:offre.html.twig', array('objet' => $objetApidae, 'trad' => $trad));
+            return $this->render('ApidaeBundle:Default:offreTest.html.twig', array('objet' => $objetApidae));
         } else {
-            return $this->render('ApidaeBundle:Default:offre.html.twig');
+            //TODO changer
+            return $this->render('ApidaeBundle:Default:offreTest.html.twig');
         }
     }
 

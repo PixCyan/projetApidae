@@ -28,7 +28,6 @@ class ObjetApidae
      */
     private $idObj;
 
-    //TODO mettre dans traduction
     /**
      * @var string
      *
@@ -123,41 +122,6 @@ class ObjetApidae
     /**
      * @var string
      *
-     * @ORM\Column(name="obj_DescriptionCourte", type="string", length=255, nullable=true)
-     */
-    private $descriptionCourte;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="obj_DescriptionLongue", type="string", length=255, nullable=true)
-     */
-    private $descriptionLongue;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="obj_DescriptionPersonnalisee", type="string", length=255, nullable=true)
-     */
-    private $descriptionPersonnalisee;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="obj_BonsPlans", type="string", length=255, nullable=true)
-     */
-    private $bonsPlans;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="obj_InfosSup", type="string", length=255, nullable=true)
-     */
-    private $infosSup;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="obj_DateEnClair", type="string", length=255, nullable=true)
      */
     private $dateEnClair;
@@ -206,6 +170,11 @@ class ObjetApidae
      */
     private $typesPublic;
 
+    /**
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="objet", cascade={"persist"})
+     */
+    private $traductions;
+
     public function _construct() {
         //initialisation des collections
         $this->traductions = new ArrayCollection();
@@ -222,6 +191,20 @@ class ObjetApidae
         $this->tarifs = new ArrayCollection();
         $this->ouvertures = new ArrayCollection();
         $this->typesPublic = new ArrayCollection();
+    }
+
+    /**
+     * Ajoute/lie une traduction à l'objet
+     */
+    public function addTraduction(TraductionObjetApidae $traduction) {
+        $this->traductions[] = $traduction;
+    }
+
+    /**
+     * Supprime une traduction lié à l'objet
+     */
+    public function removeTraduction(TraductionObjetApidae $traduction) {
+        $this->traductions->removeElement($traduction);
     }
 
     /**
@@ -660,85 +643,6 @@ class ObjetApidae
 
 
     //--- changements
-    /**
-     * @return mixed
-     */
-    public function getDescriptionCourte()
-    {
-        return $this->descriptionCourte;
-    }
-
-    /**
-     * @param mixed $descriptionCourte
-     */
-    public function setDescriptionCourte($descriptionCourte)
-    {
-        $this->descriptionCourte = $descriptionCourte;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescriptionLongue()
-    {
-        return $this->descriptionLongue;
-    }
-
-    /**
-     * @param string $descriptionLongue
-     */
-    public function setDescriptionLongue($descriptionLongue)
-    {
-        $this->descriptionLongue = $descriptionLongue;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescriptionPersonnalisee()
-    {
-        return $this->descriptionPersonnalisee;
-    }
-
-    /**
-     * @param string $descriptionPersonnalisee
-     */
-    public function setDescriptionPersonnalisee($descriptionPersonnalisee)
-    {
-        $this->descriptionPersonnalisee = $descriptionPersonnalisee;
-    }
-
-    /**
-     * @return string
-     */
-    public function getBonsPlans()
-    {
-        return $this->bonsPlans;
-    }
-
-    /**
-     * @param string $bonsPlans
-     */
-    public function setBonsPlans($bonsPlans)
-    {
-        $this->bonsPlans = $bonsPlans;
-    }
-
-    /**
-     * @return string
-     */
-    public function getInfosSup()
-    {
-        return $this->infosSup;
-    }
-
-    /**
-     * @param string $infosSup
-     */
-    public function setInfosSup($infosSup)
-    {
-        $this->infosSup = $infosSup;
-    }
 
     /**
      * @return string
