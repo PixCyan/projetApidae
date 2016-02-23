@@ -204,36 +204,11 @@ class Service
     }
 
     /**
-     * Set traIdTraduction
-     *
-     *
-     * @return Equipement
-     */
-    public function setTraduction(TraductionObjetApidae $traduction)
-    {
-        $this->traduction = $traduction;
-
-        return $this;
-    }
-
-    /**
-     * Get traduction
-     *
-     * @return int
-     */
-    public function getTraduction()
-    {
-        return $this->traduction;
-    }
-
-    /**
      * @return mixed
      */
-    public function getTraductions()
+    public function getObjetsApidae()
     {
-        return $this->traductions;
+        return $this->objetsApidae;
     }
-
-
 }
 
