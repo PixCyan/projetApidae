@@ -5,12 +5,12 @@ namespace ApidaeBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Tarif
+ * InformationsTarif
  *
- * @ORM\Table(name="tarif")
- * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\TarifRepository")
+ * @ORM\Table(name="informations_tarif")
+ * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\InformationsTarifRepository")
  */
-class Tarif
+class InformationsTarif
 {
     /**
      * @var int
@@ -21,12 +21,6 @@ class Tarif
      */
     private $id;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="tarLibelle", type="string", length=255)
-     */
-    private $tarLibelle;
 
     /**
      * @var string
@@ -62,8 +56,13 @@ class Tarif
      */
     private $objetApidae;
 
-    //---------------------- Getter & Setter ----------------------//
+    /**
+     * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\TarifType", inversedBy="infosTarif")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $tarifType;
 
+    //---------------------- Getter & Setter ----------------------//
 
     /**
      * Get id
@@ -76,71 +75,6 @@ class Tarif
     }
 
     /**
-     * Set tarLibelle
-     *
-     * @param string $tarLibelle
-     *
-     * @return Tarif
-     */
-    public function setTarLibelle($tarLibelle)
-    {
-        $this->tarLibelle = $tarLibelle;
-
-        return $this;
-    }
-
-    /**
-     * Get tarLibelle
-     *
-     * @return string
-     */
-    public function getTarLibelle()
-    {
-        return $this->tarLibelle;
-    }
-
-    /**
-     * Set tarDevise
-     *
-     * @param string $tarDevise
-     *
-     * @return Tarif
-     */
-    public function setTarDevise($tarDevise)
-    {
-        $this->tarDevise = $tarDevise;
-
-        return $this;
-    }
-
-    /**
-     * Get tarDevise
-     *
-     * @return string
-     */
-    public function getTarDevise()
-    {
-        return $this->tarDevise;
-    }
-
-
-    /**
-     * Set tarIndication
-     *
-     * @param string $tarIndication
-     *
-     * @return Tarif
-     */
-    public function setTarIndication($tarIndication)
-    {
-        $this->tarIndication = $tarIndication;
-
-        return $this;
-    }
-
-    /**
-     * Get tarIndication
-     *
      * @return string
      */
     public function getTarIndication()
@@ -148,24 +82,31 @@ class Tarif
         return $this->tarIndication;
     }
 
-
     /**
-     * Set tarMin
-     *
-     * @param string $tarMin
-     *
-     * @return Tarif
+     * @param string $tarIndication
      */
-    public function setTarMin($tarMin)
+    public function setTarIndication($tarIndication)
     {
-        $this->tarMin = $tarMin;
-
-        return $this;
+        $this->tarIndication = $tarIndication;
     }
 
     /**
-     * Get tarMin
-     *
+     * @return string
+     */
+    public function getTarDevise()
+    {
+        return $this->tarDevise;
+    }
+
+    /**
+     * @param string $tarDevise
+     */
+    public function setTarDevise($tarDevise)
+    {
+        $this->tarDevise = $tarDevise;
+    }
+
+    /**
      * @return string
      */
     public function getTarMin()
@@ -174,27 +115,27 @@ class Tarif
     }
 
     /**
-     * Set tarMax
-     *
-     * @param string $tarMax
-     *
-     * @return Tarif
+     * @param string $tarMin
      */
-    public function setTarMax($tarMax)
+    public function setTarMin($tarMin)
     {
-        $this->tarMax = $tarMax;
-
-        return $this;
+        $this->tarMin = $tarMin;
     }
 
     /**
-     * Get tarMax
-     *
      * @return string
      */
     public function getTarMax()
     {
         return $this->tarMax;
+    }
+
+    /**
+     * @param string $tarMax
+     */
+    public function setTarMax($tarMax)
+    {
+        $this->tarMax = $tarMax;
     }
 
     /**
@@ -212,6 +153,5 @@ class Tarif
     {
         $this->objetApidae = $objetApidae;
     }
-
 }
 

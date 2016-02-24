@@ -157,7 +157,7 @@ class ObjetApidae
     private $multimedias;
 
     /**
-     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Tarif", mappedBy="objetApidae", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\InformationsTarif", mappedBy="objetApidae", cascade={"persist"})
      */
     private $tarifs;
 

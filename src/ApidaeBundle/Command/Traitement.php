@@ -3,6 +3,7 @@
 namespace ApidaeBundle\Command;
 
 use ApidaeBundle\Entity\ObjetLie;
+use ApidaeBundle\Entity\TarifType;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -434,17 +435,27 @@ class Traitement extends ContainerAwareCommand {
 
         //-------------------- Tarifs ----------------------
         if(isset($data->descriptionTarif)) {
+        //TODO changer infor tarif et tarifType
+
             $tab = $data->descriptionTarif;
-            if(isset($tab->tarifsEnClair)) {
-                if(isset($tab->tarifsEnClair)) {
-                    $lib = $this->traitementLibelleLangues($languesSite, $tab->tarifsEnClair);
-                    $objetApidae->setTarifEnClair($lib);
-                }
-            }
             if(isset($tab->periodes[0]->tarifs)) {
                 $tarifs = $tab->periodes[0];
                 for($i = 0; $i < count($tab->periodes[0]->tarifs); $i++) {
-                    $tarif = new Tarif();
+                    $tarifType = $this->em->getRepository(TarifType::class)->findOneByIdTarif($tarifs->tarifs[$i]->type->id);
+                    if($tarifType == null) {
+                        $tarifType = new TarifType();
+                        $v = $this->traitementReference($tarifs->tarifs[$i]->type->elementReferenceType, $tarifs->tarifs[$i]->type->id);
+                        if($v != false) {
+                            $tarifType->setIdTarif($v->id);
+                            $tarifType->setTarLibelle($this->traitementLibelleLangues($languesSite, $v));
+                            //TODO terminer
+                        }
+                    }
+
+
+
+
+                    /*$tarif = new Tarif();
                     $tarif->setTarDevise($tarifs->tarifs[$i]->devise);
                     if(isset($tarifs->tarifs[$i]->maximum)) {
                         $tarif->setTarMax($tarifs->tarifs[$i]->maximum);
@@ -456,10 +467,12 @@ class Traitement extends ContainerAwareCommand {
                     } else {
                         $tarif->setTarMin(null);
                     }
-                    if(isset($tarifs->tarifs[$i]->type)) {
+                    if(isset($tarifs->tarifs[$i]->type->$chaineLangue)) {
+                        $tarif->setTarLibelle($tarifs->tarifs[$i]->type->$chaineLangue);
+                    } else {
                         $v = $this->traitementReference($tarifs->tarifs[$i]->type->elementReferenceType, $tarifs->tarifs[$i]->type->id);
                         if($v != false) {
-                            $tarif->setTarLibelle($this->traitementLibelleLangues($languesSite, $v));
+                            $tarif->setTarLibelle($v->$chaineLangue);
                         }
                     }
                     if(isset($tab->indicationTarif)) {
@@ -468,10 +481,10 @@ class Traitement extends ContainerAwareCommand {
                         $tarif->setTarIndication(null);
                     }
                     //Associe le tarif à la traduction :
-                    $tarif->setObjetApidae($objetApidae);
+                    $tarif->setTraduction($traduction);
                     //Ajoute le tarif à la traduction :
-                    $objetApidae->addTarif($tarif);
-                    $this->em->persist($tarif);
+                    $traduction->addTarif($tarif);
+                    $this->em->persist($tarif);*/
                 }
             }
         }
