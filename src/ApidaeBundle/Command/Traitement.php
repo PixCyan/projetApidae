@@ -51,7 +51,7 @@ class Traitement extends ContainerAwareCommand {
            $this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json"));
            $selections_data = json_decode($export);
            foreach ($selections_data as $value) {
-               $selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneBySelLibelle($value->libelle->libelleFr);
+               $selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($value->id);
                if ($selectionApidae == null) {
                    $selectionApidae = new SelectionApidae();
                    $selectionApidae->setIdSelectionApidae($value->id);
@@ -60,13 +60,13 @@ class Traitement extends ContainerAwareCommand {
                    $this->em->flush();
                } else {
                    print($selectionApidae->getSelLibelle() . "\n");
+                   $selectionApidae->setSelLibelle($value->nom);
                    $this->em->merge($selectionApidae);
                }
                foreach ($value->objetsTouristiques as $val) {
                    print($val->id . "\n");
                    //=> $data = aller chercher le bon fichier dans objetsModifies
                    $data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
-                   //récupération des données :
                    //Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
                    $type = $data->type;
                    $chaineExplode = explode("_", $type);
@@ -233,43 +233,9 @@ class Traitement extends ContainerAwareCommand {
                 if($typeClient == null) {
                     $typeClient = new TypePublic();
                     $typeClient->setTypId($tab->typesClientele[$i]->id);
-                    if(isset($tab->typesClientele[$i])) {
-                        $v = $this->traitementReference($tab->typesClientele[$i]->elementReferenceType, $tab->typesClientele[$i]->id);
-                        if($v != false) {
-                            $typeClient->setTypLibelle($this->traitementLibelleLangues($languesSite, $v));
-                            if(isset($v->familleCritere)) {
-                                $v = $this->traitementReference($v->familleCritere->elementReferenceType, $v->familleCritere->id);
-                                if($v != null) {
-                                    $typeClient->setFamilleCritere(($this->traitementLibelleLangues($languesSite, $v)));
-                                } else {
-                                    $typeClient->setFamilleCritere(null);
-                                }
-                            }
-                        }
-                    }
-                    if(isset($tab->typesClientele[$i]->tailleGroupeMax)) {
-                        $typeClient->setMax($tab->typesClientele[$i]->tailleGroupeMax);
-                    } else {
-                        $typeClient->setMax(null);
-                    }
-                    if(isset($tab->typesClientele[$i]->tailleGroupeMin)) {
-                        $typeClient->setMin($tab->typesClientele[$i]->tailleGroupeMin);
-                    } else {
-                        $typeClient->setMin(null);
-                    }
-                    //Associe lobjet au type de public
-                    $typeClient->addObjetApidae($objetApidae);
-                    //Ajoute le type de client au dico de la traduction :
-                    $objetApidae->addTypePublic($typeClient);
-                    $this->em->persist($typeClient);
-                    //$this->em->flush();
-                } else if($this->em->getRepository(TypePublic::class)->findOneByTypId(($tab->typesClientele[$i]->id)) != $typeClient) {
-                    //Associe la traduction au type de public
-                    $typeClient->addObjetApidae($objetApidae);
-                    //Ajoute le type de client au dico de la traduction :
-                    $objetApidae->addTypePublic($typeClient);
-                    $this->em->merge($typeClient);
-                    $this->em->flush();
+                    $this->updateTypeCLient($typeClient, $i, $tab, $languesSite, $objetApidae, false);
+                } else {
+                    $this->updateTypeCLient($typeClient, $i, $tab, $languesSite, $objetApidae, true);
                 }
             }
         }
@@ -641,19 +607,26 @@ class Traitement extends ContainerAwareCommand {
         $catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($id);
         if($catExist == null) {
             $categorie = new Categorie();
-            $categorie->setCatId($id);
-            $categorie->setCatLibelle($cat);
-            //Associe la catégorie à l'objet :
-            $objetApidae->addCategorie($categorie);
+            $this->updateCategorie($cat, $categorie, $id, $objetApidae);
+            $this->em->persist($categorie);
+            //$this->em->flush();
+        } else {
+            $this->updateCategorie($cat, $catExist, $id, $objetApidae);
+            $this->em->merge($catExist);
+            $this->em->merge($objetApidae);
+        }
+    }
+
+    private function updateCategorie($cat,$categorie, $id, $objetApidae) {
+        $categorie->setCatId($id);
+        $categorie->setCatLibelle($cat);
+        if(!$categorie->getObjets()->contains($objetApidae)) {
             //Ajout de lobjet à la catégorie :
             $categorie->addObjet($objetApidae);
-            $this->em->persist($categorie);
-            $this->em->flush();
-        } else if($this->em->getRepository(ObjetApidae::class)->findOneByIdObj($objetApidae->getIdObjet()) != $objetApidae){
-            //Associe la catégorie à l'objet
-            $objetApidae->addCategorie($catExist);
-            $catExist->addObjet($objetApidae);
-            $this->em->merge($catExist);
+        }
+        if(!$objetApidae->getCategories()->contains($categorie)) {
+            //Associe la catégorie à l'objet :
+            $objetApidae->addCategorie($categorie);
         }
     }
 
@@ -834,6 +807,47 @@ class Traitement extends ContainerAwareCommand {
             $this->em->persist($equipement);
             $this->em->merge($objetApidae);
         }
+    }
+
+    private function updateTypeCLient($typeClient, $i, $tab, $languesSite, $objetApidae, $update) {
+        $typeClient->setTypId($tab->typesClientele[$i]->id);
+        if(isset($tab->typesClientele[$i])) {
+            $v = $this->traitementReference($tab->typesClientele[$i]->elementReferenceType, $tab->typesClientele[$i]->id);
+            if($v != false) {
+                $typeClient->setTypLibelle($this->traitementLibelleLangues($languesSite, $v));
+                if(isset($v->familleCritere)) {
+                    $v = $this->traitementReference($v->familleCritere->elementReferenceType, $v->familleCritere->id);
+                    if($v != null) {
+                        $typeClient->setFamilleCritere(($this->traitementLibelleLangues($languesSite, $v)));
+                    } else {
+                        $typeClient->setFamilleCritere(null);
+                    }
+                }
+            }
+        }
+        if(isset($tab->typesClientele[$i]->tailleGroupeMax)) {
+            $typeClient->setMax($tab->typesClientele[$i]->tailleGroupeMax);
+        } else {
+            $typeClient->setMax(null);
+        }
+        if(isset($tab->typesClientele[$i]->tailleGroupeMin)) {
+            $typeClient->setMin($tab->typesClientele[$i]->tailleGroupeMin);
+        } else {
+            $typeClient->setMin(null);
+        }
+        if(!$typeClient->getObjetsApidae()->contains($objetApidae)) {
+            //Associe lobjet au type de public
+            $typeClient->addObjetApidae($objetApidae);
+        }
+        if(!$objetApidae->getTypesPublic()->contains($typeClient)) {
+            //Ajoute le type de client au dico de la traduction :
+            $objetApidae->addTypePublic($typeClient);
+        }
+        if($update) {
+            $this->em->merge($typeClient);
+        }
+        $this->em->persist($typeClient);
+        //$this->em->flush();
     }
 
 }

@@ -119,4 +119,6 @@ class Categorie
         $this->catId = $catId;
     }
 
+
+
 }
