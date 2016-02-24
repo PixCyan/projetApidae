@@ -3,6 +3,7 @@
 namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Langue
@@ -57,7 +58,7 @@ class Langue
 
 
 
-    public function _construct() {
+    public function __construct() {
         //initialisation des collections
         $this->traductions = new ArrayCollection();
     }

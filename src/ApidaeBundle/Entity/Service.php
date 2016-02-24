@@ -3,6 +3,7 @@
 namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Service
@@ -61,7 +62,7 @@ class Service
      */
     private $objetsApidae;
 
-    public function _construct() {
+    public function __construct() {
         //initialisation des collections
         $this->objetsApidae = new ArrayCollection();
     }

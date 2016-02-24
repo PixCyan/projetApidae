@@ -23,6 +23,10 @@ use ApidaeBundle\Entity\TypePublic;
 
 define('SIT_LANGUE', 'Fr');
 
+/**
+ * @Doctrine\ORM\Mapping\Entity
+ * @Doctrine\ORM\Mapping\Table(name="traitement")
+ */
 class Traitement extends ContainerAwareCommand {
     private $em;
     private $communes;
@@ -40,7 +44,6 @@ class Traitement extends ContainerAwareCommand {
         $this->em = $this->getApplication()->getKernel()->getContainer()->get('doctrine')->getManager();
         $languesSite[0] = "Français";
         $languesSite[1] = "English";
-
         //Récupération fichiers :
        try {
            $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
@@ -210,7 +213,6 @@ class Traitement extends ContainerAwareCommand {
                 $this->updateTraduction($traduction, $data, $chaineLangue, $langueTrad, $objetApidae, true);
             } else {
                 $traduction = new TraductionObjetApidae();
-                print("No trad");
                 $this->updateTraduction($traduction, $data, $chaineLangue, $langueTrad, $objetApidae, false);
             }
             $i++;
@@ -346,7 +348,6 @@ class Traitement extends ContainerAwareCommand {
                 } else {
                     $equipement->setEquInfosSup(null);
                 }
-
                 if($this->em->getRepository(Equipement::class)->findOneByEquId(($tab->equipements[$i]->id)) != null) {
                     $this->updateEquipement($equipement, $objetApidae, true);
                 } else {
@@ -427,7 +428,7 @@ class Traitement extends ContainerAwareCommand {
             foreach($data->$chaineInformations->labels as $v) {
                 $label = $this->em->getRepository(LabelQualite::class)->findOneByLabId($v->id);
                 if($label != null) {
-                    if($objetApidae->getLabelsQualite() != null && !$objetApidae->getLabelsQualite()->contains($label)) {
+                    if(!$objetApidae->getLabelsQualite()->contains($label)) {
                         print("Obj :".$objetApidae->getId()."\n");
                         $objetApidae->addLabelQualite($label);
                         $label->addObjetApidae($objetApidae);
@@ -707,7 +708,7 @@ class Traitement extends ContainerAwareCommand {
         }
 
         $multi->setObjetApidae($objetApidae);
-        if(!is_null($objetApidae->getMultimedias()) && !$objetApidae->getMultimedias()->contains($multi)) {
+        if(!$objetApidae->getMultimedias()->contains($multi)) {
             $objetApidae->addMultimedia($multi);
         }
         if($update) {
@@ -780,10 +781,10 @@ class Traitement extends ContainerAwareCommand {
         $objetApidae->setObjSuggestion(false);
         $objetApidae->setObjDateSuggestion(null);
         $objetApidae->setObjTypeApidae($data->type);
-        if(!is_null($selectionApidae->getObjets()) && !$selectionApidae->getObjets()->contains($objetApidae)) {
+        if(!$selectionApidae->getObjets()->contains($objetApidae)) {
             $selectionApidae->addObjetApidae($objetApidae);
         }
-        if(!is_null($objetApidae->getSelectionsApidae()) && !$objetApidae->getSelectionsApidae()->contains($selectionApidae)) {
+        if(!$objetApidae->getSelectionsApidae($selectionApidae)) {
             $objetApidae->addSelectionApidae($selectionApidae);
         }
         if($update == true) {
@@ -793,17 +794,17 @@ class Traitement extends ContainerAwareCommand {
         } else {
             $objetApidae->setIdObjet($data->id);
             $this->em->persist($objetApidae);
-            if(!is_null($objetApidae->getSelectionsApidae()) && !$selectionApidae->getObjets()->contains($objetApidae)) {
+            if(!$selectionApidae->getObjets()->contains($objetApidae)) {
                 $this->em->merge($selectionApidae);
             }
         }
     }
     private function updateService($service, $objetApidae, $update) {
-        if(!is_null($service->getObjetsApidae()) && !$service->getObjetsApidae()->contains($objetApidae)) {
+        if(!$service->getObjetsApidae()->contains($objetApidae)) {
             //Associe le service à la traduction :
             $service->addObjetApidae($objetApidae);
         }
-        if(!is_null($objetApidae->getServices()) && !$objetApidae->getServices()->contains($service)) {
+        if(!$objetApidae->getServices()->contains($service)) {
             //Ajoute le service au dico de la traduction :
             $objetApidae->addService($service);
         }
@@ -818,11 +819,11 @@ class Traitement extends ContainerAwareCommand {
 
 
     private function updateEquipement($equipement, $objetApidae, $update) {
-        if(!is_null($equipement->getObjetsApidae()) && !$equipement->getObjetsApidae()->contains($objetApidae) ) {
+        if(!$equipement->getObjetsApidae()->contains($objetApidae) ) {
             //Associe l'équipement à la traduction
             $equipement->addObjetApidae($objetApidae);
         }
-        if(!is_null($objetApidae->getEquipements()) && !$objetApidae->getEquipements()->contains($objetApidae)) {
+        if(!$objetApidae->getEquipements()->contains($equipement)) {
             //Ajoute l'équipement au dico de la traduction :
             $objetApidae->addEquipement($equipement);
         }

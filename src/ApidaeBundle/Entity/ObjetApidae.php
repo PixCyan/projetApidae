@@ -3,6 +3,7 @@
 namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * ObjetApidae
@@ -175,13 +176,13 @@ class ObjetApidae
      */
     private $traductions;
 
-    public function _construct() {
+    public function __construct() {
         //initialisation des collections
         $this->traductions = new ArrayCollection();
         $this->objetsLies = new ArrayCollection();
         $this->categories = new ArrayCollection();
         $this->paniers = new ArrayCollection();
-        $this->selectionsApidae = new ArrayColleciton();
+        $this->selectionsApidae = new ArrayCollection();
         $this->labelsQualite = new ArrayCollection();
         //Ajout
         $this->equipements = new ArrayCollection();

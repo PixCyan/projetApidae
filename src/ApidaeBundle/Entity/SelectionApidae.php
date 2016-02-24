@@ -3,6 +3,7 @@
 namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * SelectionApidae
@@ -42,7 +43,7 @@ class SelectionApidae
     private $objets;
 
 
-    public function _construct() {
+    public function __construct() {
         $this->objets = new ArrayCollection();
     }
 
