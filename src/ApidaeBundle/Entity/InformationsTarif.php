@@ -21,7 +21,6 @@ class InformationsTarif
      */
     private $id;
 
-
     /**
      * @var string
      *
@@ -169,6 +168,5 @@ class InformationsTarif
     {
         $this->tarifType = $tarifType;
     }
-
 }
 

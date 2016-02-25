@@ -176,6 +176,28 @@ class ObjetApidae
      */
     private $traductions;
 
+    //----- add
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="nbMaxCouverts", type="integer", length=255, nullable=true)
+     */
+    private $nbMaxCouverts;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="nbCouvertsTerrasse", type="integer", nullable=true)
+     */
+    private $nbCouvertsTerrasse;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="nbSalles", type="integer", nullable=true)
+     */
+    private $nbSalles;
+
     public function __construct() {
         //initialisation des collections
         $this->traductions = new ArrayCollection();
@@ -237,7 +259,7 @@ class ObjetApidae
     }
 
     /**
-     * Ajoute/lie une categorie à l'objet 
+     * Ajoute/lie une categorie à l'objet
      */
     public function addCategorie(Categorie $categorie) {
         $this->categories[] = $categorie;
@@ -245,14 +267,14 @@ class ObjetApidae
     }
 
     /**
-     * Supprime une categorie à l'objet 
+     * Supprime une categorie à l'objet
      */
     public function removeCategorie(Categorie $categorie) {
         $this->categories->removeElement($categorie);
     }
 
     /**
-     * Ajoute/lie un panier à l'objet 
+     * Ajoute/lie un panier à l'objet
      */
     public function addPanier(Panier $panier) {
         $this->paniers[] = $panier;
@@ -260,14 +282,14 @@ class ObjetApidae
     }
 
     /**
-     * Supprime un panier à l'objet 
+     * Supprime un panier à l'objet
      */
     public function removePanier(Panier $panier) {
         $this->paniers->removeElement($panier);
     }
 
     /**
-     * Ajoute/lie une sélection d'objets (définie sur le site) à l'objet 
+     * Ajoute/lie une sélection d'objets (définie sur le site) à l'objet
      */
     public function addSelectionApidae(SelectionApidae $selection) {
         $this->selectionsApidae[] = $selection;
@@ -275,7 +297,7 @@ class ObjetApidae
     }
 
     /**
-     * Supprime une sélection d'objets (définie sur le site) à l'objet 
+     * Supprime une sélection d'objets (définie sur le site) à l'objet
      */
     public function removeSelectionApidae(SelectionApidae $selection) {
         $this->selectionsApidae->removeElement($selection);
@@ -797,7 +819,80 @@ class ObjetApidae
         $this->nom = $nom;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getTarifs()
+    {
+        return $this->tarifs;
+    }
 
+    /**
+     * @param mixed $tarifs
+     */
+    public function setTarifs($tarifs)
+    {
+        $this->tarifs = $tarifs;
+    }
 
+    /**
+     * @return int
+     */
+    public function getNbMaxCouverts()
+    {
+        return $this->nbMaxCouverts;
+    }
+
+    /**
+     * @param int $nbMaxCouverts
+     */
+    public function setNbMaxCouverts($nbMaxCouverts)
+    {
+        $this->nbMaxCouverts = $nbMaxCouverts;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNbCouvertsTerrasse()
+    {
+        return $this->nbCouvertsTerrasse;
+    }
+
+    /**
+     * @param int $nbCouvertsTerrasse
+     */
+    public function setNbCouvertsTerrasse($nbCouvertsTerrasse)
+    {
+        $this->nbCouvertsTerrasse = $nbCouvertsTerrasse;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNbSalles()
+    {
+        return $this->nbSalles;
+    }
+
+    /**
+     * @param int $nbSalles
+     */
+    public function setNbSalles($nbSalles)
+    {
+        $this->nbSalles = $nbSalles;
+    }
+
+    public  function setCapacite($tab) {
+        if(isset($tab->nombreMaximumCouverts)) {
+            $this->setNbMaxCouverts($tab->nombreMaximumCouverts);
+        }
+        if(isset($tab->nombreCouvertsTerrasse)) {
+            $this->setNbCouvertsTerrasse($tab->nombreCouvertsTerrasse);
+        }
+        if(isset($tab->nombreSalles)) {
+            $this->setNbSalles($tab->nombreSalles);
+        }
+    }
 }
 

@@ -88,7 +88,10 @@ class TraitementController extends Controller
 		//-------------------- ObjetApidae ----------------------
 		$objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($data->id);
 		if($objetApidae == null) {
-			$objetApidae = new ObjetApidae();
+			//TODO test restautant
+			if($selectionApidae->libelle->libelleFr == "Restaurants") {
+				$objetApidae = new Restaurant();
+			}
 			$this->updateObjetApidae($objetApidae, $data, $selectionApidae, $languesSite, false);
 		} else {
 			//update de l'objet
@@ -522,8 +525,10 @@ class TraitementController extends Controller
 
 		//-------------------- Capacite ----------------------
 		//TODO capacite
-
-
+		//Test
+		if(isset($data->$chaineInformations->capacite)) {
+			$objetApidae->setCapacite($data->$chaineInformations->capacite);
+		}
 
 		//-------------------- Duree ----------------------
 		//TODO duree

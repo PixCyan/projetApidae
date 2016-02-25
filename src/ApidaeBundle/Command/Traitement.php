@@ -20,7 +20,6 @@ use ApidaeBundle\Entity\Equipement;
 use ApidaeBundle\Entity\Service;
 use ApidaeBundle\Entity\MoyenCommunication;
 use ApidaeBundle\Entity\Multimedia;
-use ApidaeBundle\Entity\Tarif;
 use ApidaeBundle\Entity\Ouverture;
 use ApidaeBundle\Entity\TypePublic;
 
@@ -437,8 +436,6 @@ class Traitement extends ContainerAwareCommand {
 
         //-------------------- Tarifs ----------------------
         if(isset($data->descriptionTarif)) {
-        //TODO changer infor tarif et tarifType
-
             $tab = $data->descriptionTarif;
             if(isset($tab->periodes[0]->tarifs)) {
                 $tarifs = $tab->periodes[0];
@@ -455,42 +452,7 @@ class Traitement extends ContainerAwareCommand {
                             $tarifType->setOrdre($v->ordre);
                         }
                     }
-                    //TODO terminer
                     $this->traitementInfosTarif($tarifType,$tarifs->tarifs[$i], $tab, $objetApidae, $update);
-
-
-
-
-                    /*$tarif = new Tarif();
-                    $tarif->setTarDevise($tarifs->tarifs[$i]->devise);
-                    if(isset($tarifs->tarifs[$i]->maximum)) {
-                        $tarif->setTarMax($tarifs->tarifs[$i]->maximum);
-                    } else {
-                        $tarif->setTarMax(null);
-                    }
-                    if(isset($tarifs->tarifs[$i]->minimum)) {
-                        $tarif->setTarMin($tarifs->tarifs[$i]->minimum);
-                    } else {
-                        $tarif->setTarMin(null);
-                    }
-                    if(isset($tarifs->tarifs[$i]->type->$chaineLangue)) {
-                        $tarif->setTarLibelle($tarifs->tarifs[$i]->type->$chaineLangue);
-                    } else {
-                        $v = $this->traitementReference($tarifs->tarifs[$i]->type->elementReferenceType, $tarifs->tarifs[$i]->type->id);
-                        if($v != false) {
-                            $tarif->setTarLibelle($v->$chaineLangue);
-                        }
-                    }
-                    if(isset($tab->indicationTarif)) {
-                        $tarif->setTarIndication($tab->indicationTarif);
-                    } else {
-                        $tarif->setTarIndication(null);
-                    }
-                    //Associe le tarif à la traduction :
-                    $tarif->setTraduction($traduction);
-                    //Ajoute le tarif à la traduction :
-                    $traduction->addTarif($tarif);
-                    $this->em->persist($tarif);*/
                 }
             }
         }
@@ -536,14 +498,9 @@ class Traitement extends ContainerAwareCommand {
         //-------------------- Capacite ----------------------
         //TODO capacite
         //Test
-        $resto = new Restaurant();
-        $resto->setNbCouvertsTerrasse(1);
-        $resto->setNbMaxCouverts(5);
-        $resto->setNbSalles(2);
-        $this->em->persist($resto);
-
-
-
+        if(isset($data->$chaineInformations->capacite)) {
+            $objetApidae->setCapacite($data->$chaineInformations->capacite);
+        }
         //-------------------- Duree ----------------------
         //TODO duree
 

@@ -177,7 +177,7 @@ class TraductionObjetApidae
     /**
      * @param mixed $objet
      */
-    public function setObjet($objet)
+    public function setObjet(ObjetApidae $objet)
     {
         $this->objet = $objet;
     }
