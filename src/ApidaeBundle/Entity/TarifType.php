@@ -2,6 +2,7 @@
 
 namespace ApidaeBundle\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -47,6 +48,26 @@ class TarifType
      * @ORM\JoinColumn(nullable=false)
      */
     private $infosTarif;
+
+    public function __construct() {
+        $this->infosTarif = new ArrayCollection();
+    }
+
+    /**
+     * Ajoute/lie une infoTarif
+     */
+    public function addInfoTarif(InformationsTarif $t) {
+        $this->infosTarif[] = $t;
+    }
+
+    /**
+     * Supprime une infoTarif
+     */
+    public function removeInfoTarif(InformationsTarif $t) {
+        $this->infosTarif->removeElement($t);
+    }
+
+
 
     //---------------------- Getter & Setter ----------------------//
 
@@ -114,5 +135,20 @@ class TarifType
         $this->infosTarif = $infosTarif;
     }
 
+    /**
+     * @return int
+     */
+    public function getOrdre()
+    {
+        return $this->ordre;
+    }
+
+    /**
+     * @param int $ordre
+     */
+    public function setOrdre($ordre)
+    {
+        $this->ordre = $ordre;
+    }
 }
 

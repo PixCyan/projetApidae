@@ -362,7 +362,7 @@ class ObjetApidae
     /**
      * Ajoute/lie un tarif à l'objet
      */
-    public function addTarif(Tarif $tarif) {
+    public function addInfoTarif(InformationsTarif $tarif) {
         $this->tarifs[] = $tarif;
 
     }
@@ -370,7 +370,7 @@ class ObjetApidae
     /**
      * Supprime un tarif lié à l'objet
      */
-    public function removeTarif(Tarif $tarif) {
+    public function removeInfoTarif(InformationsTarif $tarif) {
         $this->tarifs->removeElement($tarif);
     }
 
@@ -744,17 +744,9 @@ class ObjetApidae
     /**
      * @return mixed
      */
-    public function getTarifs()
+    public function getInfosTarif()
     {
         return $this->tarifs;
-    }
-
-    /**
-     * @param mixed $tarifs
-     */
-    public function setTarifs($tarifs)
-    {
-        $this->tarifs = $tarifs;
     }
 
     /**

@@ -2,7 +2,9 @@
 
 namespace ApidaeBundle\Command;
 
+use ApidaeBundle\Entity\InformationsTarif;
 use ApidaeBundle\Entity\ObjetLie;
+use ApidaeBundle\Entity\Restaurant;
 use ApidaeBundle\Entity\TarifType;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -442,15 +444,19 @@ class Traitement extends ContainerAwareCommand {
                 $tarifs = $tab->periodes[0];
                 for($i = 0; $i < count($tab->periodes[0]->tarifs); $i++) {
                     $tarifType = $this->em->getRepository(TarifType::class)->findOneByIdTarif($tarifs->tarifs[$i]->type->id);
+                    $update = true;
                     if($tarifType == null) {
+                        $update = false;
                         $tarifType = new TarifType();
                         $v = $this->traitementReference($tarifs->tarifs[$i]->type->elementReferenceType, $tarifs->tarifs[$i]->type->id);
                         if($v != false) {
                             $tarifType->setIdTarif($v->id);
                             $tarifType->setTarLibelle($this->traitementLibelleLangues($languesSite, $v));
-                            //TODO terminer
+                            $tarifType->setOrdre($v->ordre);
                         }
                     }
+                    //TODO terminer
+                    $this->traitementInfosTarif($tarifType,$tarifs->tarifs[$i], $tab, $objetApidae, $update);
 
 
 
@@ -529,6 +535,12 @@ class Traitement extends ContainerAwareCommand {
 
         //-------------------- Capacite ----------------------
         //TODO capacite
+        //Test
+        $resto = new Restaurant();
+        $resto->setNbCouvertsTerrasse(1);
+        $resto->setNbMaxCouverts(5);
+        $resto->setNbSalles(2);
+        $this->em->persist($resto);
 
 
 
@@ -861,6 +873,48 @@ class Traitement extends ContainerAwareCommand {
         }
         $this->em->persist($typeClient);
         //$this->em->flush();
+    }
+
+    public function traitementInfosTarif($tarifType, $tarif, $tab, $objetApidae, $update) {
+        $infosTarifs = $this->em->getRepository(InformationsTarif::class)->findOneBy(
+            array("objetApidae"=> $objetApidae, "tarifType" => $tarifType));
+        if($infosTarifs == null) {
+            $infosTarifs = new InformationsTarif();
+        }
+        $infosTarifs->setTarDevise($tarif->devise);
+        if(isset($tarif->maximum)) {
+            $infosTarifs->setTarMax($tarif->maximum);
+        } else {
+            $infosTarifs->setTarMax(null);
+        }
+        if(isset($tarif->minimum)) {
+            $infosTarifs->setTarMin($tarif->minimum);
+        } else {
+            $infosTarifs->setTarMin(null);
+        }
+
+        if(isset($tab->indicationTarif)) {
+            $infosTarifs->setTarIndication($tab->indicationTarif);
+        } else {
+            $infosTarifs->setTarIndication(null);
+        }
+        $infosTarifs->setObjetApidae($objetApidae);
+        $infosTarifs->setTarifType($tarifType);
+
+        if(!$tarifType->getInfosTarif()->contains($infosTarifs)) {
+            $tarifType->addInfoTarif($infosTarifs);
+        }
+        if(!$objetApidae->getInfosTarif()->contains($infosTarifs)) {
+            $objetApidae->addInfoTarif($infosTarifs);
+        }
+
+        if($update) {
+            $this->em->merge($tarifType);
+            $this->em->merge($objetApidae);
+        } else {
+            $this->em->persist($tarifType);
+            $this->em->merge($objetApidae);
+        }
     }
 
 }

@@ -153,5 +153,22 @@ class InformationsTarif
     {
         $this->objetApidae = $objetApidae;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTarifType()
+    {
+        return $this->tarifType;
+    }
+
+    /**
+     * @param mixed $tarifType
+     */
+    public function setTarifType($tarifType)
+    {
+        $this->tarifType = $tarifType;
+    }
+
 }
 
