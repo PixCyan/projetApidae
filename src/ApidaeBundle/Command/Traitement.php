@@ -437,6 +437,15 @@ class Traitement extends ContainerAwareCommand {
         //-------------------- Tarifs ----------------------
         if(isset($data->descriptionTarif)) {
             $tab = $data->descriptionTarif;
+            if(isset($data->descriptionTarif)) {
+                $tab = $data->descriptionTarif;
+                if (isset($tab->tarifsEnClair)) {
+                    if (isset($tab->tarifsEnClair)) {
+                        $lib = $this->traitementLibelleLangues($languesSite, $tab->tarifsEnClair);
+                        $objetApidae->setTarifEnClair($lib);
+                    }
+                }
+            }
             if(isset($tab->periodes[0]->tarifs)) {
                 $tarifs = $tab->periodes[0];
                 for($i = 0; $i < count($tab->periodes[0]->tarifs); $i++) {
@@ -467,7 +476,13 @@ class Traitement extends ContainerAwareCommand {
             if(isset($data->ouverture->periodesOuvertures)) {
                 $tab = $data->ouverture;
                 for($i = 0; $i < count($tab->periodesOuvertures); $i++) {
-                    $ouverture = new Ouverture();
+                    $ouverture = $this->em->getRepository(Ouverture::class)->findOneByIdOuverture($tab->periodesOuvertures[$i]->identifiant);
+                    $update = true;
+                    if($ouverture == null) {
+                        $update = false;
+                        $ouverture = new Ouverture();
+                    }
+                    $ouverture->setIdOuverture($tab->periodesOuvertures[$i]->identifiant);
                     $ouverture->setOuvDateDebut($tab->periodesOuvertures[$i]->dateDebut);
                     $ouverture->setOuvDateFin($tab->periodesOuvertures[$i]->dateFin);
                     if(isset($tab->periodesOuvertures[$i]->complementHoraire)) {
@@ -475,9 +490,15 @@ class Traitement extends ContainerAwareCommand {
                     }
                     //Associe l'ouverture à la traduction :
                     $ouverture->setObjetApidae($objetApidae);
-                    //Ajoute l'ouverture au dico de la traduction :
-                    $objetApidae->addOuverture($ouverture);
-                    $this->em->persist($ouverture);
+                    if(!$objetApidae->getOuvertures()->contains($ouverture)) {
+                        //Ajoute l'ouverture au dico de la traduction :
+                        $objetApidae->addOuverture($ouverture);
+                    }
+                    if($update) {
+                        $this->em->merge($ouverture);
+                    } else {
+                        $this->em->persist($ouverture);
+                    }
                 }
             }
         }
@@ -724,15 +745,6 @@ class Traitement extends ContainerAwareCommand {
         } else {
             $objetApidae->setObjGeolocalisation(null);
         }
-        if(isset($data->descriptionTarif)) {
-            $tab = $data->descriptionTarif;
-            if (isset($tab->tarifsEnClair)) {
-                if (isset($tab->tarifsEnClair)) {
-                    $lib = $this->traitementLibelleLangues($languesSite, $tab->tarifsEnClair);
-                    $objetApidae->setTarifEnClair($lib);
-                }
-            }
-        }
         $objetApidae->setObjSuggestion(false);
         $objetApidae->setObjDateSuggestion(null);
         $objetApidae->setObjTypeApidae($data->type);
@@ -742,7 +754,7 @@ class Traitement extends ContainerAwareCommand {
         if(!$objetApidae->getSelectionsApidae($selectionApidae)) {
             $objetApidae->addSelectionApidae($selectionApidae);
         }
-        if($update == true) {
+        if($update) {
             $this->em->merge($objetApidae);
             $this->em->merge($selectionApidae);
 

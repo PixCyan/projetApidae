@@ -22,6 +22,13 @@ class Ouverture
     private $id;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="idOuverture", type="integer", length=255)
+     */
+    private $idOuverture;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="ouvDateDebut", type="string", length=255)
@@ -148,7 +155,20 @@ class Ouverture
         $this->objetApidae = $objetApidae;
     }
 
+    /**
+     * @return int
+     */
+    public function getIdOuverture()
+    {
+        return $this->idOuverture;
+    }
 
-
+    /**
+     * @param int $idOuverture
+     */
+    public function setIdOuverture($idOuverture)
+    {
+        $this->idOuverture = $idOuverture;
+    }
 }
 
