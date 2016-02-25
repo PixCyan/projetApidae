@@ -1,24 +1,4 @@
-<!DOCTYPE html>
-<head>
-    {% block head %}
-        <!-- completer -->
-        <link rel="stylesheet" href="{{ asset('css/style.css') }}" type="text/css"/>
+{% extends "ApidaeBundle:commun:template.html.twig" %}
+{% block content %}
 
-    {% endblock %}
-</head>
-<html>
-    <head>
-        <title>Accueil</title>
-    </head>
-    {% block header %}
-
-    {% endblock %}
-    <body>
-    {% block content %}
-
-    {% endblock %}
-    </body>
-    {% block footer %}
-
-    {% endblock %}
-</html>
+{% endblock %}

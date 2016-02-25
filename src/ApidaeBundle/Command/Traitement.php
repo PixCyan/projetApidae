@@ -4,7 +4,6 @@ namespace ApidaeBundle\Command;
 
 use ApidaeBundle\Entity\InformationsTarif;
 use ApidaeBundle\Entity\ObjetLie;
-use ApidaeBundle\Entity\Restaurant;
 use ApidaeBundle\Entity\TarifType;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,6 +46,14 @@ class Traitement extends ContainerAwareCommand {
         $languesSite[0] = "Français";
         $languesSite[1] = "English";
         //Récupération fichiers :
+        //TESTS
+        $this->notificationMail();
+
+
+        //FIN TESTS
+
+
+
        try {
            $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
            $this->communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
@@ -67,6 +74,11 @@ class Traitement extends ContainerAwareCommand {
                }
                foreach ($value->objetsTouristiques as $val) {
                    print($val->id . "\n");
+                   //TEST
+                   $logs = fopen('logTest.txt', 'r+');
+                   fputs($logs, $val->id . "\n");
+                   fclose($logs);
+                   //FIN TEST
                    //=> $data = aller chercher le bon fichier dans objetsModifies
                    $data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
                    //Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
@@ -397,7 +409,6 @@ class Traitement extends ContainerAwareCommand {
                 $label = $this->em->getRepository(LabelQualite::class)->findOneByLabId($v->id);
                 if($label != null) {
                     if(!$objetApidae->getLabelsQualite()->contains($label)) {
-                        print("Obj :".$objetApidae->getId()."\n");
                         $objetApidae->addLabelQualite($label);
                         $label->addObjetApidae($objetApidae);
                         $this->em->merge($objetApidae);
@@ -517,8 +528,6 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //-------------------- Capacite ----------------------
-        //TODO capacite
-        //Test
         if(isset($data->$chaineInformations->capacite)) {
             $objetApidae->setCapacite($data->$chaineInformations->capacite);
         }
@@ -612,7 +621,7 @@ class Traitement extends ContainerAwareCommand {
             $categorie = new Categorie();
             $this->updateCategorie($cat, $categorie, $id, $objetApidae);
             $this->em->persist($categorie);
-            //$this->em->flush();
+            $this->em->flush();
         } else {
             $this->updateCategorie($cat, $catExist, $id, $objetApidae);
             $this->em->merge($catExist);
@@ -714,19 +723,24 @@ class Traitement extends ContainerAwareCommand {
                 $traduction->setTraDescriptionLongue(null);
             }
         }
+        if(!$objetApidae->getTraductions()->contains($traduction)) {
+            //Associe la traduction à l'objet
+            $objetApidae->addTraduction($traduction);
+        }
+        if(!$langueTrad->getTraductions()->contains($traduction)) {
+            //AJoute la traduction au dico de la langue
+            $langueTrad->addTraduction($traduction);
+        }
+
         if($update) {
             $this->em->merge($traduction);
         } else {
             $traduction->setTraDescriptionPersonnalisee(null);
             $traduction->setTraBonsPlans(null);
             $traduction->setTraInfosSup(null);
-
             //Associe la langue à la traduction
             $traduction->setLangue($langueTrad);
-            //AJoute la traduction au dico de la langue
-            $langueTrad->addTraduction($traduction);
-            //Associe la traduction à l'objet
-            $objetApidae->addTraduction($traduction);
+
             //Associe l'objet à la traduction :
             $traduction->setObjet($objetApidae);
             $this->em->persist($traduction);
@@ -884,6 +898,20 @@ class Traitement extends ContainerAwareCommand {
             $this->em->persist($tarifType);
             $this->em->merge($objetApidae);
         }
+    }
+
+    private function notificationMail() {
+        $message = \Swift_Message::newInstance()
+            ->setSubject('[ERROR] Récupération du fichier de données Apidae')
+            ->setFrom('send@example.com')
+            ->setTo('nadiaraffenne@gmail.com')
+            ->setBody('Test',
+                'text/html'
+            )
+        ;
+        $this->getContainer()->get('mailer')->send($message);
+
+        //return $this->render(...);
     }
 
 }
