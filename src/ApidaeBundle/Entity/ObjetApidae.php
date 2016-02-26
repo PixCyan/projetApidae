@@ -4,14 +4,18 @@ namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\DiscriminatorColumn;
+use Doctrine\ORM\Mapping\DiscriminatorMap;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\InheritanceType;
 
 /**
- * ObjetApidae
- *
- * @ORM\Table(name="objet_apidae")
- * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\ObjetApidaeRepository")
+ * @Entity
+ * @InheritanceType("SINGLE_TABLE")
+ * @DiscriminatorColumn(name="discr", type="string")
+ * @DiscriminatorMap({"objetApidae" = "ObjetApidae", "restaurant" = "Restaurant", "hebergement" = "Hebergement"})
  */
-class ObjetApidae
+abstract class ObjetApidae
 {
     /**
      * @var int
@@ -20,97 +24,97 @@ class ObjetApidae
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var int
      *
      * @ORM\Column(name="id_obj", type="integer", unique=true)
      */
-    private $idObj;
+    protected $idObj;
 
     /**
      * @var string
      *
      * @ORM\Column(name="obj_Etoile", type="string", length=255, nullable=true)
      */
-    private $objEtoile;
+    protected $objEtoile;
 
     /**
      * @var string
      *
      * @ORM\Column(name="obj_TypeApidae", type="string", length=255)
      */
-    private $objTypeApidae;
+    protected $objTypeApidae;
 
     /**
      * @var string
      *
      * @ORM\Column(name="obj_Geolocalisation", type="string", length=255, nullable=true)
      */
-    private $objGeolocalisation;
+    protected $objGeolocalisation;
 
     /**
      * @var bool
      *
      * @ORM\Column(name="obj_Suggestion", type="boolean")
      */
-    private $objSuggestion;
+    protected $objSuggestion;
 
     /**
      * @var \DateTime
      *
      * @ORM\Column(name="obj_DateSuggestion", type="datetime", nullable=true)
      */
-    private $objDateSuggestion;
+    protected $objDateSuggestion;
 
     /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\ObjetLie",  mappedBy="objet", cascade={"persist"})
      */
-    private $objetsLies;
+    protected $objetsLies;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHascategories")
      */
-    private $categories;
+    protected $categories;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Panier", mappedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasPanier")
      */
-    private $paniers;
+    protected $paniers;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\SelectionApidae", mappedBy="objets", cascade={"merge"})
      * @ORM\JoinTable(name="objetHasSelection")
      */
-    private $selectionsApidae;
+    protected $selectionsApidae;
 
     /**
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\Commune", inversedBy="objetsApidae", cascade={"persist"})
      */
-    private $commune;
+    protected $commune;
 
     /**
      * @var string
      *
      * @ORM\Column(name="adresse", type="string", length=255)
      */
-    private $adresse;
+    protected $adresse;
 
     /**
      * @var string
      *
      * @ORM\Column(name="codePostal", type="string", length=255)
      */
-    private $codePostal;
+    protected $codePostal;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\LabelQualite", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasLabelQualite")
      */
-    private $labelsQualite;
+    protected $labelsQualite;
 
     //----------------------------------------- Changements trad -----------------------------------------------------//
     /**
@@ -118,85 +122,66 @@ class ObjetApidae
      *
      * @ORM\Column(name="obj_Nom", type="string", length=255, nullable=true)
      */
-    private $nom;
+    protected $nom;
 
     /**
      * @var string
      *
      * @ORM\Column(name="obj_DateEnClair", type="string", length=255, nullable=true)
      */
-    private $dateEnClair;
+    protected $dateEnClair;
 
     /**
      * @var string
      *
      * @ORM\Column(name="obj_TarifEnClair", type="string", length=255, nullable=true)
      */
-    private $tarifEnClair;
+    protected $tarifEnClair;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Equipement", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasEquipements")
      */
-    private $equipements;
+    protected $equipements;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Service", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasServices")
      */
-    private $services;
+    protected $services;
 
     /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\MoyenCommunication", mappedBy="objetApidae", cascade={"persist"})
      */
-    private $moyensCommunications;
+    protected $moyensCommunications;
 
     /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Multimedia", mappedBy="objetApidae", cascade={"persist"})
      */
-    private $multimedias;
+    protected $multimedias;
 
     /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\InformationsTarif", mappedBy="objetApidae", cascade={"persist"})
      */
-    private $tarifs;
+    protected $tarifs;
 
     /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Ouverture", mappedBy="objetApidae", cascade={"persist"})
      */
-    private $ouvertures;
+    protected $ouvertures;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TypePublic", mappedBy="objetsApidae", cascade={"persist"})
      */
-    private $typesPublic;
+    protected $typesPublic;
 
     /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="objet", cascade={"persist"})
      */
-    private $traductions;
+    protected $traductions;
 
     //----- add
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="nbMaxCouverts", type="integer", length=255, nullable=true)
-     */
-    private $nbMaxCouverts;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="nbCouvertsTerrasse", type="integer", nullable=true)
-     */
-    private $nbCouvertsTerrasse;
-
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="nbSalles", type="integer", nullable=true)
-     */
-    private $nbSalles;
+    //...
 
     public function __construct() {
         //initialisation des collections
@@ -835,64 +820,6 @@ class ObjetApidae
         $this->tarifs = $tarifs;
     }
 
-    /**
-     * @return int
-     */
-    public function getNbMaxCouverts()
-    {
-        return $this->nbMaxCouverts;
-    }
-
-    /**
-     * @param int $nbMaxCouverts
-     */
-    public function setNbMaxCouverts($nbMaxCouverts)
-    {
-        $this->nbMaxCouverts = $nbMaxCouverts;
-    }
-
-    /**
-     * @return int
-     */
-    public function getNbCouvertsTerrasse()
-    {
-        return $this->nbCouvertsTerrasse;
-    }
-
-    /**
-     * @param int $nbCouvertsTerrasse
-     */
-    public function setNbCouvertsTerrasse($nbCouvertsTerrasse)
-    {
-        $this->nbCouvertsTerrasse = $nbCouvertsTerrasse;
-    }
-
-    /**
-     * @return int
-     */
-    public function getNbSalles()
-    {
-        return $this->nbSalles;
-    }
-
-    /**
-     * @param int $nbSalles
-     */
-    public function setNbSalles($nbSalles)
-    {
-        $this->nbSalles = $nbSalles;
-    }
-
-    public  function setCapacite($tab) {
-        if(isset($tab->nombreMaximumCouverts)) {
-            $this->setNbMaxCouverts($tab->nombreMaximumCouverts);
-        }
-        if(isset($tab->nombreCouvertsTerrasse)) {
-            $this->setNbCouvertsTerrasse($tab->nombreCouvertsTerrasse);
-        }
-        if(isset($tab->nombreSalles)) {
-            $this->setNbSalles($tab->nombreSalles);
-        }
-    }
+    public abstract function setCapacite($tab);
 }
 

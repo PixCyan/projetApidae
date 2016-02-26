@@ -2,14 +2,17 @@
 
 namespace ApidaeBundle\Command;
 
+use ApidaeBundle\Entity\Activite;
+use ApidaeBundle\Entity\Evenement;
+use ApidaeBundle\Entity\Hebergement;
 use ApidaeBundle\Entity\InformationsTarif;
 use ApidaeBundle\Entity\ObjetLie;
+use ApidaeBundle\Entity\Restaurant;
 use ApidaeBundle\Entity\TarifType;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use ApidaeBundle\Entity\SelectionApidae;
-use ApidaeBundle\Entity\ObjetApidae;
 use ApidaeBundle\Entity\TraductionObjetApidae;
 use ApidaeBundle\Entity\LabelQualite;
 use ApidaeBundle\Entity\Categorie;
@@ -46,60 +49,84 @@ class Traitement extends ContainerAwareCommand {
         $languesSite[0] = "Français";
         $languesSite[1] = "English";
         //Récupération fichiers :
-       try {
-           $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
-           $this->communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
-           $this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json"));
-           $selections_data = json_decode($export);
-           foreach ($selections_data as $value) {
-               $selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($value->id);
-               if ($selectionApidae == null) {
-                   $selectionApidae = new SelectionApidae();
-                   $selectionApidae->setIdSelectionApidae($value->id);
-                   $selectionApidae->setSelLibelle($value->nom);
-                   $this->em->persist($selectionApidae);
-                   $this->em->flush();
-               } else {
-                   print($selectionApidae->getSelLibelle() . "\n");
-                   $selectionApidae->setSelLibelle($value->nom);
-                   $this->em->merge($selectionApidae);
-               }
-               foreach ($value->objetsTouristiques as $val) {
-                   print($val->id . "\n");
-                   //=> $data = aller chercher le bon fichier dans objetsModifies
-                   $data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
-                   //Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
-                   $type = $data->type;
-                   $chaineExplode = explode("_", $type);
-                   $tab = null;
-                   foreach ($chaineExplode as $value) {
-                       $str = strtolower($value);
-                       $str[0] = strtoupper($str[0]);
-                       $tab[] = $str;
-                   }
-                   $typeObj = implode($tab);
-                   $chaineInformations = "informations" . $typeObj;
-                   if ($data->type == "FETE_ET_MANIFESTATION") {
-                       $chaineType = "typesManifestation";
-                   } else {
-                       $tab[0] = strtolower($tab[0]);
-                       $chaineType = implode($tab) . "Type";
-                   }
-                   $this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite, $typeObj);
-               }
-           }
-           //---
-           $output->writeln("Fin de traitement.");
-       } catch(Exception $e) {
-           $output->writeln("Problème : ".$e->getMessage());
-       }
+        try {
+            $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
+            $this->communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
+            $this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json"));
+            $selections_data = json_decode($export);
+            foreach ($selections_data as $value) {
+                $selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($value->id);
+                if ($selectionApidae == null) {
+                    $selectionApidae = new SelectionApidae();
+                    $selectionApidae->setIdSelectionApidae($value->id);
+                    $selectionApidae->setSelLibelle($value->nom);
+                    $this->em->persist($selectionApidae);
+                    $this->em->flush();
+                } else {
+                    $selectionApidae->setSelLibelle($value->nom);
+                    $this->em->merge($selectionApidae);
+                }
+                print($selectionApidae->getSelLibelle() . "\n");
+                foreach ($value->objetsTouristiques as $val) {
+                    print($val->id . "\n");
+                    //=> $data = aller chercher le bon fichier dans objetsModifies
+                    $data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
+                    //Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
+                    $type = $data->type;
+                    $chaineExplode = explode("_", $type);
+                    $tab = null;
+                    foreach ($chaineExplode as $value) {
+                        $str = strtolower($value);
+                        $str[0] = strtoupper($str[0]);
+                        $tab[] = $str;
+                    }
+                    $typeObj = implode($tab);
+                    $chaineInformations = "informations" . $typeObj;
+                    if ($data->type == "FETE_ET_MANIFESTATION") {
+                        $chaineType = "typesManifestation";
+                    } else {
+                        $tab[0] = strtolower($tab[0]);
+                        $chaineType = implode($tab) . "Type";
+                    }
+                    $this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite, $typeObj);
+                }
+            }
+            //---
+            $output->writeln("Fin de traitement.");
+        } catch(Exception $e) {
+            $output->writeln("Problème : ".$e->getMessage());
+        }
     }
 
     private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite) {
         //-------------------- ObjetApidae ----------------------
-        $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($data->id);
-        if($objetApidae == null) {
-            $objetApidae = new ObjetApidae();
+        $update = true;
+        if($selectionApidae->getSelLibelle() == "Restaurants") {
+            $objetApidae = $this->em->getRepository(Restaurant::class)->findOneByIdObj($data->id);
+            if($objetApidae == null) {
+                $update = false;
+                $objetApidae = new Restaurant();
+            }
+        } else if($selectionApidae->getSelLibelle() == "Hébergements") {
+            $objetApidae = $this->em->getRepository(Hebergement::class)->findOneByIdObj($data->id);
+            if($objetApidae == null) {
+                $update = false;
+                $objetApidae = new Hebergement();
+            }
+        } else if($selectionApidae->getSelLibelle() == "Activités") {
+            $objetApidae = $this->em->getRepository(Activite::class)->findOneByIdObj($data->id);
+            if($objetApidae == null) {
+                $update = false;
+                $objetApidae = new Activite();
+            }
+        } else if($selectionApidae->getSelLibelle() == "Evénements") {
+            $objetApidae = $this->em->getRepository(Evenement::class)->findOneByIdObj($data->id);
+            if($objetApidae == null) {
+                $update = false;
+                $objetApidae = new Evenement();
+            }
+        }
+        if(!$update) {
             $this->updateObjetApidae($objetApidae, $data, $selectionApidae, $languesSite, false);
         } else {
             //update de l'objet

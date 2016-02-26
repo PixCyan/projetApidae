@@ -3,50 +3,32 @@
 namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Entity;
 
-
-class Restaurant
+/** @Entity */
+class Restaurant extends ObjetApidae
 {
-    /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="nbMaxCouverts", type="integer", length=255)
+     * @ORM\Column(name="nbMaxCouverts", type="integer", length=255, nullable=true)
      */
     private $nbMaxCouverts;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="nbCouvertsTerrasse", type="integer")
+     * @ORM\Column(name="nbCouvertsTerrasse", type="integer", nullable=true)
      */
     private $nbCouvertsTerrasse;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="nbSalles", type="integer")
+     * @ORM\Column(name="nbSalles", type="integer", nullable=true)
      */
     private $nbSalles;
-
-
-    /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
 
     /**
      * Set nbMaxCouverts
@@ -119,5 +101,18 @@ class Restaurant
     {
         return $this->nbSalles;
     }
+
+    public function setCapacite($tab) {
+        if(isset($tab->nombreMaximumCouverts)) {
+            $this->setNbMaxCouverts($tab->nombreMaximumCouverts);
+        }
+        if(isset($tab->nombreCouvertsTerrasse)) {
+            $this->setNbCouvertsTerrasse($tab->nombreCouvertsTerrasse);
+        }
+        if(isset($tab->nombreSalles)) {
+            $this->setNbSalles($tab->nombreSalles);
+        }
+    }
+
 }
 
