@@ -180,9 +180,6 @@ abstract class ObjetApidae
      */
     protected $traductions;
 
-    //----- add
-    //...
-
     public function __construct() {
         //initialisation des collections
         $this->traductions = new ArrayCollection();
