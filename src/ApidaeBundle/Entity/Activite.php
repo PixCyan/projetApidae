@@ -3,41 +3,24 @@
 namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\Entity;
 
-/**
- * Activite
- *
- * @ORM\Table(name="activite")
- * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\ActiviteRepository")
- */
-class Activite
+/** @Entity */
+class Activite extends ObjetApidae
 {
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="dureeSeance", type="string", length=255)
      */
-    private $id;
+    private $dureeSeance;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="duree", type="string", length=255)
+     * @ORM\Column(name="nbJours", type="string", length=255)
      */
-    private $duree;
-
-
-    /**
-     * Get id
-     *
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
+    private $nbJours;
 
     /**
      * Set duree
@@ -46,9 +29,9 @@ class Activite
      *
      * @return Activite
      */
-    public function setDuree($duree)
+    public function setDureeSeance($duree)
     {
-        $this->duree = $duree;
+        $this->dureeSeance = $duree;
 
         return $this;
     }
@@ -58,9 +41,14 @@ class Activite
      *
      * @return string
      */
-    public function getDuree()
+    public function getDureeSeance()
     {
-        return $this->duree;
+        return $this->dureeSeance;
+    }
+
+    public function setCapacite($tab)
+    {
+        // TODO: Implement setCapacite() method.
     }
 }
 

@@ -559,6 +559,16 @@ class Traitement extends ContainerAwareCommand {
         //-------------------- Duree ----------------------
         //TODO duree
 
+        //-------------------- Portee ----------------------
+        //TODO portee
+        if(isset($data->$chaineInformations->portee)) {
+            $v = $this->traitementReference($data->$chaineInformations->portee->elementReferenceType, $data->$chaineInformations->portee->id);
+            if($v != null) {
+                $tab['libelle'] = $this->traitementLibelleLangues($languesSite, $v);
+                $tab['ordre'] = $v->ordre;
+                $objetApidae->setCapacite($tab);
+            }
+        }
 
         //-------------------- ObjetsLies ----------------------
         //TODO objetsLies
