@@ -46,14 +46,6 @@ class Traitement extends ContainerAwareCommand {
         $languesSite[0] = "Français";
         $languesSite[1] = "English";
         //Récupération fichiers :
-        //TESTS
-        $this->notificationMail();
-
-
-        //FIN TESTS
-
-
-
        try {
            $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
            $this->communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
@@ -74,11 +66,6 @@ class Traitement extends ContainerAwareCommand {
                }
                foreach ($value->objetsTouristiques as $val) {
                    print($val->id . "\n");
-                   //TEST
-                   $logs = fopen('logTest.txt', 'r+');
-                   fputs($logs, $val->id . "\n");
-                   fclose($logs);
-                   //FIN TEST
                    //=> $data = aller chercher le bon fichier dans objetsModifies
                    $data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
                    //Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
@@ -243,7 +230,7 @@ class Traitement extends ContainerAwareCommand {
         if(isset($data->prestations->typesClientele)) {
             $tab = $data->prestations;
             for($i = 0; $i < count($tab->typesClientele); $i++) {
-                $typeClient = $this->em->getRepository(TypePublic::class)->findOneByTypId(($tab->typesClientele[$i]->id));
+                $typeClient = $this->em->getRepository(TypePublic::class)->findOneByTypId($tab->typesClientele[$i]->id);
                 if($typeClient == null) {
                     $typeClient = new TypePublic();
                     $typeClient->setTypId($tab->typesClientele[$i]->id);
@@ -258,19 +245,30 @@ class Traitement extends ContainerAwareCommand {
         if(isset($data->informations->moyensCommunication)) {
             $tab = $data->informations;
             for($i = 0; $i < count($tab->moyensCommunication); $i++) {
-                $com = new MoyenCommunication();
+                $com = $this->em->getRepository(MoyenCommunication::class)->findOneByIdMoyCom($tab->moyensCommunication[$i]->identifiant);
+                $update = true;
+                if($com == null) {
+                    $update = false;
+                    $com = new MoyenCommunication();
+                }
                 if(isset($tab->moyensCommunication[$i])) {
                     $v = $this->traitementReference($tab->moyensCommunication[$i]->type->elementReferenceType, $tab->moyensCommunication[$i]->type->id);
                     $lib = $this->traitementLibelleLangues($languesSite, $v);
                     $com->setMoyComLibelle($lib);
+                    $com->setIdMoyCom($tab->moyensCommunication[$i]->identifiant);
                 }
                 $com->setMoyComCoordonnees($tab->moyensCommunication[$i]->coordonnees->fr);
                 //associe la traduction à l'objet
                 $com->setObjetApidae($objetApidae);
-                //Ajoute le moyen de communication au dico de la traduction :
-                $objetApidae->addMoyenCommunication($com);
-                $this->em->persist($com);
-                $this->em->flush();
+                if(!$objetApidae->getMoyensCommunications()->contains($com)) {
+                    $objetApidae->addMoyenCommunication($com);
+                }
+                if($update) {
+                    $this->em->merge($com);
+                } else {
+                    $this->em->persist($com);
+                    $this->em->flush();
+                }
             }
         }
         //-------------------- Equipements ----------------------
@@ -899,19 +897,4 @@ class Traitement extends ContainerAwareCommand {
             $this->em->merge($objetApidae);
         }
     }
-
-    private function notificationMail() {
-        $message = \Swift_Message::newInstance()
-            ->setSubject('[ERROR] Récupération du fichier de données Apidae')
-            ->setFrom('send@example.com')
-            ->setTo('nadiaraffenne@gmail.com')
-            ->setBody('Test',
-                'text/html'
-            )
-        ;
-        $this->getContainer()->get('mailer')->send($message);
-
-        //return $this->render(...);
-    }
-
 }

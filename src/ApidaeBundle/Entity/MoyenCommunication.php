@@ -22,6 +22,13 @@ class MoyenCommunication
     private $id;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="idMoyCom", type="integer")
+     */
+    private $idMoyCom;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="moyComLibelle", type="string", length=255, nullable=true)
@@ -118,7 +125,21 @@ class MoyenCommunication
         $this->objetApidae = $objetApidae;
     }
 
+    /**
+     * @return int
+     */
+    public function getIdMoyCom()
+    {
+        return $this->idMoyCom;
+    }
 
+    /**
+     * @param int $idMoyCom
+     */
+    public function setIdMoyCom($idMoyCom)
+    {
+        $this->idMoyCom = $idMoyCom;
+    }
 }
 
 

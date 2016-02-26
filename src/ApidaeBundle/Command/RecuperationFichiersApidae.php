@@ -16,21 +16,22 @@ class RecuperationDonneesApidaeCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $logs = fopen('logRecuperationDonneesApidae.txt', 'r+');
+        //TODO récupération URL
+        $logs = fopen('logRecuperationDonneesApidae.txt', 'w');
         if ($tab = $_POST) {
             foreach($tab as $key => $value) {
                 fputs($logs, $key." : ".$value."\n");
             }
         }
+        fclose($logs);
         if(isset($_POST['statut']) && !is_null($_POST['statut'])) {
             if($_POST['statut'] == "SUCCESS") {
-                //lancement de la commande
+                //TODO lancer la commande
             } elseif($_POST['statut'] == "ERROR") {
                 //envoi d'un email
                 $this->notificationMail();
             }
         }
-        fclose($logs);
     }
 
     private function notificationMail() {
@@ -38,16 +39,11 @@ class RecuperationDonneesApidaeCommand extends ContainerAwareCommand
             ->setSubject('[ERROR] Récupération du fichier de données Apidae')
             ->setFrom('send@example.com')
             ->setTo('nadiaraffenne@gmail.com')
+            ->setContentType('text/html')
             ->setBody(
-                $this->renderView(
-                // app/Resources/views/Emails/
-                    'Emails/recuperationDonnees.html.twig'
-                ),
-                'text/html'
-            )
-        ;
+                $this->getContainer()->get('templating')->render(
+                    'ApidaeBundle:Emails/recuperationDonnees.html.twig'
+                ));
         $this->getContainer()->get('mailer')->send($message);
-
-        //return $this->render(...);
     }
 }
