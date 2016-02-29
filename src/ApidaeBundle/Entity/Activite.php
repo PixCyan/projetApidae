@@ -12,25 +12,29 @@ class Activite extends ObjetApidae
     /**
      * @var string
      *
-     * @ORM\Column(name="dureeSeance", type="string", length=255)
+     * @ORM\Column(name="dureeSeance", type="string", length=255, nullable=true)
      */
     private $dureeSeance;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="nbJours", type="string", length=255)
+     * @ORM\Column(name="nbJours", type="string", length=255, nullable=true)
      */
     private $nbJours;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Duree", inversedBy="activites")
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Duree", mappedBy="activites")
      */
     protected $durees;
 
     /**
+     * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ActiviteType",  inversedBy="activites")
+     */
+    protected $activiteType;
+
+    /**
      * Activite constructor.
-     * @param string $dureeSeance
      */
     public function __construct()
     {
@@ -85,9 +89,47 @@ class Activite extends ObjetApidae
         return $this->durees;
     }
 
+    /**
+     * @return string
+     */
+    public function getNbJours()
+    {
+        return $this->nbJours;
+    }
+
+    /**
+     * @param string $nbJours
+     */
+    public function setNbJours($nbJours)
+    {
+        $this->nbJours = $nbJours;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getActiviteType()
+    {
+        return $this->activiteType;
+    }
+
+    /**
+     * @param mixed $activiteType
+     */
+    public function setActiviteType($activiteType)
+    {
+        $this->activiteType = $activiteType;
+    }
+
     public function setCapacite($tab)
     {
-        // TODO: Implement setCapacite() method.
+        if(isset($tab['dureeSeance']) && $tab['dureeSeance'] != null) {
+            $this->setDureeSeance($tab['dureeSeance']);
+        }
+        if(isset($tab['nbJours']) && $tab['nbJours'] != null) {
+            $this->setNbJours($tab['nbJours']);
+        }
     }
+
 }
 

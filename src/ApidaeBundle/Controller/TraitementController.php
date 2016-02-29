@@ -2,24 +2,27 @@
 
 namespace ApidaeBundle\Controller;
 
+use ApidaeBundle\Entity\Activite;
+use ApidaeBundle\Entity\Duree;
+use ApidaeBundle\Entity\Evenement;
+use ApidaeBundle\Entity\Hebergement;
+use ApidaeBundle\Entity\InformationsTarif;
+use ApidaeBundle\Entity\ObjetLie;
+use ApidaeBundle\Entity\Restaurant;
+use ApidaeBundle\Entity\TarifType;
 use ApidaeBundle\Entity\SelectionApidae;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use ApidaeBundle\Entity\ObjetApidae;
 use ApidaeBundle\Entity\TraductionObjetApidae;
-use ApidaeBundle\Entity\Adresse;
 use ApidaeBundle\Entity\LabelQualite;
 use ApidaeBundle\Entity\Categorie;
+use ApidaeBundle\Entity\Commune;
 use ApidaeBundle\Entity\Langue;
 use ApidaeBundle\Entity\Equipement;
 use ApidaeBundle\Entity\Service;
 use ApidaeBundle\Entity\MoyenCommunication;
 use ApidaeBundle\Entity\Multimedia;
-use ApidaeBundle\Entity\Tarif;
 use ApidaeBundle\Entity\Ouverture;
 use ApidaeBundle\Entity\TypePublic;
-use ApidaeBundle\Entity\ObjetLie;
-use ApidaeBundle\Entity\Commune;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class TraitementController extends Controller
 {
@@ -49,10 +52,10 @@ class TraitementController extends Controller
 					$this->em->persist($selectionApidae);
 					$this->em->flush();
 				} else {
-					print($selectionApidae->getSelLibelle() . "\n");
 					$selectionApidae->setSelLibelle($value->nom);
 					$this->em->merge($selectionApidae);
 				}
+				print($selectionApidae->getSelLibelle() . "\n");
 				foreach ($value->objetsTouristiques as $val) {
 					print($val->id . "\n");
 					//=> $data = aller chercher le bon fichier dans objetsModifies
@@ -74,7 +77,7 @@ class TraitementController extends Controller
 						$tab[0] = strtolower($tab[0]);
 						$chaineType = implode($tab) . "Type";
 					}
-					$this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite, $typeObj);
+					$this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
 				}
 			}
 			//---
@@ -86,12 +89,33 @@ class TraitementController extends Controller
 
 	private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite) {
 		//-------------------- ObjetApidae ----------------------
-		$objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($data->id);
-		if($objetApidae == null) {
-			//TODO test restautant
-			if($selectionApidae->libelle->libelleFr == "Restaurants") {
+		$update = true;
+		if($selectionApidae->getSelLibelle() == "Restaurants") {
+			$objetApidae = $this->em->getRepository(Restaurant::class)->findOneByIdObj($data->id);
+			if($objetApidae == null) {
+				$update = false;
 				$objetApidae = new Restaurant();
 			}
+		} else if($selectionApidae->getSelLibelle() == "Hébergements") {
+			$objetApidae = $this->em->getRepository(Hebergement::class)->findOneByIdObj($data->id);
+			if($objetApidae == null) {
+				$update = false;
+				$objetApidae = new Hebergement();
+			}
+		} else if($selectionApidae->getSelLibelle() == "Activités") {
+			$objetApidae = $this->em->getRepository(Activite::class)->findOneByIdObj($data->id);
+			if($objetApidae == null) {
+				$update = false;
+				$objetApidae = new Activite();
+			}
+		} else if($selectionApidae->getSelLibelle() == "Evénements") {
+			$objetApidae = $this->em->getRepository(Evenement::class)->findOneByIdObj($data->id);
+			if($objetApidae == null) {
+				$update = false;
+				$objetApidae = new Evenement();
+			}
+		}
+		if(!$update) {
 			$this->updateObjetApidae($objetApidae, $data, $selectionApidae, $languesSite, false);
 		} else {
 			//update de l'objet
@@ -222,7 +246,7 @@ class TraitementController extends Controller
 		if(isset($data->prestations->typesClientele)) {
 			$tab = $data->prestations;
 			for($i = 0; $i < count($tab->typesClientele); $i++) {
-				$typeClient = $this->em->getRepository(TypePublic::class)->findOneByTypId(($tab->typesClientele[$i]->id));
+				$typeClient = $this->em->getRepository(TypePublic::class)->findOneByTypId($tab->typesClientele[$i]->id);
 				if($typeClient == null) {
 					$typeClient = new TypePublic();
 					$typeClient->setTypId($tab->typesClientele[$i]->id);
@@ -237,19 +261,30 @@ class TraitementController extends Controller
 		if(isset($data->informations->moyensCommunication)) {
 			$tab = $data->informations;
 			for($i = 0; $i < count($tab->moyensCommunication); $i++) {
-				$com = new MoyenCommunication();
+				$com = $this->em->getRepository(MoyenCommunication::class)->findOneByIdMoyCom($tab->moyensCommunication[$i]->identifiant);
+				$update = true;
+				if($com == null) {
+					$update = false;
+					$com = new MoyenCommunication();
+				}
 				if(isset($tab->moyensCommunication[$i])) {
 					$v = $this->traitementReference($tab->moyensCommunication[$i]->type->elementReferenceType, $tab->moyensCommunication[$i]->type->id);
 					$lib = $this->traitementLibelleLangues($languesSite, $v);
 					$com->setMoyComLibelle($lib);
+					$com->setIdMoyCom($tab->moyensCommunication[$i]->identifiant);
 				}
 				$com->setMoyComCoordonnees($tab->moyensCommunication[$i]->coordonnees->fr);
 				//associe la traduction à l'objet
 				$com->setObjetApidae($objetApidae);
-				//Ajoute le moyen de communication au dico de la traduction :
-				$objetApidae->addMoyenCommunication($com);
-				$this->em->persist($com);
-				$this->em->flush();
+				if(!$objetApidae->getMoyensCommunications()->contains($com)) {
+					$objetApidae->addMoyenCommunication($com);
+				}
+				if($update) {
+					$this->em->merge($com);
+				} else {
+					$this->em->persist($com);
+					$this->em->flush();
+				}
 			}
 		}
 		//-------------------- Equipements ----------------------
@@ -388,7 +423,6 @@ class TraitementController extends Controller
 				$label = $this->em->getRepository(LabelQualite::class)->findOneByLabId($v->id);
 				if($label != null) {
 					if(!$objetApidae->getLabelsQualite()->contains($label)) {
-						print("Obj :".$objetApidae->getId()."\n");
 						$objetApidae->addLabelQualite($label);
 						$label->addObjetApidae($objetApidae);
 						$this->em->merge($objetApidae);
@@ -427,9 +461,16 @@ class TraitementController extends Controller
 
 		//-------------------- Tarifs ----------------------
 		if(isset($data->descriptionTarif)) {
-			//TODO changer infor tarif et tarifType
-
 			$tab = $data->descriptionTarif;
+			if(isset($data->descriptionTarif)) {
+				$tab = $data->descriptionTarif;
+				if (isset($tab->tarifsEnClair)) {
+					if (isset($tab->tarifsEnClair)) {
+						$lib = $this->traitementLibelleLangues($languesSite, $tab->tarifsEnClair);
+						$objetApidae->setTarifEnClair($lib);
+					}
+				}
+			}
 			if(isset($tab->periodes[0]->tarifs)) {
 				$tarifs = $tab->periodes[0];
 				for($i = 0; $i < count($tab->periodes[0]->tarifs); $i++) {
@@ -445,42 +486,7 @@ class TraitementController extends Controller
 							$tarifType->setOrdre($v->ordre);
 						}
 					}
-					//TODO terminer
 					$this->traitementInfosTarif($tarifType,$tarifs->tarifs[$i], $tab, $objetApidae, $update);
-
-
-
-
-					/*$tarif = new Tarif();
-                    $tarif->setTarDevise($tarifs->tarifs[$i]->devise);
-                    if(isset($tarifs->tarifs[$i]->maximum)) {
-                        $tarif->setTarMax($tarifs->tarifs[$i]->maximum);
-                    } else {
-                        $tarif->setTarMax(null);
-                    }
-                    if(isset($tarifs->tarifs[$i]->minimum)) {
-                        $tarif->setTarMin($tarifs->tarifs[$i]->minimum);
-                    } else {
-                        $tarif->setTarMin(null);
-                    }
-                    if(isset($tarifs->tarifs[$i]->type->$chaineLangue)) {
-                        $tarif->setTarLibelle($tarifs->tarifs[$i]->type->$chaineLangue);
-                    } else {
-                        $v = $this->traitementReference($tarifs->tarifs[$i]->type->elementReferenceType, $tarifs->tarifs[$i]->type->id);
-                        if($v != false) {
-                            $tarif->setTarLibelle($v->$chaineLangue);
-                        }
-                    }
-                    if(isset($tab->indicationTarif)) {
-                        $tarif->setTarIndication($tab->indicationTarif);
-                    } else {
-                        $tarif->setTarIndication(null);
-                    }
-                    //Associe le tarif à la traduction :
-                    $tarif->setTraduction($traduction);
-                    //Ajoute le tarif à la traduction :
-                    $traduction->addTarif($tarif);
-                    $this->em->persist($tarif);*/
 				}
 			}
 		}
@@ -495,7 +501,13 @@ class TraitementController extends Controller
 			if(isset($data->ouverture->periodesOuvertures)) {
 				$tab = $data->ouverture;
 				for($i = 0; $i < count($tab->periodesOuvertures); $i++) {
-					$ouverture = new Ouverture();
+					$ouverture = $this->em->getRepository(Ouverture::class)->findOneByIdOuverture($tab->periodesOuvertures[$i]->identifiant);
+					$update = true;
+					if($ouverture == null) {
+						$update = false;
+						$ouverture = new Ouverture();
+					}
+					$ouverture->setIdOuverture($tab->periodesOuvertures[$i]->identifiant);
 					$ouverture->setOuvDateDebut($tab->periodesOuvertures[$i]->dateDebut);
 					$ouverture->setOuvDateFin($tab->periodesOuvertures[$i]->dateFin);
 					if(isset($tab->periodesOuvertures[$i]->complementHoraire)) {
@@ -503,9 +515,15 @@ class TraitementController extends Controller
 					}
 					//Associe l'ouverture à la traduction :
 					$ouverture->setObjetApidae($objetApidae);
-					//Ajoute l'ouverture au dico de la traduction :
-					$objetApidae->addOuverture($ouverture);
-					$this->em->persist($ouverture);
+					if(!$objetApidae->getOuvertures()->contains($ouverture)) {
+						//Ajoute l'ouverture au dico de la traduction :
+						$objetApidae->addOuverture($ouverture);
+					}
+					if($update) {
+						$this->em->merge($ouverture);
+					} else {
+						$this->em->persist($ouverture);
+					}
 				}
 			}
 		}
@@ -524,15 +542,60 @@ class TraitementController extends Controller
 		}
 
 		//-------------------- Capacite ----------------------
-		//TODO capacite
-		//Test
 		if(isset($data->$chaineInformations->capacite)) {
 			$objetApidae->setCapacite($data->$chaineInformations->capacite);
 		}
 
 		//-------------------- Duree ----------------------
 		//TODO duree
+		if(isset($data->$chaineInformations->durees)) {
+			$tab = array();
+			if(isset($data->$chaineInformations->dureeSeance)) {
+				$tab['dureeSeance'] = $data->$chaineInformations->dureeSeance;
+				$objetApidae->setCapacite($tab);
+			}
+			for($i = 0; $i < count($data->$chaineInformations->durees); $i++) {
+				print($data->$chaineInformations->durees[0]->elementReferenceType);
+				$v = $this->traitementReference($data->$chaineInformations->durees[$i]->elementReferenceType,
+					$data->$chaineInformations->durees[$i]->id);
+				if($v != null) {
+					$duree = $this->em->getRepository(Duree::class)->findOneByIdDuree($v->id);
+					$update = true;
+					if($duree == null) {
+						$update = false;
+						$duree = new Duree();
+					}
+					$duree->setIdDuree($v->id);
+					$duree->setLibelle($this->traitementLibelleLangues($languesSite, $v));
+					$duree->setOrdre($v->ordre);
+					if(!$duree->getActivites()->contains($objetApidae)) {
+						$duree->addActivite($objetApidae);
+					}
+					if(!$objetApidae->getDurees()->contains($duree)) {
+						$objetApidae->addDuree($duree);
+					}
+					if($update) {
+						$this->em->merge($objetApidae);
+						$this->em->merge($duree);
+					} else {
+						$this->em->persist($duree);
+						$this->em->merge($objetApidae);
+					}
+				}
+			}
+		}
 
+		//-------------------- Portee ----------------------
+		//TODO portee
+		if(isset($data->$chaineInformations->portee)) {
+			$tab = array();
+			$v = $this->traitementReference($data->$chaineInformations->portee->elementReferenceType, $data->$chaineInformations->portee->id);
+			if($v != null) {
+				$tab['libelle'] = $this->traitementLibelleLangues($languesSite, $v);
+				$tab['ordre'] = $v->ordre;
+				$objetApidae->setCapacite($tab);
+			}
+		}
 
 		//-------------------- ObjetsLies ----------------------
 		//TODO objetsLies
@@ -546,6 +609,7 @@ class TraitementController extends Controller
 				}
 			}
 		}
+
 		$this->em->persist($objetApidae);
 		$this->em->flush();
 	}
@@ -620,7 +684,7 @@ class TraitementController extends Controller
 			$categorie = new Categorie();
 			$this->updateCategorie($cat, $categorie, $id, $objetApidae);
 			$this->em->persist($categorie);
-			//$this->em->flush();
+			$this->em->flush();
 		} else {
 			$this->updateCategorie($cat, $catExist, $id, $objetApidae);
 			$this->em->merge($catExist);
@@ -722,19 +786,24 @@ class TraitementController extends Controller
 				$traduction->setTraDescriptionLongue(null);
 			}
 		}
+		if(!$objetApidae->getTraductions()->contains($traduction)) {
+			//Associe la traduction à l'objet
+			$objetApidae->addTraduction($traduction);
+		}
+		if(!$langueTrad->getTraductions()->contains($traduction)) {
+			//AJoute la traduction au dico de la langue
+			$langueTrad->addTraduction($traduction);
+		}
+
 		if($update) {
 			$this->em->merge($traduction);
 		} else {
 			$traduction->setTraDescriptionPersonnalisee(null);
 			$traduction->setTraBonsPlans(null);
 			$traduction->setTraInfosSup(null);
-
 			//Associe la langue à la traduction
 			$traduction->setLangue($langueTrad);
-			//AJoute la traduction au dico de la langue
-			$langueTrad->addTraduction($traduction);
-			//Associe la traduction à l'objet
-			$objetApidae->addTraduction($traduction);
+
 			//Associe l'objet à la traduction :
 			$traduction->setObjet($objetApidae);
 			$this->em->persist($traduction);
@@ -753,15 +822,6 @@ class TraitementController extends Controller
 		} else {
 			$objetApidae->setObjGeolocalisation(null);
 		}
-		if(isset($data->descriptionTarif)) {
-			$tab = $data->descriptionTarif;
-			if (isset($tab->tarifsEnClair)) {
-				if (isset($tab->tarifsEnClair)) {
-					$lib = $this->traitementLibelleLangues($languesSite, $tab->tarifsEnClair);
-					$objetApidae->setTarifEnClair($lib);
-				}
-			}
-		}
 		$objetApidae->setObjSuggestion(false);
 		$objetApidae->setObjDateSuggestion(null);
 		$objetApidae->setObjTypeApidae($data->type);
@@ -771,7 +831,7 @@ class TraitementController extends Controller
 		if(!$objetApidae->getSelectionsApidae($selectionApidae)) {
 			$objetApidae->addSelectionApidae($selectionApidae);
 		}
-		if($update == true) {
+		if($update) {
 			$this->em->merge($objetApidae);
 			$this->em->merge($selectionApidae);
 

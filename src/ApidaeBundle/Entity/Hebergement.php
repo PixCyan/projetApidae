@@ -19,7 +19,7 @@ class Hebergement extends ObjetApidae
     /**
      * @var int
      *
-     * @ORM\Column(name="capaciteHebergement", type="integer")
+     * @ORM\Column(name="capaciteHebergement", type="integer", nullable=true)
      */
     private $capaciteHebergement;
 

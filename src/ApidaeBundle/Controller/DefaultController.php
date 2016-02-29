@@ -43,10 +43,10 @@ class DefaultController extends Controller
         $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($id);
         $trad = null;
         if($objetApidae != null) {
-            return $this->render('ApidaeBundle:Default:offreTest.html.twig', array('objet' => $objetApidae));
+            return $this->render('ApidaeBundle:Default:vueFiche.html.twig', array('objet' => $objetApidae));
         } else {
             //TODO changer
-            return $this->render('ApidaeBundle:Default:offreTest.html.twig');
+            return $this->render('ApidaeBundle:Default:donnees.html.twig');
         }
     }
 

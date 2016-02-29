@@ -9,11 +9,15 @@ use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\InheritanceType;
 
+
+
+//SINGLE_TABLE or JOINDE pour @InheritanceType
 /**
  * @Entity
- * @InheritanceType("SINGLE_TABLE")
+ * @InheritanceType("JOINED")
  * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"objetApidae" = "ObjetApidae", "restaurant" = "Restaurant", "hebergement" = "Hebergement"})
+ * @DiscriminatorMap({"objetApidae" = "ObjetApidae", "restaurant" = "Restaurant", "hebergement" = "Hebergement",
+ *      "activite" = "Activite", "evenement" = "Evenement"})
  */
 abstract class ObjetApidae
 {

@@ -6,12 +6,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Duree
+ * ActiviteType
  *
- * @ORM\Table(name="duree")
- * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\DureeRepository")
+ * @ORM\Table(name="activiteType")
+ * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\ActiviteTypeRepository")
  */
-class Duree
+class ActiviteType
 {
     /**
      * @var int
@@ -25,9 +25,9 @@ class Duree
     /**
      * @var int
      *
-     * @ORM\Column(name="idDuree", type="integer")
+     * @ORM\Column(name="idActiviteType", type="integer", unique=true)
      */
-    private $idDuree;
+    private $idActiviteType;
 
     /**
      * @var string
@@ -39,35 +39,34 @@ class Duree
     /**
      * @var int
      *
-     * @ORM\Column(name="ordre", type="integer", length=255)
+     * @ORM\Column(name="ordre", type="integer")
      */
     private $ordre;
 
     /**
-     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Activite", inversedBy="durees")
+     * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Activite", mappedBy="activiteType")
      */
     protected $activites;
 
-    /**
-     * Activite constructor.
-     */
+
     public function __construct()
     {
+        //initialisation des collections
         $this->activites = new ArrayCollection();
     }
 
     /**
      * Ajoute/lie une traduction à l'objet
      */
-    public function addActivite(Activite $a) {
-        $this->activites[] = $a;
+    public function addActivite(Activite $activite) {
+        $this->activites[] = $activite;
     }
 
     /**
      * Supprime une traduction lié à l'objet
      */
-    public function removeActivite(Activite $a) {
-        $this->activites->removeElement($a);
+    public function removeActivite(Activite $activite) {
+        $this->activites->removeElement($activite);
     }
 
 
@@ -82,11 +81,35 @@ class Duree
     }
 
     /**
+     * Set idActivite
+     *
+     * @param integer $idActivite
+     *
+     * @return ActiviteType
+     */
+    public function setIdActivite($idActivite)
+    {
+        $this->idActiviteType = $idActivite;
+
+        return $this;
+    }
+
+    /**
+     * Get idActivite
+     *
+     * @return int
+     */
+    public function getIdActivite()
+    {
+        return $this->idActiviteType;
+    }
+
+    /**
      * Set libelle
      *
      * @param string $libelle
      *
-     * @return Duree
+     * @return ActiviteType
      */
     public function setLibelle($libelle)
     {
@@ -108,9 +131,9 @@ class Duree
     /**
      * Set ordre
      *
-     * @param string $ordre
+     * @param integer $ordre
      *
-     * @return Duree
+     * @return ActiviteType
      */
     public function setOrdre($ordre)
     {
@@ -122,7 +145,7 @@ class Duree
     /**
      * Get ordre
      *
-     * @return string
+     * @return int
      */
     public function getOrdre()
     {
@@ -135,22 +158,6 @@ class Duree
     public function getActivites()
     {
         return $this->activites;
-    }
-
-    /**
-     * @return int
-     */
-    public function getIdDuree()
-    {
-        return $this->idDuree;
-    }
-
-    /**
-     * @param int $idDuree
-     */
-    public function setIdDuree($idDuree)
-    {
-        $this->idDuree = $idDuree;
     }
 }
 

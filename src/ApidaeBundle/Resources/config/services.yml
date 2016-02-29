@@ -2,3 +2,10 @@ services:
 #    apidae.example:
 #        class: ApidaeBundle\Example
 #        arguments: [@service_id, "plain_value", %parameter%]
+
+
+services:
+    libelleLangue:
+      class: ApidaeBundle\Twig\Extension\LibelleLangue
+      tags:
+        - { name: twig.extension }

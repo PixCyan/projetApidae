@@ -1,2 +1,25 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
+{% block content %}
+    <article>
+        <div>
+            <h4> Informations principales : </h4>
+            <ul>
+                <li> Type : {{ objet.objTypeApidae }}</li>
+                <li> Objet Apidae : {{ objet.nom }} </li>
+                <li> id : {{objet.idObjet}} </li>
+            </ul>
+        </div>
+        <div>
+            <h4> Categories : </h4>
+            <ul>
+                {% for cat in objet.categories %}
+                    <li>{{ cat.catLibelle }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </article>
+    {% if objet.objTypeApidae == "RESTAURATION" %}
+        {% include "ApidaeBundle:restaurant:contenuRestaurant.html.twig" %}
+    {%  endif %}
 
+{% endblock %}

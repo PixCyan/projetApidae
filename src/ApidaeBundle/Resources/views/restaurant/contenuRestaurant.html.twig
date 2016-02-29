@@ -1,0 +1,31 @@
+{% block contentRestaurant %}
+    <article>
+        <h4> Classement(s) </h4>
+            <ul>
+            {% if objet.objEtoile is not empty %}
+                <li>Classement étoile : {{ objet.objEtoile|langueLib('Fr') }}</li>
+            {% endif %}
+            {% if objet.labelsQualite is not empty %}
+                {% for label in objet.labelsQualite %}
+                    <li>{{ label.labLibelle|langueLib('Fr') }} {{ label.labClassement|langueLib('Fr') }}</li>
+                {% endfor %}
+            {% endif %}
+            </ul>
+    </article>
+    <article>
+       <h4> Capacité </h4>
+            <ul>
+                {% if objet.nbMaxCouverts is not empty %}
+                <li> Nombre max de couverts : {{  objet.nbMaxCouverts }} </li>
+                {% endif %}
+                {% if objet.nbCouvertsTerrasse is not empty %}
+                <li> Nombre de couverts en terrasse : {{  objet.nbCouvertsTerrasse }} </li>
+                {% endif %}
+                {% if objet.nbSalles is not empty %}
+                <li> Nombre de salles : {{  objet.nbSalles }} </li>
+                {% endif %}
+            </ul>
+    </article>
+
+
+{% endblock %}

@@ -3,6 +3,8 @@
 namespace ApidaeBundle\Command;
 
 use ApidaeBundle\Entity\Activite;
+use ApidaeBundle\Entity\ActiviteType;
+use ApidaeBundle\Entity\Duree;
 use ApidaeBundle\Entity\Evenement;
 use ApidaeBundle\Entity\Hebergement;
 use ApidaeBundle\Entity\InformationsTarif;
@@ -24,8 +26,6 @@ use ApidaeBundle\Entity\MoyenCommunication;
 use ApidaeBundle\Entity\Multimedia;
 use ApidaeBundle\Entity\Ouverture;
 use ApidaeBundle\Entity\TypePublic;
-
-define('SIT_LANGUE', 'Fr');
 
 /**
  * @Doctrine\ORM\Mapping\Entity
@@ -82,13 +82,12 @@ class Traitement extends ContainerAwareCommand {
                     }
                     $typeObj = implode($tab);
                     $chaineInformations = "informations" . $typeObj;
+                    $tab[0] = strtolower($tab[0]);
+                    $chaineType = implode($tab) . "Type";
                     if ($data->type == "FETE_ET_MANIFESTATION") {
                         $chaineType = "typesManifestation";
-                    } else {
-                        $tab[0] = strtolower($tab[0]);
-                        $chaineType = implode($tab) . "Type";
                     }
-                    $this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite, $typeObj);
+                    $this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
                 }
             }
             //---
@@ -556,12 +555,62 @@ class Traitement extends ContainerAwareCommand {
         if(isset($data->$chaineInformations->capacite)) {
             $objetApidae->setCapacite($data->$chaineInformations->capacite);
         }
+
         //-------------------- Duree ----------------------
         //TODO duree
+        if(isset($data->$chaineInformations->durees)) {
+            $tab = array();
+            if(isset($data->$chaineInformations->dureeSeance)) {
+                $tab['dureeSeance'] = $data->$chaineInformations->dureeSeance;
+                print("duree \n");
+            }
+            if(isset($data->$chaineInformations->durees->nombreJours)) {
+                $tab['nbJours'] = $data->$chaineInformations->dureeSeance;
+                print("nbJours \n");
+            }
+            $objetApidae->setCapacite($tab);
+            for($i = 0; $i < count($data->$chaineInformations->durees); $i++) {
+                $v = $this->traitementReference($data->$chaineInformations->durees[$i]->elementReferenceType,
+                    $data->$chaineInformations->durees[$i]->id);
+                if($v != null) {
+                    $duree = $this->em->getRepository(Duree::class)->findOneByIdDuree($v->id);
+                    $update = true;
+                    if($duree == null) {
+                        $update = false;
+                        $duree = new Duree();
+                    }
+                    $duree->setIdDuree($v->id);
+                    $duree->setLibelle($this->traitementLibelleLangues($languesSite, $v));
+                    $duree->setOrdre($v->ordre);
+                    if(!$duree->getActivites()->contains($objetApidae)) {
+                        $duree->addActivite($objetApidae);
+                    }
+                    if(!$objetApidae->getDurees()->contains($duree)) {
+                        $objetApidae->addDuree($duree);
+                    }
+                    if($update) {
+                        $this->em->merge($objetApidae);
+                        $this->em->merge($duree);
+                    } else {
+                        $this->em->persist($duree);
+                    }
+                }
+            }
+        }
+
+        //--------------- ActiviteType / RubriqueEquipement / patrimoineCulturelType --------------------
+        if(isset($data->$chaineInformations->activiteType)) {
+            $this->traitementActiviteTypes($data->$chaineInformations->activiteType, $languesSite, $objetApidae);
+        } else if(isset($data->$chaineInformations->rubrique)) {
+            $this->traitementActiviteTypes($data->$chaineInformations->rubrique, $languesSite, $objetApidae);
+        } else if(isset($data->$chaineInformations->patrimoineCulturelType)) {
+            $this->traitementActiviteTypes($data->$chaineInformations->patrimoineCulturelType, $languesSite, $objetApidae);
+        }
 
         //-------------------- Portee ----------------------
         //TODO portee
         if(isset($data->$chaineInformations->portee)) {
+            $tab = array();
             $v = $this->traitementReference($data->$chaineInformations->portee->elementReferenceType, $data->$chaineInformations->portee->id);
             if($v != null) {
                 $tab['libelle'] = $this->traitementLibelleLangues($languesSite, $v);
@@ -932,6 +981,34 @@ class Traitement extends ContainerAwareCommand {
         } else {
             $this->em->persist($tarifType);
             $this->em->merge($objetApidae);
+        }
+    }
+
+
+    public function traitementActiviteTypes($tab, $languesSite, $objetApidae) {
+        $act =  $this->em->getRepository(ActiviteType::class)->findOneByIdActiviteType($tab->id);
+        $update = true;
+        if($act == null) {
+            $update = false;
+            $act = new ActiviteType();
+        }
+        $v = $this->traitementReference($tab->elementReferenceType, $tab->id);
+        if($v != null) {
+            $act->setLibelle($this->traitementLibelleLangues($languesSite, $v));
+        }
+        $act->setLibelle($this->traitementLibelleLangues($languesSite, $v));
+        $act->setIdActivite($v->id);
+        $act->setOrdre($v->ordre);
+        $objetApidae->setActiviteType($act);
+        if(!$act->getActivites()->contains($objetApidae)) {
+            $act->addActivite($objetApidae);
+        }
+        if($update) {
+            $this->em->merge($objetApidae);
+            $this->em->merge($act);
+        } else {
+            print("persist activite");
+            $this->em->persist($act);
         }
     }
 }
