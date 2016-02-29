@@ -1,11 +1,13 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
 {% block content %}
+    <p> Langue (temporaire) : {{langue.lanShortCut}} </p>
     <article>
         <div>
             <h4> Informations principales : </h4>
             <ul>
                 <li> Type : {{ objet.objTypeApidae }}</li>
-                <li> Objet Apidae : {{ objet.nom }} </li>
+
+                <li> Objet Apidae : {{ objet.nom|langueLib('Fr') }} </li>
                 <li> id : {{objet.idObjet}} </li>
             </ul>
         </div>
@@ -13,13 +15,45 @@
             <h4> Categories : </h4>
             <ul>
                 {% for cat in objet.categories %}
-                    <li>{{ cat.catLibelle }}</li>
+                    <li>{{ cat.catLibelle|langueLib('Fr') }}</li>
                 {% endfor %}
             </ul>
         </div>
     </article>
+
+    <article>
+        <div>
+            <h4> Multimédias : </h4>
+            <ul>
+                <li> To Do</li>
+            </ul>
+        </div>
+        <div>
+            <h4> Categories : </h4>
+            <ul>
+                {% for cat in objet.categories %}
+                    <li>{{ cat.catLibelle|langueLib('Fr') }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </article>
+
+    {% if objet.moyensCommunications is not empty %}
+    <article>
+            <div>
+                <h4> Moyens de communication : </h4>
+                <ul>
+                    {% for moy in objet.moyensCommunications %}
+                        <li>{{ moy.moyComLibelle|langueLib('Fr') }} : {{ moy.moyComCoordonnees }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+    </article>
+    {% endif %}
+
     {% if objet.objTypeApidae == "RESTAURATION" %}
         {% include "ApidaeBundle:restaurant:contenuRestaurant.html.twig" %}
+        {% include "ApidaeBundle:commun:ServicesEquipements.html.twig" %}
     {%  endif %}
 
 {% endblock %}

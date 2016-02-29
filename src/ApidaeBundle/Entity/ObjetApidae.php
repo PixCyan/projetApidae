@@ -11,10 +11,10 @@ use Doctrine\ORM\Mapping\InheritanceType;
 
 
 
-//SINGLE_TABLE or JOINDE pour @InheritanceType
+//SINGLE_TABLE or JOINED pour @InheritanceType
 /**
  * @Entity
- * @InheritanceType("JOINED")
+ * @InheritanceType("SINGLE_TABLE")
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({"objetApidae" = "ObjetApidae", "restaurant" = "Restaurant", "hebergement" = "Hebergement",
  *      "activite" = "Activite", "evenement" = "Evenement"})

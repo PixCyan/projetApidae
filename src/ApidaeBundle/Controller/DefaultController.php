@@ -2,6 +2,8 @@
 
 namespace ApidaeBundle\Controller;
 
+use ApidaeBundle\Entity\Langue;
+use ApidaeBundle\Entity\TraductionObjetApidae;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
 
@@ -40,10 +42,14 @@ class DefaultController extends Controller
         }
         //Test affichage obet
         $this->em = $this->getDoctrine()->getManager();
+        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue(0);
         $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($id);
-        $trad = null;
+        $trad = $this->em->getRepository(TraductionObjetApidae::class)->findOneBy(
+            array("objet"=> $objetApidae, "langue" => $langue));
+
         if($objetApidae != null) {
-            return $this->render('ApidaeBundle:Default:vueFiche.html.twig', array('objet' => $objetApidae));
+            return $this->render('ApidaeBundle:Default:vueFiche.html.twig',
+                array('objet' => $objetApidae, 'trad' => $trad, 'langue' => $langue));
         } else {
             //TODO changer
             return $this->render('ApidaeBundle:Default:donnees.html.twig');

@@ -141,6 +141,7 @@ class Traitement extends ContainerAwareCommand {
                     $objetApidae->setCommune($commune);
                     //update
                     $this->em->merge($commune);
+                    $this->em->merge($objetApidae);
                 } else {
                     $commune = new Commune();
                     foreach($this->communes as $com) {
@@ -562,11 +563,9 @@ class Traitement extends ContainerAwareCommand {
             $tab = array();
             if(isset($data->$chaineInformations->dureeSeance)) {
                 $tab['dureeSeance'] = $data->$chaineInformations->dureeSeance;
-                print("duree \n");
             }
             if(isset($data->$chaineInformations->durees->nombreJours)) {
                 $tab['nbJours'] = $data->$chaineInformations->dureeSeance;
-                print("nbJours \n");
             }
             $objetApidae->setCapacite($tab);
             for($i = 0; $i < count($data->$chaineInformations->durees); $i++) {
@@ -1007,7 +1006,6 @@ class Traitement extends ContainerAwareCommand {
             $this->em->merge($objetApidae);
             $this->em->merge($act);
         } else {
-            print("persist activite");
             $this->em->persist($act);
         }
     }

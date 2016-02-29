@@ -6,6 +6,6 @@ services:
 
 services:
     libelleLangue:
-      class: ApidaeBundle\Twig\Extension\LibelleLangue
+      class: ApidaeBundle\Twig\Extension\Fonctions
       tags:
         - { name: twig.extension }
