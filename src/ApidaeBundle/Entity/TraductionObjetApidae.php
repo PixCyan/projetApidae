@@ -24,21 +24,21 @@ class TraductionObjetApidae
     /**
      * @var string
      *
-     * @ORM\Column(name="tra_DescriptionCourte", type="string", length=255, nullable=true)
+     * @ORM\Column(name="tra_DescriptionCourte", type="text", length=255, nullable=true)
      */
     private $traDescriptionCourte;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="tra_DescriptionLongue", type="string", length=255, nullable=true)
+     * @ORM\Column(name="tra_DescriptionLongue", type="text", nullable=true)
      */
     private $traDescriptionLongue;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="tra_DescriptionPersonnalisee", type="string", length=255, nullable=true)
+     * @ORM\Column(name="tra_DescriptionPersonnalisee", type="text", nullable=true)
      */
     private $traDescriptionPersonnalisee;
 

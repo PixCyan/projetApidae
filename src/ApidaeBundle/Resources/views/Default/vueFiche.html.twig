@@ -1,33 +1,17 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
 {% block content %}
-    <p> Langue (temporaire) : {{langue.lanShortCut}} </p>
+    <h1> {{ objet.nom|langueLib(langue.lanShortCut) }} </h1>
     <article>
-        <div>
-            <h4> Informations principales : </h4>
-            <ul>
-                <li> Type : {{ objet.objTypeApidae }}</li>
-
-                <li> Objet Apidae : {{ objet.nom|langueLib(langue.lanShortCut) }} </li>
-                <li> id : {{objet.idObjet}} </li>
-            </ul>
-        </div>
-        <div>
-            <h4> Categories : </h4>
-            <ul>
-                {% for cat in objet.categories %}
-                    <li>{{ cat.catLibelle|langueLib(langue.lanShortCut) }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-    </article>
-
-    <article>
+        {% if objet.multimedias is not empty %}
         <div>
             <h4> Multimédias : </h4>
             <ul>
                 <li> To Do</li>
             </ul>
         </div>
+        {% endif %}
+
+        {% if objet.categories is not empty %}
         <div>
             <h4> Categories : </h4>
             <ul>
@@ -36,36 +20,83 @@
                 {% endfor %}
             </ul>
         </div>
-    </article>
+        {% endif %}
 
-    {% if objet.moyensCommunications is not empty %}
-    <article>
+        {% if objet.adresse is not empty %}
+            <article>
+                <h4> Adresse : </h4>
+                <p> {{ objet.adresse|langueLib(langue.lanShortCut) }}</p>
+                {% if objet.commune is not empty %}
+                    <p>{{ objet.commune.comCode }} {{ objet.commune.comNom }}</p>
+                {%  endif %}
+
+            </article>
+        {%  endif %}
+
+        {% if objet.moyensCommunications is not empty %}
+            <article>
+                <h4> Moyens de communication : </h4>
+                <ul>
+                    {% for moy in objet.moyensCommunications %}
+                        <li>{{ moy.moyComLibelle|langueLib(langue.lanShortCut) }} : {{ moy.moyComCoordonnees }}</li>
+                    {% endfor %}
+                </ul>
+            </article>
+        {% endif %}
+
+        {% if trad.traDescriptionLongue is not empty %}
         <div>
-            <h4> Moyens de communication : </h4>
-            <ul>
-                {% for moy in objet.moyensCommunications %}
-                    <li>{{ moy.moyComLibelle|langueLib(langue.lanShortCut) }} : {{ moy.moyComCoordonnees }}</li>
-                {% endfor %}
-            </ul>
+            <h4> Description : </h4>
+            <p> {{ trad.traDescriptionLongue }} </p>
         </div>
+        {% endif %}
+
+        {% if objet.tarifEnClair is not empty or objet.dateEnClair is not empty%}
+            <div>
+                <h4> Tarifs et Ouvertures </h4>
+                {% if objet.tarifEnClair is not empty %}
+                    <p> {{ objet.tarifEnClair|langueLib(langue.lanShortCut) }}</p>
+                {% endif %}
+                {% if objet.dateEnClair is not empty %}
+                    <p> {{ objet.dateEnClair|langueLib(langue.lanShortCut) }}</p>
+                {% endif %}
+                {% if objet.ouvertures is not empty %}
+                {% for ouv in objet.ouvertures %}
+                    {% if ouv.ouvInfosSup is not empty %}
+                        <p> Informations supplémentaires : {{ ouv.ouvInfosSup|langueLib(langue.lanShortCut) }}</p>
+                    {% endif %}
+                {% endfor %}
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if trad.traInfosSup is not empty or trad.traInfosSup is not empty %}
+        <div>
+            {% if trad.traInfosSup is not empty %}
+                <p>Informations supplémentaires : {{ trad.traInfosSup }} </p>
+            {% endif %}
+            {% if trad.traInfosSup is not empty %}
+                <p>Bons plans : {{ trad.traBonsPlans }} </p>
+            {% endif %}
+        </div>
+        {% endif %}
     </article>
-    {% endif %}
 
     {% if objet.typesPublic is not empty %}
     <article>
         <h4> Types de public : </h4>
         <ul>
             {% for type in objet.typesPublic %}
-                <li>{{ type.typLibelle|langueLib(langue.lanShortCut) }}
-                    <ul>
-                        {% if type.familleCritere is not empty %}
-                            <li> {{ type.familleCritere|langueLib(langue.lanShortCut) }}  </li>
-                        {% endif %}
-                        {% if type.min is not empty %}
-                            <li> Min : {{ type.min }} / Max : {{ type.max }}</li>
-                        {% endif %}
-                    </ul>
-                </li>
+            <li>{{ type.typLibelle|langueLib(langue.lanShortCut) }}
+                <ul>
+                    {% if type.familleCritere is not empty %}
+                        <li> {{ type.familleCritere|langueLib(langue.lanShortCut) }}  </li>
+                    {% endif %}
+                    {% if type.min is not empty %}
+                        <li> Min : {{ type.min }} / Max : {{ type.max }}</li>
+                    {% endif %}
+                </ul>
+            </li>
             {% endfor %}
         </ul>
     </article>
@@ -75,6 +106,11 @@
         {% include "ApidaeBundle:restaurant:contenuRestaurant.html.twig" %}
     {% elseif objet.objTypeApidae|typeApidae == "HEBERGEMENT" or objet.objTypeApidae|typeApidae == "HOTELLERIE" %}
         {% include "ApidaeBundle:hebergement:contenuHebergement.html.twig" %}
+    {% elseif objet.objTypeApidae|typeApidae == "EQUIPEMENT" or objet.objTypeApidae|typeApidae == "PATRIMOINE"
+        or objet.objTypeApidae|typeApidae == "ACTIVITE"%}
+        {% include "ApidaeBundle:activite:contenuActivite.html.twig" %}
+    {% elseif objet.objTypeApidae|typeApidae == "FETE" %}
+        {% include "ApidaeBundle:evenement:contenuEvenement.html.twig" %}
     {%  endif %}
 
 {% endblock %}

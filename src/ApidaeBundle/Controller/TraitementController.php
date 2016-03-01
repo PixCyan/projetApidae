@@ -511,7 +511,7 @@ class TraitementController extends Controller
 					$ouverture->setOuvDateDebut($tab->periodesOuvertures[$i]->dateDebut);
 					$ouverture->setOuvDateFin($tab->periodesOuvertures[$i]->dateFin);
 					if(isset($tab->periodesOuvertures[$i]->complementHoraire)) {
-						$ouverture->setSerInfosSup($this->traitementLibelleLangues($languesSite, $tab->periodesOuvertures[$i]->complementHoraire));
+						$ouverture->setOuvInfosSup($this->traitementLibelleLangues($languesSite, $tab->periodesOuvertures[$i]->complementHoraire));
 					}
 					//Associe l'ouverture à la traduction :
 					$ouverture->setObjetApidae($objetApidae);

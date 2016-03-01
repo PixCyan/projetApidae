@@ -522,7 +522,7 @@ class Traitement extends ContainerAwareCommand {
                     $ouverture->setOuvDateDebut($tab->periodesOuvertures[$i]->dateDebut);
                     $ouverture->setOuvDateFin($tab->periodesOuvertures[$i]->dateFin);
                     if(isset($tab->periodesOuvertures[$i]->complementHoraire)) {
-                        $ouverture->setSerInfosSup($this->traitementLibelleLangues($languesSite, $tab->periodesOuvertures[$i]->complementHoraire));
+                        $ouverture->setOuvInfosSup($this->traitementLibelleLangues($languesSite, $tab->periodesOuvertures[$i]->complementHoraire));
                     }
                     //Associe l'ouverture à la traduction :
                     $ouverture->setObjetApidae($objetApidae);
@@ -565,7 +565,7 @@ class Traitement extends ContainerAwareCommand {
                 $tab['dureeSeance'] = $data->$chaineInformations->dureeSeance;
             }
             if(isset($data->$chaineInformations->durees->nombreJours)) {
-                $tab['nbJours'] = $data->$chaineInformations->dureeSeance;
+                $tab['nbJours'] = $data->$chaineInformations->nombreJours;
             }
             $objetApidae->setCapacite($tab);
             for($i = 0; $i < count($data->$chaineInformations->durees); $i++) {

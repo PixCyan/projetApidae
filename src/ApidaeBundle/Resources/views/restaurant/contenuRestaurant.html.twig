@@ -3,18 +3,18 @@
     <article>
        <h4> Capacité </h4>
             <ul>
-                {% if objet.nbMaxCouverts is not empty %}
+            {% if objet.nbMaxCouverts is not empty %}
                 <li> Nombre max de couverts : {{  objet.nbMaxCouverts }} </li>
-                {% endif %}
-                {% if objet.nbCouvertsTerrasse is not empty %}
+            {% endif %}
+            {% if objet.nbCouvertsTerrasse is not empty %}
                 <li> Nombre de couverts en terrasse : {{  objet.nbCouvertsTerrasse }} </li>
-                {% endif %}
-                {% if objet.nbSalles is not empty %}
+            {% endif %}
+            {% if objet.nbSalles is not empty %}
                 <li> Nombre de salles : {{  objet.nbSalles }} </li>
-                {% endif %}
+            {% endif %}
             </ul>
     </article>
-
+    
     {% include "ApidaeBundle:commun:OptionsRestauHeberg.html.twig" %}
 
 

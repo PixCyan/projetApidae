@@ -5,11 +5,11 @@
             <h4> Classement(s) </h4>
             <ul>
                 {% if objet.objEtoile is not empty %}
-                    <li>Classement étoile : {{ objet.objEtoile|langueLib('Fr') }}</li>
+                    <li>Classement étoile : {{ objet.objEtoile|langueLib(langue.lanShortCut) }}</li>
                 {% endif %}
                 {% if objet.labelsQualite is not empty %}
                     {% for label in objet.labelsQualite %}
-                        <li>{{ label.labLibelle|langueLib('Fr') }} {{ label.labClassement|langueLib('Fr') }}</li>
+                        <li>{{ label.labLibelle|langueLib(langue.lanShortCut) }} {{ label.labClassement|langueLib(langue.lanShortCut) }}</li>
                     {% endfor %}
                 {% endif %}
             </ul>
@@ -21,10 +21,10 @@
         <h4> Services : </h4>
         <ul>
             {% for service in objet.services %}
-            <li>{{ service.serLibelle|langueLib('Fr') }}
+            <li>{{ service.serLibelle|langueLib(langue.lanShortCut) }}
                 {% if service.serInfosSup is not empty %}
                     <ul>
-                        <li> {{ service.serInfosSup|langueLib('Fr') }} </li>
+                        <li> {{ service.serInfosSup|langueLib(langue.lanShortCut) }} </li>
                     </ul>
                 {% endif %}
             </li>
@@ -38,10 +38,10 @@
         <h4> Equipements : </h4>
         <ul>
             {% for equipement in objet.equipements %}
-            <li>{{ equipement.equLibelle|langueLib('Fr') }}
+            <li>{{ equipement.equLibelle|langueLib(langue.lanShortCut) }}
                 {% if equipement.equInfosSup is not empty %}
                     <ul>
-                        <li> {{ equipement.equInfosSup|langueLib('Fr') }} </li>
+                        <li> {{ equipement.equInfosSup|langueLib(langue.lanShortCut) }} </li>
                     </ul>
                 {% endif %}
             </li>

@@ -45,9 +45,9 @@ class Ouverture
     /**
      * @var string
      *
-     * @ORM\Column(name="serInfosSup", type="string", length=255, nullable=true)
+     * @ORM\Column(name="ouvInfosSup", type="string", length=255, nullable=true)
      */
-    private $serInfosSup;
+    private $ouvInfosSup;
 
     /**
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="ouvertures")
@@ -84,13 +84,13 @@ class Ouverture
     /**
      * Set serInfosSup
      *
-     * @param string $serInfosSup
+     * @param string $ouvInfosSup
      *
      * @return Service
      */
-    public function setSerInfosSup($serInfosSup)
+    public function setOuvInfosSup($ouvInfosSup)
     {
-        $this->serInfosSup = $serInfosSup;
+        $this->ouvInfosSup = $ouvInfosSup;
 
         return $this;
     }
@@ -100,9 +100,9 @@ class Ouverture
      *
      * @return string
      */
-    public function getSerInfosSup()
+    public function getOuvInfosSup()
     {
-        return $this->serInfosSup;
+        return $this->ouvInfosSup;
     }
 
     /**
