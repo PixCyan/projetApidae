@@ -7,7 +7,7 @@
             <ul>
                 <li> Type : {{ objet.objTypeApidae }}</li>
 
-                <li> Objet Apidae : {{ objet.nom|langueLib('Fr') }} </li>
+                <li> Objet Apidae : {{ objet.nom|langueLib(langue.lanShortCut) }} </li>
                 <li> id : {{objet.idObjet}} </li>
             </ul>
         </div>
@@ -15,7 +15,7 @@
             <h4> Categories : </h4>
             <ul>
                 {% for cat in objet.categories %}
-                    <li>{{ cat.catLibelle|langueLib('Fr') }}</li>
+                    <li>{{ cat.catLibelle|langueLib(langue.lanShortCut) }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -32,7 +32,7 @@
             <h4> Categories : </h4>
             <ul>
                 {% for cat in objet.categories %}
-                    <li>{{ cat.catLibelle|langueLib('Fr') }}</li>
+                    <li>{{ cat.catLibelle|langueLib(langue.lanShortCut) }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -40,20 +40,41 @@
 
     {% if objet.moyensCommunications is not empty %}
     <article>
-            <div>
-                <h4> Moyens de communication : </h4>
-                <ul>
-                    {% for moy in objet.moyensCommunications %}
-                        <li>{{ moy.moyComLibelle|langueLib('Fr') }} : {{ moy.moyComCoordonnees }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
+        <div>
+            <h4> Moyens de communication : </h4>
+            <ul>
+                {% for moy in objet.moyensCommunications %}
+                    <li>{{ moy.moyComLibelle|langueLib(langue.lanShortCut) }} : {{ moy.moyComCoordonnees }}</li>
+                {% endfor %}
+            </ul>
+        </div>
     </article>
     {% endif %}
 
-    {% if objet.objTypeApidae == "RESTAURATION" %}
+    {% if objet.typesPublic is not empty %}
+    <article>
+        <h4> Types de public : </h4>
+        <ul>
+            {% for type in objet.typesPublic %}
+                <li>{{ type.typLibelle|langueLib(langue.lanShortCut) }}
+                    <ul>
+                        {% if type.familleCritere is not empty %}
+                            <li> {{ type.familleCritere|langueLib(langue.lanShortCut) }}  </li>
+                        {% endif %}
+                        {% if type.min is not empty %}
+                            <li> Min : {{ type.min }} / Max : {{ type.max }}</li>
+                        {% endif %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    </article>
+    {% endif %}
+
+    {% if objet.objTypeApidae|typeApidae == "RESTAURATION" %}
         {% include "ApidaeBundle:restaurant:contenuRestaurant.html.twig" %}
-        {% include "ApidaeBundle:commun:ServicesEquipements.html.twig" %}
+    {% elseif objet.objTypeApidae|typeApidae == "HEBERGEMENT" or objet.objTypeApidae|typeApidae == "HOTELLERIE" %}
+        {% include "ApidaeBundle:hebergement:contenuHebergement.html.twig" %}
     {%  endif %}
 
 {% endblock %}

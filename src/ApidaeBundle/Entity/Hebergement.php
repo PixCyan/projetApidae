@@ -103,6 +103,13 @@ class Hebergement extends ObjetApidae
     /**
      * @var int
      *
+     * @ORM\Column(name="nbLitsSimples", type="integer", nullable=true)
+     */
+    private $nbLitsSimples;
+
+    /**
+     * @var int
+     *
      * @ORM\Column(name="surface", type="integer", nullable=true)
      */
     private $surface;
@@ -120,6 +127,13 @@ class Hebergement extends ObjetApidae
      * @ORM\Column(name="nbPieces", type="integer", nullable=true)
      */
     private $nbPieces;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="capaciteMaxPossible", type="integer", nullable=true)
+     */
+    private $capaciteMaxPossible;
 
     /**
      * Get id
@@ -507,6 +521,38 @@ class Hebergement extends ObjetApidae
         $this->capaciteHebergement = $capaciteHebergement;
     }
 
+    /**
+     * @return int
+     */
+    public function getNbLitsSimples()
+    {
+        return $this->nbLitsSimples;
+    }
+
+    /**
+     * @param int $nbLitsSimples
+     */
+    public function setNbLitsSimples($nbLitsSimples)
+    {
+        $this->nbLitsSimples = $nbLitsSimples;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCapaciteMaxPossible()
+    {
+        return $this->capaciteMaxPossible;
+    }
+
+    /**
+     * @param int $capaciteMaxPossible
+     */
+    public function setCapaciteMaxPossible($capaciteMaxPossible)
+    {
+        $this->capaciteMaxPossible = $capaciteMaxPossible;
+    }
+
     public function setCapacite($tab) {
         //var_dump($tab);
         if(isset($tab->naturisme)) {
@@ -521,8 +567,8 @@ class Hebergement extends ObjetApidae
             $this->setNbSuites($tab->nombreSuites);
         } if(isset($tab->capaciteHebergement)) {
             $this->setCapaciteHebergement($tab->capaciteHebergement);
-        } if(isset($tab->nbPieces)) {
-            $this->setNbPieces($tab->nbPieces);
+        } if(isset($tab->nombrePieces)) {
+            $this->setNbPieces($tab->nombrePieces);
         } if(isset($tab->numeroEtages)) {
             $this->setNumeroEtage($tab->numeroEtages);
         } if(isset($tab->surface)) {
@@ -541,6 +587,10 @@ class Hebergement extends ObjetApidae
             $this->setNbChambresDeclareesHotelier($tab->nombreChambresDeclareesHotelier);
         } if(isset($tab->nombreChambresClassees)) {
             $this->setNbChambresClassees($tab->nombreChambresClassees);
+        }  if(isset($tab->nombreLitsSimples)) {
+            $this->setNbLitsSimples($tab->nombreLitsSimples);
+        } if(isset($tab->capaciteMaximumPossible)) {
+            $this->setCapaciteMaxPossible($tab->capaciteMaximumPossible);
         }
     }
 }

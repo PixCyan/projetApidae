@@ -17,7 +17,7 @@ namespace ApidaeBundle\Twig\Extension;
 
      public function getFilters() {
          return array(new \Twig_SimpleFilter('langueLib', array($this, 'getLangueLib')),
-             new \Twig_SimpleFilter('typeApidae', array($this, 'getTyeApidae')));
+             new \Twig_SimpleFilter('typeApidae', array($this, 'getTypeApidae')));
      }
 
      function getLangueLib($str, $locale='') {

@@ -1,21 +1,5 @@
 {% block contentRestaurant %}
 
-    {% if objet.objEtoile is not empty and objet.labelsQualite is not empty %}
-    <article>
-        <h4> Classement(s) </h4>
-            <ul>
-            {% if objet.objEtoile is not empty %}
-                <li>Classement étoile : {{ objet.objEtoile|langueLib('Fr') }}</li>
-            {% endif %}
-            {% if objet.labelsQualite is not empty %}
-                {% for label in objet.labelsQualite %}
-                    <li>{{ label.labLibelle|langueLib('Fr') }} {{ label.labClassement|langueLib('Fr') }}</li>
-                {% endfor %}
-            {% endif %}
-            </ul>
-    </article>
-    {% endif %}
-
     <article>
        <h4> Capacité </h4>
             <ul>
@@ -30,6 +14,8 @@
                 {% endif %}
             </ul>
     </article>
+
+    {% include "ApidaeBundle:commun:OptionsRestauHeberg.html.twig" %}
 
 
 {% endblock %}
