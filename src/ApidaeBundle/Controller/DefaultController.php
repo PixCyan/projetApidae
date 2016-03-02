@@ -38,9 +38,11 @@ class DefaultController extends Controller
     public function offreAction($id)
     {
         //phpinfo();
+        //Test
         if($id == 0) {
             $id = 48925;
         }
+        $categoriesMenu = $this->getCategoriesMenu();
         //Test affichage obet
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue(0);
@@ -50,7 +52,7 @@ class DefaultController extends Controller
 
         if($objetApidae != null) {
             return $this->render('ApidaeBundle:Default:vueFiche.html.twig',
-                array('objet' => $objetApidae, 'trad' => $trad, 'langue' => $langue));
+                array('objet' => $objetApidae, 'trad' => $trad, 'langue' => $langue, 'categoriesMenu' => $categoriesMenu));
         } else {
             //TODO changer
             return $this->render('ApidaeBundle:Default:donnees.html.twig');
@@ -59,7 +61,7 @@ class DefaultController extends Controller
 
     public function listeAction($typeObjet, $categorieId)
     {
-        //TODO
+        $categoriesMenu = $this->getCategoriesMenu();
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue(0);
         $categorie = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
@@ -67,11 +69,25 @@ class DefaultController extends Controller
 
         if($objets != null) {
             return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-                array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie));
+                array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie,
+                    'categoriesMenu' => $categoriesMenu));
         } else {
             //TODO changer
             return $this->render('ApidaeBundle:Default:donnees.html.twig');
         }
+    }
+
+
+    private function getCategoriesMenu() {
+        $categories = array();
+        $this->em = $this->getDoctrine()->getManager();
+        $categories['Restaurants'] = $this->em->getRepository(Categorie::class)->getCategoriesRestaurants();
+        $categories['Hébergements'] = $this->em->getRepository(Categorie::class)->getCategoriesHebergements();
+        $categories['Activités'] = $this->em->getRepository(Categorie::class)->getCategoriesActivites();
+        $categories['Evénements'] = $this->em->getRepository(Categorie::class)->getCategoriesEvenements();
+
+        return $categories;
+
 
     }
 

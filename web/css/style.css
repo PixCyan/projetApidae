@@ -8,3 +8,8 @@
     margin : auto;
     width: 80%;
 }
+
+.LiDisplay {
+    display :inline-block;
+    vertical-align: top;
+}
