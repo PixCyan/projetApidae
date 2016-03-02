@@ -2,7 +2,12 @@
 
 namespace ApidaeBundle\Twig\Extension;
 
- class Fonctions extends  \Twig_Extension {
+ use ApidaeBundle\Entity\Langue;
+ use ApidaeBundle\Entity\ObjetApidae;
+ use Twig_Extension;
+ use Twig_SimpleFunction;
+
+ class Fonctions extends  Twig_Extension {
      private $SIT_LANGUE = 'Fr';
 
      /**
@@ -20,6 +25,10 @@ namespace ApidaeBundle\Twig\Extension;
              new \Twig_SimpleFilter('typeApidae', array($this, 'getTypeApidae')));
      }
 
+     public function getFunctions() {
+         return array(new Twig_SimpleFunction('tradLangue', array($this, 'getTradLangue')));
+     }
+
      function getLangueLib($str, $locale='') {
          if (empty ($locale)) {
              $locale = $this->SIT_LANGUE;
@@ -34,8 +43,16 @@ namespace ApidaeBundle\Twig\Extension;
      }
 
      function getTypeApidae($str) {
-         //TODO finir
          $chaineExplode = explode("_", $str);
          return $chaineExplode[0];
+     }
+
+     function getTradLangue(ObjetApidae $objet, Langue $langue) {
+         foreach($objet->getTraductions() as $value) {
+             if($value->getLangue() == $langue) {
+                 return $value;
+             }
+         }
+         return null;
      }
  }

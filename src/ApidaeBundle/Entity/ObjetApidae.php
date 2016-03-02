@@ -131,14 +131,14 @@ abstract class ObjetApidae
     /**
      * @var string
      *
-     * @ORM\Column(name="obj_DateEnClair", type="string", length=255, nullable=true)
+     * @ORM\Column(name="obj_DateEnClair", type="text", nullable=true)
      */
     protected $dateEnClair;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="obj_TarifEnClair", type="string", length=255, nullable=true)
+     * @ORM\Column(name="obj_TarifEnClair", type="text",nullable=true)
      */
     protected $tarifEnClair;
 
@@ -822,5 +822,14 @@ abstract class ObjetApidae
     }
 
     public abstract function setCapacite($tab);
+
+    protected function getTradLangue($langue) {
+        foreach($this->getTraductions() as $value) {
+            if($value->getLangue() == $langue) {
+                return $value;
+            }
+        }
+        return null;
+    }
 }
 

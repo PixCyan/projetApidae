@@ -1,6 +1,8 @@
 .testListe {
     border : 1px grey solid;
-    margin : 10px;
+    margin : auto;
+    margin-bottom : 10px;
+    width: 70%;
     padding : 0 0 10px 10px;
 }
 
@@ -9,7 +11,11 @@
     width: 80%;
 }
 
-.LiDisplay {
+.LiDisplay, .imgListe, .infosListe, .lienDetailsListe, .filtresListe {
     display :inline-block;
     vertical-align: top;
+}
+
+.infosListe {
+    width : 50%;
 }
