@@ -1,0 +1,10 @@
+.testListe {
+    border : 1px grey solid;
+    margin : 10px;
+    padding : 0 0 10px 10px;
+}
+
+#content {
+    margin : auto;
+    width: 80%;
+}

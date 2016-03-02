@@ -173,12 +173,12 @@ class Traitement extends ContainerAwareCommand {
             foreach($data->$chaineInformations->categories as $categorie) {
                 $v = $this->traitementReference($categorie->elementReferenceType,$categorie->id);
                 $lanLib =$this->traitementLibelleLangues($languesSite, $v);
-                $this->traitementCategorieDetails($lanLib, $categorie->id, $objetApidae);
+                $this->traitementCategorieDetails($lanLib, $categorie, $objetApidae);
                 if(isset($v->familleCritere)) {
                     if(!$this->em->getRepository(Categorie::class)->findOneByCatId(($v->familleCritere->id))) {
                         $val = $this->traitementReference($v->familleCritere->elementReferenceType, $v->familleCritere->id);
                         $lanLib =$this->traitementLibelleLangues($languesSite, $val);
-                        $this->traitementCategorieDetails($lanLib, $v->familleCritere->id, $objetApidae);
+                        $this->traitementCategorieDetails($lanLib, $v->familleCritere, $objetApidae);
                     }
                 }
             }
@@ -195,21 +195,15 @@ class Traitement extends ContainerAwareCommand {
             $tab = $data->$chaineInformations->$chaineType;
             if($chaineType == "typesManifestation") {
                 foreach($tab as $value) {
-                    $catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($value->id);
-                    if($catExist != null) {
-                        $v = $this->traitementReference($value->elementReferenceType, $value->id);
-                        $lanLib = $this->traitementLibelleLangues($languesSite, $v);
-                        $this->traitementCategorieDetails($lanLib, $value->id, $objetApidae);
-                    }
+                    $v = $this->traitementReference($value->elementReferenceType, $value->id);
+                    $lanLib = $this->traitementLibelleLangues($languesSite, $v);
+                    $this->traitementCategorieDetails($lanLib, $value, $objetApidae);
                 }
             } else {
-                $tab = $data->$chaineInformations->$chaineType;
-                $catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($tab->id);
-                if($catExist != null) {
-                    $v = $this->traitementReference($tab->elementReferenceType, $tab->id);
-                    $lanLib = $this->traitementLibelleLangues($languesSite, $v);
-                    $this->traitementCategorieDetails($lanLib, $tab->id, $objetApidae);
-                }
+                $v = $this->traitementReference($tab->elementReferenceType, $tab->id);
+                $lanLib = $this->traitementLibelleLangues($languesSite, $v);
+                $this->traitementCategorieDetails($lanLib, $tab, $objetApidae);
+
             }
         }
 
@@ -697,24 +691,25 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
-    private function traitementCategorieDetails($cat, $id, $objetApidae) {
+    private function traitementCategorieDetails($catLibelle, $objetCatRef, $objetApidae) {
         //On vérifie si la catégorie existe déjà
-        $catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($id);
+        $catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($objetCatRef->id);
         if($catExist == null) {
             $categorie = new Categorie();
-            $this->updateCategorie($cat, $categorie, $id, $objetApidae);
+            $this->updateCategorie($catLibelle, $categorie, $objetCatRef, $objetApidae);
             $this->em->persist($categorie);
             $this->em->flush();
         } else {
-            $this->updateCategorie($cat, $catExist, $id, $objetApidae);
+            $this->updateCategorie($catLibelle, $catExist, $objetCatRef, $objetApidae);
             $this->em->merge($catExist);
             $this->em->merge($objetApidae);
         }
     }
 
-    private function updateCategorie($cat,$categorie, $id, $objetApidae) {
-        $categorie->setCatId($id);
-        $categorie->setCatLibelle($cat);
+    private function updateCategorie($catLibelle,$categorie, $objetCatRef, $objetApidae) {
+        $categorie->setCatId($objetCatRef->id);
+        $categorie->setCatLibelle($catLibelle);
+        $categorie->setCatRefType($objetCatRef->elementReferenceType);
         if(!$categorie->getObjets()->contains($objetApidae)) {
             //Ajout de lobjet à la catégorie :
             $categorie->addObjet($objetApidae);
@@ -729,7 +724,7 @@ class Traitement extends ContainerAwareCommand {
         foreach($tab as $categorie) {
             $v = $this->traitementReference($categorie->elementReferenceType, $categorie->id);
             $lanLib =$this->traitementLibelleLangues($languesSite, $v);
-            $this->traitementCategorieDetails($lanLib, $categorie->id, $objetApidae);
+            $this->traitementCategorieDetails($lanLib, $categorie, $objetApidae);
         }
     }
 

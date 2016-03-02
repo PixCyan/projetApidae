@@ -37,6 +37,13 @@ class Categorie
     private $catLibelle;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="catRefType", type="string", length=255)
+     */
+    private $catRefType;
+
+    /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="categories", cascade={"persist"})
      */
     private $objets;
@@ -119,6 +126,19 @@ class Categorie
         $this->catId = $catId;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCatRefType()
+    {
+        return $this->catRefType;
+    }
 
-
+    /**
+     * @param mixed $catRefType
+     */
+    public function setCatRefType($catRefType)
+    {
+        $this->catRefType = $catRefType;
+    }
 }

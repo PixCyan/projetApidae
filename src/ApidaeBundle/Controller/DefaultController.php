@@ -2,6 +2,7 @@
 
 namespace ApidaeBundle\Controller;
 
+use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Langue;
 use ApidaeBundle\Entity\TraductionObjetApidae;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -56,9 +57,22 @@ class DefaultController extends Controller
         }
     }
 
-    public function listeAction($type)
+    public function listeAction($typeObjet, $categorieId)
     {
         //TODO
+        $this->em = $this->getDoctrine()->getManager();
+        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue(0);
+        $categorie = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+        $objets = $categorie->getObjets();
+
+        if($objets != null) {
+            return $this->render('ApidaeBundle:Default:vueListe.html.twig',
+                array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie));
+        } else {
+            //TODO changer
+            return $this->render('ApidaeBundle:Default:donnees.html.twig');
+        }
+
     }
 
 }

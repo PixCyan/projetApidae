@@ -71,11 +71,10 @@ class TraitementController extends Controller
 					}
 					$typeObj = implode($tab);
 					$chaineInformations = "informations" . $typeObj;
+					$tab[0] = strtolower($tab[0]);
+					$chaineType = implode($tab) . "Type";
 					if ($data->type == "FETE_ET_MANIFESTATION") {
 						$chaineType = "typesManifestation";
-					} else {
-						$tab[0] = strtolower($tab[0]);
-						$chaineType = implode($tab) . "Type";
 					}
 					$this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
 				}
@@ -131,6 +130,7 @@ class TraitementController extends Controller
 					$objetApidae->setCommune($commune);
 					//update
 					$this->em->merge($commune);
+					$this->em->merge($objetApidae);
 				} else {
 					$commune = new Commune();
 					foreach($this->communes as $com) {
@@ -162,12 +162,12 @@ class TraitementController extends Controller
 			foreach($data->$chaineInformations->categories as $categorie) {
 				$v = $this->traitementReference($categorie->elementReferenceType,$categorie->id);
 				$lanLib =$this->traitementLibelleLangues($languesSite, $v);
-				$this->traitementCategorieDetails($lanLib, $categorie->id, $objetApidae);
+				$this->traitementCategorieDetails($lanLib, $categorie, $objetApidae);
 				if(isset($v->familleCritere)) {
 					if(!$this->em->getRepository(Categorie::class)->findOneByCatId(($v->familleCritere->id))) {
 						$val = $this->traitementReference($v->familleCritere->elementReferenceType, $v->familleCritere->id);
 						$lanLib =$this->traitementLibelleLangues($languesSite, $val);
-						$this->traitementCategorieDetails($lanLib, $v->familleCritere->id, $objetApidae);
+						$this->traitementCategorieDetails($lanLib, $v->familleCritere, $objetApidae);
 					}
 				}
 			}
@@ -184,21 +184,15 @@ class TraitementController extends Controller
 			$tab = $data->$chaineInformations->$chaineType;
 			if($chaineType == "typesManifestation") {
 				foreach($tab as $value) {
-					$catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($value->id);
-					if($catExist != null) {
-						$v = $this->traitementReference($value->elementReferenceType, $value->id);
-						$lanLib = $this->traitementLibelleLangues($languesSite, $v);
-						$this->traitementCategorieDetails($lanLib, $value->id, $objetApidae);
-					}
+					$v = $this->traitementReference($value->elementReferenceType, $value->id);
+					$lanLib = $this->traitementLibelleLangues($languesSite, $v);
+					$this->traitementCategorieDetails($lanLib, $value, $objetApidae);
 				}
 			} else {
-				$tab = $data->$chaineInformations->$chaineType;
-				$catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($tab->id);
-				if($catExist != null) {
-					$v = $this->traitementReference($tab->elementReferenceType, $tab->id);
-					$lanLib = $this->traitementLibelleLangues($languesSite, $v);
-					$this->traitementCategorieDetails($lanLib, $tab->id, $objetApidae);
-				}
+				$v = $this->traitementReference($tab->elementReferenceType, $tab->id);
+				$lanLib = $this->traitementLibelleLangues($languesSite, $v);
+				$this->traitementCategorieDetails($lanLib, $tab, $objetApidae);
+
 			}
 		}
 
@@ -552,10 +546,12 @@ class TraitementController extends Controller
 			$tab = array();
 			if(isset($data->$chaineInformations->dureeSeance)) {
 				$tab['dureeSeance'] = $data->$chaineInformations->dureeSeance;
-				$objetApidae->setCapacite($tab);
 			}
+			if(isset($data->$chaineInformations->durees->nombreJours)) {
+				$tab['nbJours'] = $data->$chaineInformations->nombreJours;
+			}
+			$objetApidae->setCapacite($tab);
 			for($i = 0; $i < count($data->$chaineInformations->durees); $i++) {
-				print($data->$chaineInformations->durees[0]->elementReferenceType);
 				$v = $this->traitementReference($data->$chaineInformations->durees[$i]->elementReferenceType,
 					$data->$chaineInformations->durees[$i]->id);
 				if($v != null) {
@@ -579,10 +575,18 @@ class TraitementController extends Controller
 						$this->em->merge($duree);
 					} else {
 						$this->em->persist($duree);
-						$this->em->merge($objetApidae);
 					}
 				}
 			}
+		}
+
+		//--------------- ActiviteType / RubriqueEquipement / patrimoineCulturelType --------------------
+		if(isset($data->$chaineInformations->activiteType)) {
+			$this->traitementActiviteTypes($data->$chaineInformations->activiteType, $languesSite, $objetApidae);
+		} else if(isset($data->$chaineInformations->rubrique)) {
+			$this->traitementActiviteTypes($data->$chaineInformations->rubrique, $languesSite, $objetApidae);
+		} else if(isset($data->$chaineInformations->patrimoineCulturelType)) {
+			$this->traitementActiviteTypes($data->$chaineInformations->patrimoineCulturelType, $languesSite, $objetApidae);
 		}
 
 		//-------------------- Portee ----------------------
@@ -609,7 +613,6 @@ class TraitementController extends Controller
 				}
 			}
 		}
-
 		$this->em->persist($objetApidae);
 		$this->em->flush();
 	}
@@ -677,24 +680,25 @@ class TraitementController extends Controller
 		}
 	}
 
-	private function traitementCategorieDetails($cat, $id, $objetApidae) {
+	private function traitementCategorieDetails($catLibelle, $objetCatRef, $objetApidae) {
 		//On vérifie si la catégorie existe déjà
-		$catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($id);
+		$catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($objetCatRef->id);
 		if($catExist == null) {
 			$categorie = new Categorie();
-			$this->updateCategorie($cat, $categorie, $id, $objetApidae);
+			$this->updateCategorie($catLibelle, $categorie, $objetCatRef, $objetApidae);
 			$this->em->persist($categorie);
 			$this->em->flush();
 		} else {
-			$this->updateCategorie($cat, $catExist, $id, $objetApidae);
+			$this->updateCategorie($catLibelle, $catExist, $objetCatRef, $objetApidae);
 			$this->em->merge($catExist);
 			$this->em->merge($objetApidae);
 		}
 	}
 
-	private function updateCategorie($cat,$categorie, $id, $objetApidae) {
-		$categorie->setCatId($id);
-		$categorie->setCatLibelle($cat);
+	private function updateCategorie($catLibelle,$categorie, $objetCatRef, $objetApidae) {
+		$categorie->setCatId($objetCatRef->id);
+		$categorie->setCatLibelle($catLibelle);
+		$categorie->setCatRefType($objetCatRef->elementReferenceType);
 		if(!$categorie->getObjets()->contains($objetApidae)) {
 			//Ajout de lobjet à la catégorie :
 			$categorie->addObjet($objetApidae);
@@ -709,7 +713,7 @@ class TraitementController extends Controller
 		foreach($tab as $categorie) {
 			$v = $this->traitementReference($categorie->elementReferenceType, $categorie->id);
 			$lanLib =$this->traitementLibelleLangues($languesSite, $v);
-			$this->traitementCategorieDetails($lanLib, $categorie->id, $objetApidae);
+			$this->traitementCategorieDetails($lanLib, $categorie, $objetApidae);
 		}
 	}
 
@@ -960,6 +964,33 @@ class TraitementController extends Controller
 		} else {
 			$this->em->persist($tarifType);
 			$this->em->merge($objetApidae);
+		}
+	}
+
+
+	public function traitementActiviteTypes($tab, $languesSite, $objetApidae) {
+		$act =  $this->em->getRepository(ActiviteType::class)->findOneByIdActiviteType($tab->id);
+		$update = true;
+		if($act == null) {
+			$update = false;
+			$act = new ActiviteType();
+		}
+		$v = $this->traitementReference($tab->elementReferenceType, $tab->id);
+		if($v != null) {
+			$act->setLibelle($this->traitementLibelleLangues($languesSite, $v));
+		}
+		$act->setLibelle($this->traitementLibelleLangues($languesSite, $v));
+		$act->setIdActivite($v->id);
+		$act->setOrdre($v->ordre);
+		$objetApidae->setActiviteType($act);
+		if(!$act->getActivites()->contains($objetApidae)) {
+			$act->addActivite($objetApidae);
+		}
+		if($update) {
+			$this->em->merge($objetApidae);
+			$this->em->merge($act);
+		} else {
+			$this->em->persist($act);
 		}
 	}
 }

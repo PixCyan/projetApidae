@@ -1,2 +1,47 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
+{% block content %}
+    <h1> {{ typeObjet }} :: {{ categorie.catLibelle|langueLib(langue.lanShortCut) }}</h1>
+    {% for objet in objets %}
+    <article class="testListe">
+        <div>
+            <h2> {{ objet.nom|langueLib(langue.lanShortCut) }}
+            {% if objet.commune is not empty %}
+                {{ objet.commune.comNom }}
+            {%  endif %}
+            </h2>
+            {% if objet.categories is not empty %}
+                <p> Categories :
+                    {% for cat in objet.categories %}
+                        {{ cat.catLibelle|langueLib(langue.lanShortCut) }}
+                    {% endfor %}
+                </p>
+            {% endif %}
+            {% if objet.tarifEnClair is not empty %}
+                <p> {{ objet.tarifEnClair|langueLib(langue.lanShortCut) }}</p>
+            {% endif %}
+            {% for trad in objet.traductions %}
+            {% if trad.langue.lanLibelle ==  langue.lanLibelle and trad.traDescriptionCourte is not empty %}
+                <div>
+                    <h4> Description : </h4>
+                    <p> {{ trad.traDescriptionCourte }} </p>
+                </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        {% if objet.multimedias is not empty %}
+            <div>
+                <h4> Multimédias : </h4>
+                <ul>
+                    <li> To Do</li>
+                </ul>
+            </div>
+        {% endif %}
 
+        <a href="{{ path('offre', {'id': objet.idObjet }) }}"> Voir le détail </a>
+    </article>
+    {% endfor %}
+
+
+
+
+{%  endblock %}
