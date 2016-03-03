@@ -1,4 +1,14 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
 {% block content %}
+    <article>
+        <h2> Nos suggestions </h2>
+        {% if suggestions is empty %}
+        <p> Aucune suggestions disponibles !</p>
+        {% else %}
+            {%  for suggestion in suggestions %}
+                <a href="{{ path('offre', {'id': suggestion.idObjet }) }}" ><img src="{{ suggestion.multimedias.first.mulUrl}}"></a>
+            {%  endfor %}
+        {% endif %}
+    </article>
 
 {% endblock %}

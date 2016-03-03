@@ -1,10 +1,18 @@
+user:
+    resource: "@UserBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
 apidae:
     path : /
     defaults :  { _controller: ApidaeBundle:Index:index }
     prefix : /
 
-test:
-    path : /test
+userBundle:
+    resource: "@UserBundle/Resources/config/routing.yml"
+
+index:
+    path : /accueil
     defaults: { _controller: ApidaeBundle:Default:index }
 
 traitement:

@@ -5,9 +5,11 @@
         {% if objet.multimedias is not empty %}
         <div>
             <h4> Multimédias : </h4>
-            <ul>
-                <li> To Do</li>
-            </ul>
+            {% for m in objet.multimedias %}
+                {% if m.mulUrlFiche is not empty %}
+                    <a href="{{ m.mulUrl}}" ><img src="{{ m.mulUrlFiche}}"></a>
+                {% endif %}
+            {%  endfor %}
         </div>
         {% endif %}
 

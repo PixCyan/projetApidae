@@ -1,15 +1,20 @@
 {% block header %}
     {% block nav %}
     <nav>
-        {% for key, cat in categoriesMenu %}
-        <li class="LiDisplay"> {{ key }}
-            <ul>
-                {% for c in cat %}
-                    <li><a href="{{ path('liste', {'typeObjet': key, 'categorieId': c.catId}) }}"> {{ c.catLibelle|langueLib(langue.lanShortCut)  }} </a></li>
-                {% endfor %}
-            </ul>
-        </li>
-        {% endfor %}
+
+        <ul>
+            <li class="LiDisplay"><a href="{{ path('index') }}"> Accueil </a></li>
+            {% for key, cat in categoriesMenu %}
+            <li class="LiDisplay"> {{ key }}
+                <ul>
+                    {% for c in cat %}
+                        <li><a href="{{ path('liste', {'typeObjet': key, 'categorieId': c.catId}) }}"> {{ c.catLibelle|langueLib(langue.lanShortCut)  }} </a></li>
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
+
 
     </nav>
     {% endblock %}
