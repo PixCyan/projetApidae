@@ -11,13 +11,15 @@ use ApidaeBundle\Entity\ObjetApidae;
 class DefaultController extends Controller
 {
     private $em;
+    //0 = FR, 1 = EN
+    private $lan = 0;
 
     public function indexAction()
     {
         $user = $this->getUser();
         $categoriesMenu = $this->getCategoriesMenu();
         $this->em = $this->getDoctrine()->getManager();
-        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue(0);
+        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
         $suggestions = $this->em->getRepository(ObjetApidae::class)->findByObjSuggestion(1);
         return $this->render('ApidaeBundle:Default:index.html.twig', array('suggestions' => $suggestions,
             'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $user));
@@ -35,7 +37,7 @@ class DefaultController extends Controller
         $categoriesMenu = $this->getCategoriesMenu();
         //Test affichage obet
         $this->em = $this->getDoctrine()->getManager();
-        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue(0);
+        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
         $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($id);
         $trad = $this->em->getRepository(TraductionObjetApidae::class)->findOneBy(
             array("objet"=> $objetApidae, "langue" => $langue));
@@ -55,7 +57,7 @@ class DefaultController extends Controller
         $user = $this->getUser();
         $categoriesMenu = $this->getCategoriesMenu();
         $this->em = $this->getDoctrine()->getManager();
-        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue(0);
+        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
         $categorie = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
         $objets = $categorie->getObjets();
 

@@ -1,0 +1,29 @@
+{% extends "ApidaeBundle:commun:template.html.twig" %}
+{% block content %}
+    <h1> Gestion des utilisateurs </h1>
+    <article class="filtresListe">
+        <h2> Recherches </h2>
+        <p> To Do </p>
+    </article>
+
+    <article class="testListe">
+        <h2> Utilisateurs </h2>
+        {% if users is not defined or users is empty %}
+            <p> Aucun utilisateurs ! </p>
+        {% else %}
+            <table class="tabUsers">
+                <tr> <th> Pseudo </th> <th> Email </th> <th> </th> </tr>
+                {% for u in users %}
+                <tr>
+                    <td>{{ u.username }}</td>
+                    <td>{{ u.email }}</td>
+                    <td class="actionsTab"><a href="{{ path('modifierUser', {'userId': u.id}) }}"> Modifier </a> <a href="#"> Supprimer </a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        {% endif %}
+
+    </article>
+
+
+{%  endblock %}

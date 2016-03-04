@@ -20,3 +20,20 @@ fos_user_change_password:
 profile:
     path: /consulterProfile
     defaults: { _controller: UserBundle:Default:voirProfil }
+
+listeUsers:
+    path: /admin/liste/utilisateurs
+    defaults: { _controller: UserBundle:Default:listeUtilisateurs }
+
+editionProfile:
+    path: /admin/editionProfile
+    defaults: { _controller: FOSUserBundle:Profile:edit }
+
+modifierUser:
+    path: /admin/modifier/utilisateur/{userId}
+    defaults: { _controller: UserBundle:Default:modifierUtilisateur }
+
+updateUser:
+    path: /admin/miseAjour/utilisateur/
+    defaults: { _controller: UserBundle:Default:updateUtilisateur }
+    methods: [POST, PUT]

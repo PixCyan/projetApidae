@@ -1,11 +1,11 @@
 {% block header %}
-    {% block nav %}
     <nav>
-        <ul>
-            <li class="LiDisplay"><a href="{{ path('index') }}"> Accueil </a></li>
+    {% block nav %}
+       <ul>
+            <li class="LiMenu"><a href="{{ path('index') }}"> Accueil </a></li>
             {% if categoriesMenu is defined %}
                 {% for key, cat in categoriesMenu %}
-                <li class="LiDisplay"> {{ key }}
+                <li class="LiMenu"> {{ key }}
                     <ul>
                         {% for c in cat %}
                             <li><a href="{{ path('liste', {'typeObjet': key, 'categorieId': c.catId}) }}">
@@ -15,23 +15,43 @@
                 </li>
                 {% endfor %}
             {% endif %}
-            {%  if user is defined %}
-            <li class="LiDisplay"> Compte
+
+            <li class="LiMenu"> Panier
                 <ul>
-                    {% if user is empty %}
-                    <!-- Si non connecté -->
-                    <li><a href="{{ path('fos_user_registration_register') }}"> S'enregistrer </a></li>
-                    <li><a href="{{ path('fos_user_security_login') }}"> Se connecter </a></li>
+                    {% if user is not defined or user is empty %}
+                        <!-- Si non connecté -->
+                        <li><a href="{{ path('panier') }}"> Ma sélection </a></li>
                     {% else %}
-                    <!-- Si connecté-->
-                    <li><a href="{{ path('fos_user_profile_show') }}"> Mon profil </a></li>
-                    <li><a href="{{ path('panier') }}"> Gestion des sélections </a></li>
-                    <li><a href="{{ path('fos_user_security_logout') }}"> Se déconnecter </a></li>
+                        <!-- Si connecté-->
+                        <li><a href="{{ path('panier') }}"> Gestion des sélections </a></li>
                     {% endif %}
                 </ul>
             </li>
-            {% endif %}
+
+            <li class="LiMenu"> Compte
+                <ul>
+                    {% if user is not defined or user is empty %}
+                        <!-- Si non connecté -->
+                        <li><a href="{{ path('fos_user_registration_register') }}"> S'enregistrer </a></li>
+                        <li><a href="{{ path('fos_user_security_login') }}"> Se connecter </a></li>
+                    {% else %}
+                        <!-- Si connecté-->
+                        <li><a href="{{ path('fos_user_profile_show') }}"> Mon profil </a></li>
+                        <li><a href="{{ path('panier') }}"> Gestion des sélections </a></li>
+                        <li><a href="{{ path('fos_user_security_logout') }}"> Se déconnecter </a></li>
+                    {% endif %}
+                </ul>
+            </li>
+
+           {% if user is defined and user is not empty and is_granted('ROLE_SUPER_ADMIN')%}
+           <li class="LiMenu"> Administration
+               <ul>
+                   <li><a href="{{ path('listeUsers') }}"> Gérer les utilisateurs </a></li>
+               </ul>
+           </li>
+           {% endif %}
+
         </ul>
-    </nav>
     {% endblock %}
+    </nav>
 {% endblock %}
