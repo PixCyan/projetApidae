@@ -42,6 +42,12 @@ class Panier
      */
     private $objets;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="UserBundle\Entity\UserApidae", inversedBy="paniers")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $user;
+
 
     public function __construct() {
         $this->objets = new ArrayCollection();

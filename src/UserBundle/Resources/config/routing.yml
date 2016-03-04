@@ -16,3 +16,7 @@ fos_user_resetting:
 fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /profile
+
+profile:
+    path: /consulterProfile
+    defaults: { _controller: UserBundle:Default:voirProfil }

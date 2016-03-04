@@ -3,36 +3,32 @@
 namespace ApidaeBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use ApidaeBundle\Entity\ObjetApidae;
-use ApidaeBundle\Entity\TraductionObjetApidae;
+use ApidaeBundle\Entity\Categorie;
+use ApidaeBundle\Entity\Langue;
 
 class IndexController extends Controller
 {
     private $em;
-    /**
-     * @Route("/")
-     */
+
     public function indexAction()
     {
-		//Test objetLie
+        $categoriesMenu = $this->getCategoriesMenu();
         $this->em = $this->getDoctrine()->getManager();
-        $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj(119889);
-        $trad = null;
-        if($objetApidae != null) {
-            $traductions = $objetApidae->getTraductions();
-            foreach($traductions as $value) {
-                if($value->getLangue()->getLanLibelle() == "Français") {
-                    $trad = $value;
-                }
-            }
-            return $this->render('ApidaeBundle:Default:index.html.twig', array('objet' => $objetApidae, 'trad' => $trad));
-        } else {
-            return $this->render('ApidaeBundle:Default:index.html.twig');
-        }
+        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue(0);
+        $suggestions = $this->em->getRepository(ObjetApidae::class)->findByObjSuggestion(1);
+        return $this->render('ApidaeBundle:Default:index.html.twig', array('suggestions' => $suggestions,
+            'categoriesMenu' => $categoriesMenu, 'langue' => $langue));
+    }
 
+    private function getCategoriesMenu() {
+        $categories = array();
+        $this->em = $this->getDoctrine()->getManager();
+        $categories['Restaurants'] = $this->em->getRepository(Categorie::class)->getCategoriesRestaurants();
+        $categories['Hébergements'] = $this->em->getRepository(Categorie::class)->getCategoriesHebergements();
+        $categories['Activités'] = $this->em->getRepository(Categorie::class)->getCategoriesActivites();
+        $categories['Evénements'] = $this->em->getRepository(Categorie::class)->getCategoriesEvenements();
 
-
-
+        return $categories;
     }
 }

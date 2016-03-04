@@ -124,7 +124,7 @@ abstract class ObjetApidae
     /**
      * @var string
      *
-     * @ORM\Column(name="obj_Nom", type="string", length=255, nullable=true)
+     * @ORM\Column(name="obj_Nom", type="text", nullable=true)
      */
     protected $nom;
 

@@ -1,21 +1,37 @@
 {% block header %}
     {% block nav %}
     <nav>
-
         <ul>
             <li class="LiDisplay"><a href="{{ path('index') }}"> Accueil </a></li>
-            {% for key, cat in categoriesMenu %}
-            <li class="LiDisplay"> {{ key }}
+            {% if categoriesMenu is defined %}
+                {% for key, cat in categoriesMenu %}
+                <li class="LiDisplay"> {{ key }}
+                    <ul>
+                        {% for c in cat %}
+                            <li><a href="{{ path('liste', {'typeObjet': key, 'categorieId': c.catId}) }}">
+                                    {{ c.catLibelle|langueLib(langue.lanShortCut)  }} </a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            {% endif %}
+            {%  if user is defined %}
+            <li class="LiDisplay"> Compte
                 <ul>
-                    {% for c in cat %}
-                        <li><a href="{{ path('liste', {'typeObjet': key, 'categorieId': c.catId}) }}"> {{ c.catLibelle|langueLib(langue.lanShortCut)  }} </a></li>
-                    {% endfor %}
+                    {% if user is empty %}
+                    <!-- Si non connecté -->
+                    <li><a href="{{ path('fos_user_registration_register') }}"> S'enregistrer </a></li>
+                    <li><a href="{{ path('fos_user_security_login') }}"> Se connecter </a></li>
+                    {% else %}
+                    <!-- Si connecté-->
+                    <li><a href="{{ path('fos_user_profile_show') }}"> Mon profil </a></li>
+                    <li><a href="{{ path('panier') }}"> Gestion des sélections </a></li>
+                    <li><a href="{{ path('fos_user_security_logout') }}"> Se déconnecter </a></li>
+                    {% endif %}
                 </ul>
             </li>
-            {% endfor %}
+            {% endif %}
         </ul>
-
-
     </nav>
     {% endblock %}
 {% endblock %}

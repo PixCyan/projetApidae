@@ -24,7 +24,7 @@ class TraductionObjetApidae
     /**
      * @var string
      *
-     * @ORM\Column(name="tra_DescriptionCourte", type="text", length=255, nullable=true)
+     * @ORM\Column(name="tra_DescriptionCourte", type="text", nullable=true)
      */
     private $traDescriptionCourte;
 
@@ -45,14 +45,14 @@ class TraductionObjetApidae
     /**
      * @var string
      *
-     * @ORM\Column(name="tra_BonsPlans", type="string", length=255, nullable=true)
+     * @ORM\Column(name="tra_BonsPlans", type="text", nullable=true)
      */
     private $traBonsPlans;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="tra_InfosSup", type="string", length=255, nullable=true)
+     * @ORM\Column(name="tra_InfosSup", type="text", nullable=true)
      */
     private $traInfosSup;
 
