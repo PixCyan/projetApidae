@@ -1,1 +1,16 @@
-modifier user
+{% extends "ApidaeBundle:commun:template.html.twig" %}
+{% block content %}
+    {% for flash_message in app.session.flashbag.get('notice') %}
+        <div class="flash-notice">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
+    <article>
+        <h2> Modifier un utilisateur </h2>
+        <form action="{{ path('modifierUser', {'userId': user.id}) }}" method="POST">
+            {{ form_widget(form) }}
+        </form>
+    </article>
+
+{% endblock %}
+

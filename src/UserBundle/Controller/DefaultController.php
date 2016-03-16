@@ -2,10 +2,16 @@
 
 namespace UserBundle\Controller;
 
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Langue;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use UserBundle\Entity\UserApidae;
+use UserBundle\Form\UserApidaeType;
+
 
 class DefaultController extends Controller
 {
@@ -49,32 +55,35 @@ class DefaultController extends Controller
             'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'users' => $users, 'user' => $user));
     }
 
-    public function modifierUtilisateurAction($userId) {
-        //TODO revoir
+    public function updateUtilisateurAction($userId, Request $request) {
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
-        //$categoriesMenu = $this->getCategoriesMenu();
         $user = $em->getRepository(UserApidae::class)->findOneById($userId);
-        $userCourant = $this->getUser();
 
-        $formFactory = $this->get('fos_user.profile.form.factory');
-        $form = $formFactory->createForm();
-        $form->setData($user);
+        $form = $this->createForm(new UserApidaeType(), $user);
 
-        return $this->render('FOSUserBundle:Profile:edit.html.twig', array('langue' => $langue, 'form' => $form->createView(),
-            'userCourant' => $userCourant, 'user' => $user));
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if($form->get('password')->getData() !== $form->get('confirmerMdp')->getData()) {
+                $this->addFlash(
+                    'notice',
+                    'Le mot de passe doit être identique !'
+                );
+            } else {
+                $user = $form->getData();
+                $encoder = $this->container->get('security.encoder_factory')->getEncoder($user);
+                $user->setPassword($encoder->encodePassword($form->get('password')->getData(), $user->getSalt()));
+                $em->merge($user);
+                $em->flush();
+                return $this->redirectToRoute('confirmerModifUser');
+            }
+        }
+        return $this->render('UserBundle:action:modifierUser.html.twig', array('form' => $form->createView(), 'user' => $user));
     }
 
-    public function updateUtilisateurAction($userId) {
-        //TODO revoir
-        $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
-        //$categoriesMenu = $this->getCategoriesMenu();
-        $user = $em->getRepository(UserApidae::class)->findOneById($userId);
-
-
-
-        //return $this->render('FOSUserBundle:Profile:edit.html.twig', array('langue' => $langue, 'userCourant' => $userCourant ));
+    public function confirmerModifUserAction() {
+        //TODO créer vue
+        return new Response("Utilisateur modifié.");
     }
 
     private function getCategoriesMenu() {

@@ -26,14 +26,14 @@ listeUsers:
     defaults: { _controller: UserBundle:Default:listeUtilisateurs }
 
 editionProfile:
-    path: /admin/editionProfile
+    path: /editionProfile
     defaults: { _controller: FOSUserBundle:Profile:edit }
 
 modifierUser:
     path: /admin/modifier/utilisateur/{userId}
-    defaults: { _controller: UserBundle:Default:modifierUtilisateur }
-
-updateUser:
-    path: /admin/miseAjour/utilisateur/
     defaults: { _controller: UserBundle:Default:updateUtilisateur }
-    methods: [POST, PUT]
+    methods: [POST, GET]
+
+confirmerModifUser:
+    path: /admin/miseAjour/utilisateur/
+    defaults: { _controller: UserBundle:Default:confirmerModifUser }

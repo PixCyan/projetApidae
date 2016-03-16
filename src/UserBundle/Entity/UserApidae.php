@@ -21,6 +21,28 @@ class UserApidae extends BaseUser
     protected $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="adresse", type="text", nullable=true)
+     */
+    private $adresse;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="photo", type="string", length=255, nullable=true)
+     */
+    private $photo;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="activites", type="text", nullable=true)
+     */
+    private $activites;
+
+    /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Panier", mappedBy="user")
      * @ORM\JoinColumn(nullable=true)
      */
@@ -56,5 +78,52 @@ class UserApidae extends BaseUser
         return $this->paniers;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAdresse()
+    {
+        return $this->adresse;
+    }
+
+    /**
+     * @param mixed $adresse
+     */
+    public function setAdresse($adresse)
+    {
+        $this->adresse = $adresse;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getActivites()
+    {
+        return $this->activites;
+    }
+
+    /**
+     * @param mixed $activites
+     */
+    public function setActivites($activites)
+    {
+        $this->activites = $activites;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPhoto()
+    {
+        return $this->photo;
+    }
+
+    /**
+     * @param mixed $photo
+     */
+    public function setPhoto($photo)
+    {
+        $this->photo = $photo;
+    }
 }
 
