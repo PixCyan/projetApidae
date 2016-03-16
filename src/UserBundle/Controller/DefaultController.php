@@ -86,6 +86,21 @@ class DefaultController extends Controller
         return new Response("Utilisateur modifié.");
     }
 
+    public function deleteUserAction($userId) {
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository(UserApidae::class)->findOneById($userId);
+        $em->remove($user);
+        $em->flush();
+
+        $this->addFlash(
+            'notice',
+            'L\'utilisateur a bien été supprimé.'
+        );
+
+
+        return $this->redirectToRoute('listeUsers');
+    }
+
     private function getCategoriesMenu() {
         $categories = array();
         $em = $this->getDoctrine()->getManager();

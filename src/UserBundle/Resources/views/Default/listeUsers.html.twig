@@ -6,6 +6,11 @@
         <p> To Do </p>
     </article>
 
+    {% for flash_message in app.session.flashbag.get('notice') %}
+        <div class="flash-notice">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
     <article class="testListe">
         <h2> Utilisateurs </h2>
         {% if users is not defined or users is empty %}
@@ -17,7 +22,9 @@
                 <tr>
                     <td>{{ u.username }}</td>
                     <td>{{ u.email }}</td>
-                    <td class="actionsTab"><a href="{{ path('modifierUser', {'userId': u.id}) }}"> Modifier </a> <a href="#"> Supprimer </a></td>
+                    <td class="actionsTab"><a href="{{ path('modifierUser', {'userId': u.id}) }}"> Modifier </a>
+                        <a onclick="if (confirm('Etes-vous sûr de vouloir supprimer cet utilisateur ?')) window.location.href={{ "'" ~ path('deleteUser', {'userId': u.id}) ~ "'" }}"
+                           href="{{ path('deleteUser', {'userId': u.id}) }}"> Supprimer </a></td>
                 </tr>
                 {% endfor %}
             </table>
