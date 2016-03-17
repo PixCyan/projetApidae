@@ -9,8 +9,17 @@
         <h4> Gestion des offres Apidae </h4>
         <div class="filtresListe">
             <h2> Recherches </h2>
-            <p> To Do </p>
+            <form id="form_recherche" action="{{ path('gestionOffres') }}" method="post">
+                {{ form_widget(form) }}
+                <input type="submit" value="Rechercher" />
+            </form>
         </div>
+        {% if objets is defined and objets is not null %}
+        <div>
+            <h4> Objets correspondant à votre recherche </h4>
+            {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
+        </div>
+        {% endif %}
     </article>
 
 {% endblock %}

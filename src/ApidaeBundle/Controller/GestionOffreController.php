@@ -5,6 +5,8 @@ namespace ApidaeBundle\Controller;
 
 use ApidaeBundle\Entity\ObjetApidae;
 use ApidaeBundle\Entity\TraductionObjetApidae;
+use ApidaeBundle\Form\ArticleRechercheForm;
+use ApidaeBundle\Form\RechercheObjetForm;
 use ApidaeBundle\Form\TraductionObjetApidaeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\Categorie;
@@ -29,38 +31,72 @@ class GestionOffreController extends Controller
         $trad = $em->getRepository(TraductionObjetApidae::class)->findOneBy(
             array("objet"=> $objet, "langue" => $langue));
 
-        //---- Test form
-        if($trad != null) {
-            $form = $this->createForm(new TraductionObjetApidaeType(), $trad);
-
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-                //TODO changer
-                $traductionObjet = $form->getData();
-
+        if ($trad != null) {
+            $formTrad = $this->createForm(new TraductionObjetApidaeType(), $trad);
+            $formTrad->handleRequest($request);
+            if ($formTrad->isSubmitted() && $formTrad->isValid()) {
+                $traductionObjet = $formTrad->getData();
                 $em->merge($traductionObjet);
                 $em->flush();
-
                 $this->addFlash(
                     'notice',
                     'L\'objet Apidae a bien été modifiée.'
                 );
                 return $this->redirectToRoute('gestionOffres');
-
             }
+
         }
         return $this->render('ApidaeBundle:GestionOffre:modifierOffre.html.twig', array(
-            'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'objet' => $objet, 'form' => $form->createView()));
+            'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'objet' => $objet, 'form' => $formTrad->createView()));
     }
 
-    public function gestionOffresAction() {
+    public function gestionOffresAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
         $categoriesMenu = $this->getCategoriesMenu();
         $userCourant = $this->getUser();
+
+        $form = $this->createForm(new RechercheObjetForm());
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            //TODO changer
+            $objets = $em->getRepository(ObjetApidae::class)->getObjetByNom($form->get('chaine')->getData());
+            if($objets == null) {
+                $this->addFlash(
+                    'notice',
+                    'Aucun objet apidae ne correspond à votre recherche.'
+                );
+            }
+            return $this->render('ApidaeBundle:GestionOffre:gestionOffres.html.twig', array(
+                'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $userCourant, 'objets' => $objets,
+                'form' => $form->createView()));
+        }
         return $this->render('ApidaeBundle:GestionOffre:gestionOffres.html.twig', array(
-            'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $userCourant));
+            'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $userCourant, 'form' => $form->createView()));
+    }
+
+    public function rechercheOffreAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+        $categoriesMenu = $this->getCategoriesMenu();
+        $userCourant = $this->getUser();
+        $form = $this->createForm(new RechercheObjetForm());
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            //TODO changer
+            $objets = $em->getRepository(ObjetApidae::class)->getObjetByNom($form->get('chaine')->getData());
+            if($objets == null) {
+                $this->addFlash(
+                    'notice',
+                    'Aucun objet apidae ne correspond à votre recherche.'
+                );
+            }
+            return $this->render('ApidaeBundle:GestionOffre:gestionOffres.html.twig', array(
+                'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $userCourant, 'objets' => $objets,
+                'form' => $form));
+        }
+        return $this->render('ApidaeBundle:GestionOffre:gestionOffres.html.twig', array(
+            'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $userCourant, 'form' => $form));
     }
 
     private function getCategoriesMenu() {

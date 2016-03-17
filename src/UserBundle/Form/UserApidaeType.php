@@ -3,7 +3,6 @@
 namespace UserBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,8 +27,7 @@ class UserApidaeType extends AbstractType
                 'multiple' => true
             ))
             ->add('password', TextType::class, array('attr' => array('value' => null, 'required' => true)))
-            ->add('confirmerMdp', TextType::class, array('label' => 'Confirmez le mot de passe', "mapped" => false, 'required' => true))
-            ->add('modifier', SubmitType::class, array('label' => 'Modifier'));
+            ->add('confirmerMdp', TextType::class, array('label' => 'Confirmez le mot de passe', "mapped" => false, 'required' => true));
     }
     
     /**

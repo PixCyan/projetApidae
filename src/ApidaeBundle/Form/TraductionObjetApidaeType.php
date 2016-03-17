@@ -21,7 +21,7 @@ class TraductionObjetApidaeType extends AbstractType
             ->add('traDescriptionPersonnalisee')
             ->add('traBonsPlans')
             ->add('traInfosSup')
-            ->add('modifier', SubmitType::class, array('label' => 'Modifier'))
+            ->add('objet', ObjetApidaeType::class)
         ;
     }
     

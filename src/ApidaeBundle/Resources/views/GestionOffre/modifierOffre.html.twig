@@ -5,6 +5,9 @@
         <h4> Modification </h4>
         <form action="{{ path('modifierOffre', {'offreId': objet.idObjet}) }}" method="POST">
             {{ form_widget(form) }}
+            {{ form_row(form.objet.nom) }}
+            <button type="submit" value="submit">Modifier</button>
+            <button type="button" onclick="javascript:history.go(-1)" value="cancel">Annuler</button>
         </form>
     </article>
 

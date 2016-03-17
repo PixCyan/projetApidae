@@ -9,6 +9,8 @@
         <h2> Modifier un utilisateur </h2>
         <form action="{{ path('modifierUser', {'userId': user.id}) }}" method="POST">
             {{ form_widget(form) }}
+            <button type="submit" value="submit">Modifier</button>
+            <button type="button" onclick="javascript:history.go(-1)" value="cancel">Annuler</button>
         </form>
     </article>
 

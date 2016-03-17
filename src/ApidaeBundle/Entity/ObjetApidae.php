@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping\InheritanceType;
  * @DiscriminatorColumn(name="discr", type="string")
  * @DiscriminatorMap({"objetApidae" = "ObjetApidae", "restaurant" = "Restaurant", "hebergement" = "Hebergement",
  *      "activite" = "Activite", "evenement" = "Evenement"})
+ * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\ObjetApidaeRepository")
  */
 abstract class ObjetApidae
 {

@@ -16,7 +16,7 @@ class ObjetApidaeType extends AbstractType
     {
         $builder
             ->add('nom')
-            ->add('categories')
+            ->add('objSuggestion')
         ;
     }
     

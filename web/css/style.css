@@ -11,7 +11,7 @@
     width: 80%;
 }
 
-.LiMenu, .imgListe, .infosListe, .lienDetailsListe, .filtresListe {
+.LiMenu, .imgListe, .infosListe, .lienDetailsListe, .filtresListe, .optionsAdmin {
     display :inline-block;
     vertical-align: top;
 }

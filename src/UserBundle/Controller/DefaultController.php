@@ -97,8 +97,6 @@ class DefaultController extends Controller
             'notice',
             'L\'utilisateur a bien été supprimé.'
         );
-
-
         return $this->redirectToRoute('listeUsers');
     }
 

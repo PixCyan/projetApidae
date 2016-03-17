@@ -10,7 +10,6 @@ use ApidaeBundle\Entity\Categorie;
  * repository methods below.
  */
 class CategorieRepository extends \Doctrine\ORM\EntityRepository {
-    private $em;
 
     public function getCategoriesHebergements() {
         $em = $this->getEntityManager();

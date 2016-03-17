@@ -21,7 +21,9 @@ panier:
 gestionOffres:
     path: /admin/gestion/offres/
     defaults: { _controller: ApidaeBundle:GestionOffre:gestionOffres }
+    methods: [POST, GET]
 
 modifierOffre:
     path: /admin/modifier/offre/{offreId}
     defaults: { _controller: ApidaeBundle:GestionOffre:modifierOffre }
+
