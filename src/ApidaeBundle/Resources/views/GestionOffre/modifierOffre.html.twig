@@ -1,0 +1,11 @@
+{% extends "ApidaeBundle:commun:template.html.twig" %}
+{% block content %}
+
+    <article>
+        <h4> Modification </h4>
+        <form action="{{ path('modifierOffre', {'offreId': objet.idObjet}) }}" method="POST">
+            {{ form_widget(form) }}
+        </form>
+    </article>
+
+{% endblock %}

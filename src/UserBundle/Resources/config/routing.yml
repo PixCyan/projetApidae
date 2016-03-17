@@ -34,10 +34,7 @@ modifierUser:
     defaults: { _controller: UserBundle:Default:updateUtilisateur }
     methods: [POST, GET]
 
-confirmerModifUser:
-    path: /admin/miseAjour/utilisateur/
-    defaults: { _controller: UserBundle:Default:confirmerModifUser }
-
 deleteUser:
     path: /admin/delete/utilisateur/{userId}
     defaults: { _controller: UserBundle:Default:deleteUser }
+

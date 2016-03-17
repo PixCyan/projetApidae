@@ -19,6 +19,14 @@ class UserApidaeType extends AbstractType
         $builder
             ->add('username', TextType::class, array('required' => true))
             ->add('email', TextType::class, array('required' => true))
+            ->add('roles', 'choice', array('choices' =>
+                array(
+                    'ROLE_USER' => 'ROLE_USER',
+                    'ROLE_SUPER_ADMIN' => 'ROLE_SUPER_ADMIN',
+                ),
+                'required'  => true,
+                'multiple' => true
+            ))
             ->add('password', TextType::class, array('attr' => array('value' => null, 'required' => true)))
             ->add('confirmerMdp', TextType::class, array('label' => 'Confirmez le mot de passe', "mapped" => false, 'required' => true))
             ->add('modifier', SubmitType::class, array('label' => 'Modifier'));

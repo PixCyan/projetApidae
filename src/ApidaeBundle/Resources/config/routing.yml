@@ -17,3 +17,11 @@ liste:
 panier:
     path: /panier
     defaults: { _controller: UserBundle:Default:voirPanier }
+
+gestionOffres:
+    path: /admin/gestion/offres/
+    defaults: { _controller: ApidaeBundle:GestionOffre:gestionOffres }
+
+modifierOffre:
+    path: /admin/modifier/offre/{offreId}
+    defaults: { _controller: ApidaeBundle:GestionOffre:modifierOffre }

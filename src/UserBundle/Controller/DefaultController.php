@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Langue;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use UserBundle\Entity\UserApidae;
 use UserBundle\Form\UserApidaeType;
@@ -70,20 +69,22 @@ class DefaultController extends Controller
                     'Le mot de passe doit être identique !'
                 );
             } else {
+
                 $user = $form->getData();
+                $role = $form->get('roles')->getData();
+                $user->setRoles($role);
                 $encoder = $this->container->get('security.encoder_factory')->getEncoder($user);
                 $user->setPassword($encoder->encodePassword($form->get('password')->getData(), $user->getSalt()));
                 $em->merge($user);
                 $em->flush();
-                return $this->redirectToRoute('confirmerModifUser');
+                $this->addFlash(
+                    'notice',
+                    'L\'utilisateur a bien été modifié.'
+                );
+                return $this->redirectToRoute('listeUsers');
             }
         }
         return $this->render('UserBundle:action:modifierUser.html.twig', array('form' => $form->createView(), 'user' => $user));
-    }
-
-    public function confirmerModifUserAction() {
-        //TODO créer vue
-        return new Response("Utilisateur modifié.");
     }
 
     public function deleteUserAction($userId) {
