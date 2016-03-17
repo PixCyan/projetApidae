@@ -5,7 +5,6 @@ namespace ApidaeBundle\Controller;
 
 use ApidaeBundle\Entity\ObjetApidae;
 use ApidaeBundle\Entity\TraductionObjetApidae;
-use ApidaeBundle\Form\ArticleRechercheForm;
 use ApidaeBundle\Form\RechercheObjetForm;
 use ApidaeBundle\Form\TraductionObjetApidaeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
