@@ -14,6 +14,10 @@ liste:
     path: /liste/{typeObjet}/{categorieId}
     defaults: { _controller: ApidaeBundle:Default:liste }
 
+listeEvenement:
+    path: /listeEvenements/{periode}
+    defaults: { _controller: ApidaeBundle:Default:listeEvenements }
+
 panier:
     path: /panier
     defaults: { _controller: UserBundle:Default:voirPanier }

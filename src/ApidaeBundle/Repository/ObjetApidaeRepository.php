@@ -11,12 +11,19 @@ use ApidaeBundle\Entity\ObjetApidae;
  */
 class ObjetApidaeRepository extends \Doctrine\ORM\EntityRepository {
 
-    public function getObjetByCategorie() {
-        //TODO getObjetByCategorie
-    }
-
-    public function getObjetByService() {
-        //TODO getObjetByService
+    //get Musées Patrimoines et Galeries
+    //pas bonne
+    public function getMusees() {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->innerjoin('ApidaeBundle:Categorie', 'c', 'WITH','ApidaeBundle:ObjetApidae', 'o')
+            ->where('c.catId = ?1')
+            ->orWhere('c.catId = ?2')
+            ->orWhere('c.catId = ?3')
+            ->setParameters(array(1 => '3203', 2 => '3347', 3 => '3201'));
+        $query = $qb->getQuery();
+        return $query->getResult();
     }
 
     public function getObjetByNom($chaine) {
@@ -29,5 +36,14 @@ class ObjetApidaeRepository extends \Doctrine\ORM\EntityRepository {
         $query = $qb->getQuery();
         return $query->getResult();
     }
+
+    public function getObjetByType() {
+        //TODO getObjetByType
+    }
+
+    public function getObjetByService() {
+        //TODO getObjetByService
+    }
+
 
 }

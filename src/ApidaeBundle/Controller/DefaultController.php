@@ -3,8 +3,11 @@
 namespace ApidaeBundle\Controller;
 
 use ApidaeBundle\Entity\Categorie;
+use ApidaeBundle\Entity\Evenement;
 use ApidaeBundle\Entity\Langue;
 use ApidaeBundle\Entity\TraductionObjetApidae;
+use ApidaeBundle\Repository\EvenementRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
 
@@ -25,10 +28,8 @@ class DefaultController extends Controller
             'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $user));
     }
 
-    public function offreAction($id)
-    {
+    public function offreAction($id) {
         $user = $this->getUser();
-
         //phpinfo();
         //Test
         if($id == 0) {
@@ -55,22 +56,83 @@ class DefaultController extends Controller
     public function listeAction($typeObjet, $categorieId)
     {
         $user = $this->getUser();
-        $categoriesMenu = $this->getCategoriesMenu();
+        //$categoriesMenu = $this->getCategoriesMenu();
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
-        $categorie = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-        $objets = $categorie->getObjets();
 
-        if($objets != null) {
-            return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-                array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie,
-                    'categoriesMenu' => $categoriesMenu, 'user' => $user));
+        if($categorieId == '2883') {
+            $categories = $this->em->getRepository(Categorie::class)->getHotels();
+            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            $objets = $this->traitementObjetsCategories($categories);
+        } elseif($categorieId == '2620') {
+            $categories = $this->em->getRepository(Categorie::class)->getGites();
+            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            $objets = $this->traitementObjetsCategories($categories);
+        } elseif($categorieId == '2418') {
+            $categories = $this->em->getRepository(Categorie::class)->getCampings();
+            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            $objets = $this->traitementObjetsCategories($categories);
+        } elseif($categorieId == '2646') {
+            $categories = $this->em->getRepository(Categorie::class)->getHebergementsAutres();
+            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            $objets = $this->traitementObjetsCategories($categories);
+        } elseif($categorieId == '3404') {
+            $categories = $this->em->getRepository(Categorie::class)->getBars();
+            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            $objets = $this->traitementObjetsCategories($categories);
+        } elseif($categorieId == '3203') {
+            $categories = $this->em->getRepository(Categorie::class)->getMusees();
+            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            $objets = $this->traitementObjetsCategories($categories);
+        } elseif($categorieId == '3283') {
+            $categories = $this->em->getRepository(Categorie::class)->getItineraires();
+            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            $objets = $this->traitementObjetsCategories($categories);
         } else {
-            //TODO changer
-            return $this->render('ApidaeBundle:Default:donnees.html.twig');
+            $categorie = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            if(!$categorie) {
+                //TODO ERROR
+                throw $this->createNotFoundException('Cette categorie est vide.');
+            } else {
+                $objets = $categorie->getObjets();
+            }
         }
+
+        return $this->render('ApidaeBundle:Default:vueListe.html.twig',
+            array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie, 'user' => $user));
     }
 
+    public function listeEvenementsAction($periode) {
+        $user = $this->getUser();
+        //$categoriesMenu = $this->getCategoriesMenu();
+        $this->em = $this->getDoctrine()->getManager();
+        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+
+        //TODO listeEvenement
+        if($periode == 1) {
+            $evenement = $this->em->getRepository(Evenement::class)->getAjourdhui();
+
+
+        }
+
+        $typeObjet = "Evénements";
+        return $this->render('ApidaeBundle:Default:vueListe.html.twig',
+            array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user));
+    }
+
+
+    private function traitementObjetsCategories($categories) {
+        $objets = new ArrayCollection();
+        foreach($categories as $category) {
+            $c= $category->getObjets();
+            foreach($c as $obj) {
+                if(!$objets->contains($obj)) {
+                    $objets->add($obj);
+                }
+            }
+        }
+        return $objets;
+    }
 
     private function getCategoriesMenu() {
         $categories = array();

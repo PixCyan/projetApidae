@@ -12,11 +12,13 @@
             {{ objet.commune.comNom }}
         {%  endif %}
         {% if objet.categories is not empty%}
-            <p> Categories :
+            <div> Categories :
                 {% for cat in objet.categories %}
-                    {{ cat.catLibelle|langueLib(langue.lanShortCut) }}
+                    <div class="listeCategories">
+                        {{ cat.catLibelle|langueLib(langue.lanShortCut) }}
+                    </div>
                 {% endfor %}
-            </p>
+            </div>
         {% endif %}
         {% if objet.tarifEnClair is not empty %}
             <p> {{ objet.tarifEnClair|langueLib(langue.lanShortCut) }}</p>

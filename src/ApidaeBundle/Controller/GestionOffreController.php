@@ -43,7 +43,6 @@ class GestionOffreController extends Controller
                 );
                 return $this->redirectToRoute('gestionOffres');
             }
-
         }
         return $this->render('ApidaeBundle:GestionOffre:modifierOffre.html.twig', array(
             'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'objet' => $objet, 'form' => $formTrad->createView()));

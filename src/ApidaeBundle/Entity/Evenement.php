@@ -5,7 +5,9 @@ namespace ApidaeBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 
-/** @Entity */
+/** @Entity
+ * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\EvenementRepository")
+ */
 class Evenement extends ObjetApidae
 {
     /**

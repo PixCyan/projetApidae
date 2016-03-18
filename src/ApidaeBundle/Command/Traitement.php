@@ -206,8 +206,13 @@ class Traitement extends ContainerAwareCommand {
 
             }
         }
+        if(isset($data->$chaineInformations->activites)) {
+            $this->traitementTypeCategories($data->$chaineInformations->activites, $objetApidae, $languesSite);
+        }
+        if(isset($data->$chaineInformations->themes)) {
+            $this->traitementTypeCategories($data->$chaineInformations->themes, $objetApidae, $languesSite);
+        }
 
-        //$this->em->flush();
 
         //--------------------Langue ----------------------
         $i = 0;

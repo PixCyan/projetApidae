@@ -2,19 +2,57 @@
     <nav>
     {% block nav %}
        <ul>
-            <li class="LiMenu"><a href="{{ path('index') }}"> Accueil </a></li>
-            {% if categoriesMenu is defined %}
-                {% for key, cat in categoriesMenu %}
-                <li class="LiMenu"> {{ key }}
-                    <ul>
-                        {% for c in cat %}
-                            <li><a href="{{ path('liste', {'typeObjet': key, 'categorieId': c.catId}) }}">
-                                    {{ c.catLibelle|langueLib(langue.lanShortCut)  }} </a></li>
-                        {% endfor %}
-                    </ul>
-                </li>
-                {% endfor %}
-            {% endif %}
+           <li class="LiMenu"><a href="{{ path('index') }}"> Accueil </a></li>
+           <li class="LiMenu"> Hébergements
+               <ul>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2883'}) }}">Hôtels </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2620'}) }}">Gîtes, Locations meublées</a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2619'}) }}">Chambres d'hôtes </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2642'}) }}">Centres de vacances</a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2640'}) }}">Auberge de jeunesse </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2418'}) }}">Campings et Aires de camping-cars </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2626'}) }}"> Insolites</a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2646'}) }}">Autres </a></li>
+
+                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '0000'}) }}">Séjour tout compris </a></li>
+               </ul>
+           </li>
+           <li class="LiMenu"> Restaurants
+               <ul>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2883'}) }}">Traditionnels </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '3825'}) }}">Gastronomiques </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2886'}) }}">Pizzerias </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2882'}) }}"> Crêperies </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2887'}) }}">Restaurations rapides </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2880'}) }}">Brasseries </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '3404'}) }}">Pubs, Bars, Salons de thé </a></li>
+
+                   <li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '0000'}) }}">Saveurs d'ailleurs </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '0000'}) }}">Auberges </a></li>
+
+               </ul>
+           </li>
+           <li class="LiMenu"> Activités
+               <ul>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3203'}) }}">Patrimoine, Musée, Galeries </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3283'}) }}">Itinéraires, Parcours </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '1890'}) }}">Stage</a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '1830'}) }}">Cours</a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '1789'}) }}">Activités sportives</a></li>
+
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '0000'}) }}">Randonnées </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '0000'}) }}">Activités aériennes </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '0000'}) }}">Baignade </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '0000'}) }}">Insolites </a></li>
+               </ul>
+           </li>
+           <li class="LiMenu"> Evénements
+               <ul>
+                   <li><a href="{{ path('listeEvenement', {'typeObjet': 'Evenements', 'periode': '1'}) }}">Aujourd'hui </a></li>
+                   <li><a href="{{ path('listeEvenement', {'typeObjet': 'Evenements', 'periode': '7'}) }}">Dans la semaine</a></li>
+                   <li><a href="{{ path('listeEvenement', {'typeObjet': 'Evenements', 'periode': '30'}) }}">Les 30 prochains jours</a></li>
+               </ul>
+           </li>
 
             <li class="LiMenu"> Panier
                 <ul>

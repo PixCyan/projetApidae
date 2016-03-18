@@ -6,12 +6,17 @@
     padding : 0 0 10px 10px;
 }
 
+.listeCategories {
+    border : 1px grey solid;
+    padding : 5px;
+}
+
 #content {
     margin : auto;
     width: 80%;
 }
 
-.LiMenu, .imgListe, .infosListe, .lienDetailsListe, .filtresListe, .optionsAdmin {
+.LiMenu, .imgListe, .infosListe, .lienDetailsListe, .filtresListe, .optionsAdmin, .listeCategories {
     display :inline-block;
     vertical-align: top;
 }

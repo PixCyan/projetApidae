@@ -1,6 +1,7 @@
 <?php
 
 namespace ApidaeBundle\Repository;
+use DateTime;
 
 /**
  * OuvertureRepository
@@ -10,4 +11,19 @@ namespace ApidaeBundle\Repository;
  */
 class OuvertureRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    //TODO
+    public function getAjourdhui()
+    {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('e')
+            ->from('ApidaeBundle:Evenement', 'e')
+            ->where('o.ouvDateDebut = ?1')
+            ->setParameters(array(1 => new DateTime()));
+        $query = $qb->getQuery();
+        return $query->getResult();
+
+    }
+
 }
