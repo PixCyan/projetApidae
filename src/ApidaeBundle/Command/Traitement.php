@@ -566,6 +566,7 @@ class Traitement extends ContainerAwareCommand {
             if(isset($data->$chaineInformations->durees->nombreJours)) {
                 $tab['nbJours'] = $data->$chaineInformations->nombreJours;
             }
+
             $objetApidae->setCapacite($tab);
             for($i = 0; $i < count($data->$chaineInformations->durees); $i++) {
                 $v = $this->traitementReference($data->$chaineInformations->durees[$i]->elementReferenceType,
@@ -613,8 +614,14 @@ class Traitement extends ContainerAwareCommand {
             if($v != null) {
                 $tab['libelle'] = $this->traitementLibelleLangues($languesSite, $v);
                 $tab['ordre'] = $v->ordre;
-                $objetApidae->setCapacite($tab);
             }
+            if(isset($data->ouverture->periodesOuvertures)) {
+                $tab['dateFin'] = $data->ouverture->periodesOuvertures[0]->dateFin;
+            }
+            if(isset($data->ouverture->periodesOuvertures)) {
+                $tab['dateDebut'] = $data->ouverture->periodesOuvertures[0]->dateDebut;
+            }
+            $objetApidae->setCapacite($tab);
         }
 
         //-------------------- ObjetsLies ----------------------

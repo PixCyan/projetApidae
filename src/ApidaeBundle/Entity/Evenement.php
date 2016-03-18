@@ -25,6 +25,20 @@ class Evenement extends ObjetApidae
     private $ordrePortee;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="dateDebut", type="datetime", length=255, nullable=true)
+     */
+    private $dateDebut;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="dateFin", type="datetime", length=255, nullable=true)
+     */
+    private $dateFin;
+
+    /**
      * @return string
      */
     public function getPortee()
@@ -56,11 +70,44 @@ class Evenement extends ObjetApidae
         $this->ordrePortee = $ordrePortee;
     }
 
+    /**
+     * @return int
+     */
+    public function getDateDebut()
+    {
+        return $this->dateDebut;
+    }
+
+    /**
+     * @param int $ouvDateDebut
+     */
+    public function setDateDebut($ouvDateDebut)
+    {
+        $this->dateDebut = $ouvDateDebut;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDateFin()
+    {
+        return $this->dateFin;
+    }
+
+    /**
+     * @param int $ouvDateFin
+     */
+    public function setDateFin($ouvDateFin)
+    {
+        $this->dateFin = $ouvDateFin;
+    }
 
     public function setCapacite($tab)
     {
         $this->setPortee($tab['libelle']);
         $this->setOrdrePortee($tab['ordre']);
+        $this->setDateDebut($tab['dateDebut']);
+        $this->setDateFin($tab['dateFin']);
     }
 }
 
