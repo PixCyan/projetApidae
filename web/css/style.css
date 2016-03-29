@@ -1,9 +1,17 @@
-.testListe {
+.objetListe {
     border : 1px grey solid;
     margin : auto;
     margin-bottom : 10px;
-    width: 70%;
+    width: 90%;
     padding : 0 0 10px 10px;
+}
+
+#listeDobjets {
+    width: 73%;
+}
+
+.filtresListe {
+    width : 25%;
 }
 
 .listeCategories {
@@ -16,7 +24,7 @@
     width: 80%;
 }
 
-.LiMenu, .imgListe, .infosListe, .lienDetailsListe, .filtresListe, .optionsAdmin, .listeCategories {
+.LiMenu, .imgListe, .infosListe, .lienDetailsListe, .filtresListe, .optionsAdmin, .listeCategories, #listeDobjets {
     display :inline-block;
     vertical-align: top;
 }

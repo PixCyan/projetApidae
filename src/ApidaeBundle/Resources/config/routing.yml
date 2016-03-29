@@ -31,3 +31,7 @@ modifierOffre:
     path: /admin/modifier/offre/{offreId}
     defaults: { _controller: ApidaeBundle:GestionOffre:modifierOffre }
 
+rechercheAffinnee:
+    path: /recherche/{typeObjet}
+    defaults: { _controller: ApidaeBundle:Default:rechercheAffinnee }
+

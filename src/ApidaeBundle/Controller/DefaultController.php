@@ -6,10 +6,12 @@ use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Evenement;
 use ApidaeBundle\Entity\Langue;
 use ApidaeBundle\Entity\TraductionObjetApidae;
+use ApidaeBundle\Form\RechercheObjetForm;
 use ApidaeBundle\Repository\EvenementRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
+use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
@@ -20,12 +22,11 @@ class DefaultController extends Controller
     public function indexAction()
     {
         $user = $this->getUser();
-        $categoriesMenu = $this->getCategoriesMenu();
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
         $suggestions = $this->em->getRepository(ObjetApidae::class)->findByObjSuggestion(1);
         return $this->render('ApidaeBundle:Default:index.html.twig', array('suggestions' => $suggestions,
-            'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $user));
+            'langue' => $langue, 'user' => $user));
     }
 
     public function offreAction($id) {
@@ -35,7 +36,6 @@ class DefaultController extends Controller
         if($id == 0) {
             $id = 48925;
         }
-        $categoriesMenu = $this->getCategoriesMenu();
         //Test affichage obet
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
@@ -45,7 +45,7 @@ class DefaultController extends Controller
 
         if($objetApidae != null) {
             return $this->render('ApidaeBundle:Default:vueFiche.html.twig',
-                array('objet' => $objetApidae, 'trad' => $trad, 'langue' => $langue, 'categoriesMenu' => $categoriesMenu,
+                array('objet' => $objetApidae, 'trad' => $trad, 'langue' => $langue,
                     'user' => $user));
         } else {
             //TODO changer
@@ -53,13 +53,37 @@ class DefaultController extends Controller
         }
     }
 
-    public function listeAction($typeObjet, $categorieId)
+    public function listeAction($typeObjet, $categorieId, Request $request)
     {
+        $session = $request->getSession();
         $user = $this->getUser();
         //$categoriesMenu = $this->getCategoriesMenu();
         $this->em = $this->getDoctrine()->getManager();
-        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
 
+        //---- Add form
+        $em = $this->getDoctrine()->getManager();
+        $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+
+        $form = $this->createForm(new RechercheObjetForm());
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            //TODO changer
+            $objets = $em->getRepository(ObjetApidae::class)->getObjetByNom($form->get('chaine')->getData());
+            if($objets == null) {
+                $this->addFlash(
+                    'notice',
+                    'Aucun objet apidae ne correspond à votre recherche.'
+                );
+            } else {
+                $services = $this->getServicesFromObjets($objets);
+                $session->set('listeObjets', $objets);
+            }
+            return $this->render('ApidaeBundle:Default:vueListe.html.twig',
+                array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet,
+                    'user' => $user, 'form' => $form->createView()));
+        }
+
+        //---- Fin forme recherche simple
         if($categorieId == '2883') {
             $categories = $this->em->getRepository(Categorie::class)->getHotels();
             $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
@@ -98,8 +122,12 @@ class DefaultController extends Controller
             }
         }
 
+        $session->set('listeObjets', $categorie->getObjets());
+        $services = $this->getServicesFromObjets($categorie->getObjets());
+
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-            array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie, 'user' => $user));
+            array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie,
+                'user' => $user, 'form' => $form->createView(), 'services' => $services));
     }
 
     public function listeEvenementsAction($periode) {
@@ -115,13 +143,26 @@ class DefaultController extends Controller
             $evenements = $this->em->getRepository(Evenement::class)->getInterval($periode);
         }
 
-
         $typeObjet = "Evénements";
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $evenements, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user));
     }
 
 
+    public function rechercheAffinneeAction(Request $request, $typeObjet) {
+        $user = $this->getUser();
+        $tab = $_POST['services'];
+        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+        var_dump($tab);
+        return $this->render('ApidaeBundle:Default:vueListe.html.twig',
+            array('objets' => $evenements, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user));
+    }
+
+    /**
+     * Retourne un tableau des objets auxquelles sont liées les categories données en param
+     * @param $categories
+     * @return ArrayCollection
+     */
     private function traitementObjetsCategories($categories) {
         $objets = new ArrayCollection();
         foreach($categories as $category) {
@@ -135,15 +176,23 @@ class DefaultController extends Controller
         return $objets;
     }
 
-    private function getCategoriesMenu() {
-        $categories = array();
-        $this->em = $this->getDoctrine()->getManager();
-        $categories['Restaurants'] = $this->em->getRepository(Categorie::class)->getCategoriesRestaurants();
-        $categories['Hébergements'] = $this->em->getRepository(Categorie::class)->getCategoriesHebergements();
-        $categories['Activités'] = $this->em->getRepository(Categorie::class)->getCategoriesActivites();
-        $categories['Evénements'] = $this->em->getRepository(Categorie::class)->getCategoriesEvenements();
-
-        return $categories;
+    /**
+     * Get tous les services liés aux objets de la liste actuelle
+     * @param $rechercheActuelle
+     * @return array
+     */
+    private function getServicesFromObjets($rechercheActuelle) {
+        $services = array();
+        foreach($rechercheActuelle as $objet) {
+            foreach($objet->getServices() as $service) {
+                if(!in_array($service, $services)) {
+                    $services[] = $service;
+                }
+            }
+        }
+        return $services;
     }
+
+
 
 }

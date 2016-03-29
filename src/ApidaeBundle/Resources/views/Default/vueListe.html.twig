@@ -3,7 +3,20 @@
     <h1> {{ typeObjet }} ::  {% if categorie is defined and categorie is not empty %}{{ categorie.catLibelle|langueLib(langue.lanShortCut) }} {% endif %}</h1>
     <article class="filtresListe">
         <h2> Filtres </h2>
-        <p> To Do </p>
+        <p> To Do Form</p>
+        <form id="form_recherche" action="" method="post">
+            {{ form_widget(form) }}
+            <input type="submit" value="Rechercher" />
+        </form>
+        {% if services is defined and services is not empty and objets|length != 1 %}
+        <form id="form_recherche" action="{{ path('rechercheAffinnee', {'typeObjet': typeObjet}) }}" method="post">
+            {% for s in services %}
+            <input type="checkbox" id="{{ s.serId }}" value="{{ s.serId }}" name="services[]">
+                <label for="{{ s.serId }}"> {{ s.serLibelle|langueLib(langue.lanShortCut) }}</label><br/>
+            {% endfor %}
+            <input type="submit" value="Rechercher avec critères" />
+        </form>
+        {% endif %}
     </article>
     {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
 {% endblock %}
