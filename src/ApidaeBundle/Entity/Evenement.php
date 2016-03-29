@@ -4,6 +4,7 @@ namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /** @Entity
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\EvenementRepository")
@@ -25,16 +26,16 @@ class Evenement extends ObjetApidae
     private $ordrePortee;
 
     /**
-     * @var int
+     * @var datetime
      *
-     * @ORM\Column(name="dateDebut", type="datetime", length=255, nullable=true)
+     * @ORM\Column(name="dateDebut", type="datetime", length=255)
      */
     private $dateDebut;
 
     /**
-     * @var int
+     * @var datetime
      *
-     * @ORM\Column(name="dateFin", type="datetime", length=255, nullable=true)
+     * @ORM\Column(name="dateFin", type="datetime", length=255)
      */
     private $dateFin;
 
@@ -106,8 +107,12 @@ class Evenement extends ObjetApidae
     {
         $this->setPortee($tab['libelle']);
         $this->setOrdrePortee($tab['ordre']);
-        $this->setDateDebut($tab['dateDebut']);
-        $this->setDateFin($tab['dateFin']);
+        if(isset($tab['dateDebut'])) {
+            $this->setDateDebut(date_create($tab['dateDebut']));
+        }
+        if(isset($tab['dateFin'])) {
+            $this->setDateFin(date_create($tab['dateFin']));
+        }
     }
 }
 

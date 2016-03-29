@@ -110,14 +110,15 @@ class DefaultController extends Controller
 
         //TODO listeEvenement
         if($periode == 1) {
-            $evenement = $this->em->getRepository(Evenement::class)->getAjourdhui();
-
-
+            $evenements = $this->em->getRepository(Evenement::class)->getAujourdhui2();
+        } else {
+            $evenements = $this->em->getRepository(Evenement::class)->getInterval($periode);
         }
+
 
         $typeObjet = "Evénements";
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-            array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user));
+            array('objets' => $evenements, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user));
     }
 
 

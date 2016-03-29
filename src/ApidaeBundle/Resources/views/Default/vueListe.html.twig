@@ -1,6 +1,6 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
 {%  block content %}
-    <h1> {{ typeObjet }} ::  {{ categorie.catLibelle|langueLib(langue.lanShortCut) }}</h1>
+    <h1> {{ typeObjet }} ::  {% if categorie is defined and categorie is not empty %}{{ categorie.catLibelle|langueLib(langue.lanShortCut) }} {% endif %}</h1>
     <article class="filtresListe">
         <h2> Filtres </h2>
         <p> To Do </p>

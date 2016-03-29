@@ -12,41 +12,102 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class EvenementRepository extends \Doctrine\ORM\EntityRepository {
 
     //TODO
-    public function getAjourdhui() {
+    public function getAujourdhui() {
+        $date = new \DateTime();
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:Ouverture', 'o')
+            ->where('o.ouvDateDebut = ?1')
+            ->setParameters(array(1 => $date->format('Y-m-d')));
+        $query = $qb->getQuery();
+        $q = $query->getResult();
+        $evenements = array();
+        foreach($q as $elem) {
+            if($elem->getObjetApidae()->getObjTypeApidae() == "FETE_ET_MANIFESTATION") {
+                $evenements[] = $elem->getObjetApidae();
+            }
+        }
+        return $evenements;
+    }
+
+    //TODO
+    public function getInterval($periode) {
+        $date = new \DateTime('+'.$periode.' days');
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:Ouverture', 'o')
+            ->where('o.ouvDateDebut = ?1')
+            ->setParameters(array(1 => $date->format('Y-m-d')));
+        $query = $qb->getQuery();
+        $q = $query->getResult();
+        $evenements = array();
+        foreach($q as $elem) {
+            if($elem->getObjetApidae()->getObjTypeApidae() == "FETE_ET_MANIFESTATION") {
+                $evenements[] = $elem->getObjetApidae();
+            }
+        }
+        return $evenements;
+    }
+
+
+    //-------------- Anciennes
+
+    public function getIntervalOld($periode) {
+        $date = new \DateTime('+'.$periode.' days');
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('e')
             ->from('ApidaeBundle:Evenement', 'e')
-            ->where('o.ouvDateDebut = ?1')
-            ->setParameters(array(1 => new DateTime()));
+            ->where('e.dateDebut = ?1')
+            ->setParameters(array(1 => $date->format('Y-m-d')));
         $query = $qb->getQuery();
         return $query->getResult();
     }
 
-    //TODO
     public function getSemaine() {
+        //$date = new \DateTime('+7 days');
+
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
-        $qb->select('c')
-            ->from('ApidaeBundle:Categorie', 'c')
-            ->where('c.catId = ?1')
-            ->orWhere('c.catId = ?2')
-            ->setParameters(array(1 => '2734', 2 => '2736'));
+        $qb->select('e')
+            ->from('ApidaeBundle:Evenement', 'e')
+            ->where('e.dateDebut = ?1')
+            ->setParameters(array(1 => new \DateTime('+7 days')));
         $query = $qb->getQuery();
         return $query->getResult();
     }
 
-    //TODO
     public function getTrenteJours() {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
-        $qb->select('c')
-            ->from('ApidaeBundle:Categorie', 'c')
-            ->where('c.catId = ?1')
-            ->orWhere('c.catId = ?2')
-            ->setParameters(array(1 => '2734', 2 => '2736'));
+        $qb->select('e')
+            ->from('ApidaeBundle:Evenement', 'e')
+            ->where('e.dateDebut = ?1')
+            ->setParameters(array(1 => new \DateTime('+30 days')));
         $query = $qb->getQuery();
         return $query->getResult();
+    }
+
+    //test function
+    public function getAujourdhui2() {
+        $date = new \DateTime();
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:Ouverture', 'o')
+            ->where('o.ouvDateDebut = ?1')
+            ->setParameters(array(1 => $date->format('Y-m-d')));
+        $query = $qb->getQuery();
+        $q = $query->getResult();
+        $evenements = array();
+        foreach($q as $elem) {
+            if($elem->getObjetApidae()->getObjTypeApidae() == "FETE_ET_MANIFESTATION") {
+                $evenements[] = $elem->getObjetApidae();
+            }
+        }
+        return $evenements;
     }
 
 }

@@ -617,6 +617,8 @@ class Traitement extends ContainerAwareCommand {
             }
             if(isset($data->ouverture->periodesOuvertures)) {
                 $tab['dateFin'] = $data->ouverture->periodesOuvertures[0]->dateFin;
+                //echo date('Y-m-d', strtotime($tab['dateFin']));
+                //echo date_format(date_create($tab['dateFin']), "Y-m-d");
             }
             if(isset($data->ouverture->periodesOuvertures)) {
                 $tab['dateDebut'] = $data->ouverture->periodesOuvertures[0]->dateDebut;
