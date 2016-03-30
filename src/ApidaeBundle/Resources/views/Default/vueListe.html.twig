@@ -1,13 +1,9 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
 {%  block content %}
-    <h1> {{ typeObjet }} ::  {% if categorie is defined and categorie is not empty %}{{ categorie.catLibelle|langueLib(langue.lanShortCut) }} {% endif %}</h1>
+    <h1> {{ typeObjet }} {% if categorie is defined and categorie is not empty %} : {{ categorie.catLibelle|langueLib(langue.lanShortCut) }} {% endif %}</h1>
     <article class="filtresListe">
         <h2> Filtres </h2>
         <p> To Do Form</p>
-        <form id="form_recherche" action="" method="post">
-            {{ form_widget(form) }}
-            <input type="submit" value="Rechercher" />
-        </form>
         {% if services is defined and services is not empty and objets|length != 1 %}
         <form id="form_recherche" action="{{ path('rechercheAffinnee', {'typeObjet': typeObjet}) }}" method="post">
             {% for s in services %}
@@ -18,5 +14,10 @@
         </form>
         {% endif %}
     </article>
+    {% for flash_message in app.session.flashbag.get('notice') %}
+        <div class="flash-notice">
+            {{ flash_message }}
+        </div>
+    {% endfor %}
     {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
 {% endblock %}

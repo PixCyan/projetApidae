@@ -33,13 +33,14 @@ class EvenementRepository extends \Doctrine\ORM\EntityRepository {
 
     //TODO
     public function getInterval($periode) {
+        $dateNow = new \DateTime();
         $date = new \DateTime('+'.$periode.' days');
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('o')
             ->from('ApidaeBundle:Ouverture', 'o')
-            ->where('o.ouvDateDebut = ?1')
-            ->setParameters(array(1 => $date->format('Y-m-d')));
+            ->where('o.ouvDateDebut BETWEEN ?1 AND ?2')
+            ->setParameters(array(1 => $dateNow->format('Y-m-d'), 2 => $date->format('Y-m-d')));
         $query = $qb->getQuery();
         $q = $query->getResult();
         $evenements = array();

@@ -35,3 +35,7 @@ rechercheAffinnee:
     path: /recherche/{typeObjet}
     defaults: { _controller: ApidaeBundle:Default:rechercheAffinnee }
 
+rechercheSimple:
+    path: /recherche
+    defaults: { _controller: ApidaeBundle:Default:rechercheSimple }
+

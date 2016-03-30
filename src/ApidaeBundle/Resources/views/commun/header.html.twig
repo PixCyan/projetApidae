@@ -5,7 +5,7 @@
            <li class="LiMenu"><a href="{{ path('index') }}"> Accueil </a></li>
            <li class="LiMenu"> Hébergements
                <ul>
-                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2883'}) }}">Hôtels </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2734'}) }}">Hôtels </a></li>
                    <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2620'}) }}">Gîtes, Locations meublées</a></li>
                    <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2619'}) }}">Chambres d'hôtes </a></li>
                    <li><a href="{{ path('liste', {'typeObjet': 'Hebergements', 'categorieId': '2642'}) }}">Centres de vacances</a></li>
@@ -92,5 +92,9 @@
 
         </ul>
     {% endblock %}
+        <form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
+            <label for="rechercheSimple">Rechercher </label><input type="text" name="champsRecherche" id="rechercheSimple" placeholder="ex : Lac" />
+            <input type="submit" value="Rechercher" />
+        </form>
     </nav>
 {% endblock %}
