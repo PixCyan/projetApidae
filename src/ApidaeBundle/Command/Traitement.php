@@ -607,7 +607,6 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //-------------------- Portee ----------------------
-        //TODO portee
         if(isset($data->$chaineInformations->portee)) {
             $tab = array();
             $v = $this->traitementReference($data->$chaineInformations->portee->elementReferenceType, $data->$chaineInformations->portee->id);
@@ -627,7 +626,7 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //-------------------- ObjetsLies ----------------------
-        //TODO objetsLies
+        //TODO objetsLies traitement
         if(isset($data->liens)) {
             for ($i = 0; $i < count($data->liens); $i++) {
                 if(isset($data->liens->liensObjetsTouristiquesTypes[$i]->objetTouristique->id)) {
