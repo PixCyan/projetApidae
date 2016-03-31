@@ -7,7 +7,7 @@ namespace ApidaeBundle\Twig\Extension;
  use Twig_Extension;
  use Twig_SimpleFunction;
 
- class Fonctions extends  Twig_Extension {
+ class Fonctions extends Twig_Extension {
      private $SIT_LANGUE = 'Fr';
 
      /**

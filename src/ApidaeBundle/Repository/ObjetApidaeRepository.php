@@ -12,7 +12,7 @@ use ApidaeBundle\Entity\ObjetApidae;
 class ObjetApidaeRepository extends \Doctrine\ORM\EntityRepository {
 
     //get Musées Patrimoines et Galeries
-    //pas bonne
+    //TODO query pas bonne
     public function getMusees() {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
@@ -31,8 +31,8 @@ class ObjetApidaeRepository extends \Doctrine\ORM\EntityRepository {
         $qb = $em->createQueryBuilder();
         $qb->select('o')
             ->from('ApidaeBundle:ObjetApidae', 'o')
-            ->where($qb->expr()->like('o.nom', ':chaine'))
-            ->setParameter('chaine','%'.$chaine.'%' );
+            ->where('REGEXP(o.nom, :regexp) = true')
+            ->setParameter('regexp', $chaine );
         $query = $qb->getQuery();
         return $query->getResult();
     }

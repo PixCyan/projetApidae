@@ -8,7 +8,7 @@ use ApidaeBundle\Entity\Langue;
 use ApidaeBundle\Entity\Service;
 use ApidaeBundle\Entity\TraductionObjetApidae;
 use ApidaeBundle\Form\RechercheObjetForm;
-use ApidaeBundle\Repository\EvenementRepository;
+use ApidaeBundle\Fonctions\Fonctions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
@@ -33,25 +33,21 @@ class DefaultController extends Controller
     public function offreAction($id) {
         $user = $this->getUser();
         //phpinfo();
-        //Test
         if($id == 0) {
             $id = 48925;
         }
-        //Test affichage obet
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
         $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($id);
         $trad = $this->em->getRepository(TraductionObjetApidae::class)->findOneBy(
             array("objet"=> $objetApidae, "langue" => $langue));
 
-        if($objetApidae != null) {
-            return $this->render('ApidaeBundle:Default:vueFiche.html.twig',
-                array('objet' => $objetApidae, 'trad' => $trad, 'langue' => $langue,
-                    'user' => $user));
-        } else {
-            //TODO changer
-            return $this->render('ApidaeBundle:Default:donnees.html.twig');
-        }
+        if(!$objetApidae) {
+            throw $this->createNotFoundException('Cette offre n\'existe pas.');
+        } 
+        return $this->render('ApidaeBundle:Default:vueFiche.html.twig',
+            array('objet' => $objetApidae, 'trad' => $trad, 'langue' => $langue,
+                'user' => $user));
     }
 
     public function rechercheSimpleAction(Request $request) {
@@ -60,7 +56,30 @@ class DefaultController extends Controller
         $this->em = $this->getDoctrine()->getManager();
         $em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+
+        //---- Add ----
+        $recherche = str_replace(array ('<', '>', '.', ','), array ('&lt;', '&gt;', ' ', ' '),
+            trim(strip_tags($request->query->get('champsRecherche'))));
+        $keywords = array_unique(array_merge(explode(' ', $recherche), array ($recherche)));
+        //génère la regex
+        if(count($keywords) > 0) {
+            $a_regexp = array();
+            foreach ($keywords as $keyword) {
+                if (mb_strlen($keyword) > 2)
+                    $a_regexp[] = Fonctions::genererRegexp($keyword);
+            }
+            //--- Titre des offres :
+            foreach($a_regexp as $regex) {
+                $regex = "([^[:alpha:]]|^)" . $regex;
+
+
+            }
+
+        }
+
+        //------------
         $objets = $em->getRepository(ObjetApidae::class)->getObjetByNom($request->query->get('champsRecherche'));
+        
         if($objets == null) {
             $this->addFlash(
                 'notice',
@@ -71,9 +90,10 @@ class DefaultController extends Controller
             $services = $this->getServicesFromObjets($objets);
             $session->set('listeObjets', $objets);
         }
+        var_dump($keywords);
             return $this->render('ApidaeBundle:Default:vueListe.html.twig',
                 array('objets' => $objets, 'langue' => $langue,
-                    'typeObjet' => 'Recherche : '.$request->query->get('champsRecherche'),
+                    'typeObjet' => 'Recherche : '.end($keywords),
                     'user' => $user, 'services' => $services));
     }
 
@@ -235,6 +255,8 @@ class DefaultController extends Controller
         return $services;
     }
 
+    
+    
 
 
 }
