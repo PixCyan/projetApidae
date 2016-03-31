@@ -5,6 +5,7 @@ namespace ApidaeBundle\Controller;
 
 use ApidaeBundle\Entity\ObjetApidae;
 use ApidaeBundle\Entity\TraductionObjetApidae;
+use ApidaeBundle\Fonctions\Fonctions;
 use ApidaeBundle\Form\RechercheObjetForm;
 use ApidaeBundle\Form\TraductionObjetApidaeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -82,7 +83,30 @@ class GestionOffreController extends Controller
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             //TODO changer
-            $objets = $em->getRepository(ObjetApidae::class)->getObjetByNom($form->get('chaine')->getData());
+            //----- Changements
+            $recherche = str_replace(array ('<', '>', '.', ','), array ('&lt;', '&gt;', ' ', ' '),
+                trim(strip_tags($form->get('chaine')->getData())));
+            $keywords = array_unique(array_merge(explode(' ', $recherche), array ($recherche)));
+            $objets = array();
+            if(count($keywords) > 0) {
+                $a_regexp = array();
+                foreach ($keywords as $keyword) {
+                    if (mb_strlen($keyword) > 2)
+                        $a_regexp[] = Fonctions::genererRegexp($keyword);
+                }
+
+                //--- Titre des offres :
+                foreach($a_regexp as $regex) {
+                    $regex = "([^[:alpha:]]|^)" . $regex;
+                    print($regex);
+                    $res = $em->getRepository(ObjetApidae::class)->getObjetByNom($regex);
+                    //array_merge($objets, $res);
+                    $objets = $res;
+                }
+
+            }
+            //----------
+            //$objets = $em->getRepository(ObjetApidae::class)->getObjetByNom($form->get('chaine')->getData());
             if($objets == null) {
                 $this->addFlash(
                     'notice',

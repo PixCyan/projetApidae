@@ -61,26 +61,28 @@ class DefaultController extends Controller
         $recherche = str_replace(array ('<', '>', '.', ','), array ('&lt;', '&gt;', ' ', ' '),
             trim(strip_tags($request->query->get('champsRecherche'))));
         $keywords = array_unique(array_merge(explode(' ', $recherche), array ($recherche)));
-        //génère la regex
+        $objets = array();
         if(count($keywords) > 0) {
             $a_regexp = array();
             foreach ($keywords as $keyword) {
                 if (mb_strlen($keyword) > 2)
                     $a_regexp[] = Fonctions::genererRegexp($keyword);
             }
+
             //--- Titre des offres :
             foreach($a_regexp as $regex) {
                 $regex = "([^[:alpha:]]|^)" . $regex;
-
-
+                print($regex);
+                $res = $em->getRepository(ObjetApidae::class)->getObjetByNom($regex);
+                //array_merge($objets, $res);
+                $objets = $res;
             }
 
         }
-
         //------------
-        $objets = $em->getRepository(ObjetApidae::class)->getObjetByNom($request->query->get('champsRecherche'));
-        
-        if($objets == null) {
+
+
+        if(empty($objets)) {
             $this->addFlash(
                 'notice',
                 'Aucun objet apidae ne correspond à votre recherche.'
@@ -90,7 +92,7 @@ class DefaultController extends Controller
             $services = $this->getServicesFromObjets($objets);
             $session->set('listeObjets', $objets);
         }
-        var_dump($keywords);
+        //var_dump($keywords);
             return $this->render('ApidaeBundle:Default:vueListe.html.twig',
                 array('objets' => $objets, 'langue' => $langue,
                     'typeObjet' => 'Recherche : '.end($keywords),
