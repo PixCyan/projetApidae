@@ -70,12 +70,21 @@ class DefaultController extends Controller
             }
 
             //--- Titre des offres :
+            $i = 0;
+            //var_dump($a_regexp);
             foreach($a_regexp as $regex) {
                 $regex = "([^[:alpha:]]|$)" . $regex. " ";
                 //print($regex);
                 $res = $em->getRepository(ObjetApidae::class)->getObjetByNom($regex);
-                //array_merge($objets, $res);
-                $objets = $res;
+                //print (gettype($res));
+                if($i+1 == count($a_regexp) && count($a_regexp) != 1) {
+                    foreach ($res as $r) {
+                        array_unshift($objets, $r);
+                    }
+                } else {
+                    $objets = array_merge_recursive($objets, $res);
+                }
+                $i++;
             }
 
         }
@@ -92,11 +101,11 @@ class DefaultController extends Controller
             $services = $this->getServicesFromObjets($objets);
             $session->set('listeObjets', $objets);
         }
-        //var_dump($keywords);
-            return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-                array('objets' => $objets, 'langue' => $langue,
-                    'typeObjet' => 'Recherche : '.end($keywords),
-                    'user' => $user, 'services' => $services));
+
+        return $this->render('ApidaeBundle:Default:vueListe.html.twig',
+            array('objets' => $objets, 'langue' => $langue,
+                'typeObjet' => 'Recherche : '.end($keywords),
+                'user' => $user, 'services' => $services));
     }
 
     public function listeAction($typeObjet, $categorieId, Request $request)
@@ -149,10 +158,11 @@ class DefaultController extends Controller
         $session->set('listeObjets', $categorie->getObjets());
 
         $services = $this->getServicesFromObjets($categorie->getObjets());
+        $modesPaiement = $this->getModesPaimentFromObjets($objets);
 
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie,
-                'user' => $user, 'services' => $services));
+                'user' => $user, 'services' => $services, 'modesPaiement' => $modesPaiement));
     }
 
     public function listeEvenementsAction($periode) {
@@ -209,9 +219,10 @@ class DefaultController extends Controller
         $session->remove('listeObjets');
         $session->set('listeObjets', $objets);
         $services = $this->getServicesFromObjets($objets);
+        $modesPaiement = $this->getModesPaimentFromObjets($objets);
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user,
-                'services' => $services));
+                'services' => $services, 'modesPaiement' => $modesPaiement));
     }
 
     /**
@@ -245,16 +256,38 @@ class DefaultController extends Controller
                     $services[] = $service;
                 }
             }
+        }
+        foreach($rechercheActuelle as $objet) {
+            foreach($objet->getServices() as $service) {
+                if(!isset($services[$service->getSerId()])) {
+                    print("Ser = ".$service->getSerLibelle()." : ".$service->getSerId()."<br/>");
+                    $services[$service->getSerId()] = $service;
+                }
+            }
         }*/
         $services = new ArrayCollection();
         foreach($rechercheActuelle as $objet) {
             foreach($objet->getServices() as $service) {
-                if(!$services->contains($service)) {
+                //print("Ser = ".$service->getSerLibelle()." : ".$service->getSerId()."<br/>");
+                if(!$services->contains($service) && ($service->getSerType() == "PrestationService")) {
                     $services->add($service);
                 }
             }
         }
         return $services;
+    }
+
+    private function getModesPaimentFromObjets($rechercheActuelle) {
+        $mp = new ArrayCollection();
+        foreach($rechercheActuelle as $objet) {
+            foreach($objet->getServices() as $service) {
+                //print("Ser = ".$service->getSerLibelle()." : ".$service->getSerId()."<br/>");
+                if(!$mp->contains($service) && ($service->getSerType() == "ModePaiement")) {
+                    $mp->add($service);
+                }
+            }
+        }
+        return $mp;
     }
 
     

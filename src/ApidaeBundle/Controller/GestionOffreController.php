@@ -79,8 +79,8 @@ class GestionOffreController extends Controller
                     $regex = "([^[:alpha:]]|$)" . $regex. " ";
                     //print($regex);
                     $res = $em->getRepository(ObjetApidae::class)->getObjetByNom($regex);
-                    //array_merge($objets, $res);
-                    $objets = $res;
+                    array_merge($objets, $res);
+                    //$objets = $res;
                 }
             }
             //----------

@@ -6,10 +6,12 @@
         <p> To Do Form</p>
         {% if services is defined and services is not empty and objets|length != 1 %}
         <form id="form_recherche" action="{{ path('rechercheAffinnee', {'typeObjet': typeObjet}) }}" method="post">
-            {% for s in services %}
-            <input type="checkbox" id="{{ s.serId }}" value="{{ s.serId }}" name="services[]">
-                <label for="{{ s.serId }}"> {{ s.serLibelle|langueLib(langue.lanShortCut) }}</label><br/>
-            {% endfor %}
+            {% if services is defined and services is not empty %}
+                {% include "ApidaeBundle:filtres:ServicesFiltres.html.twig" %}
+            {% endif %}
+            {% if modesPaiement is defined and modesPaiement is not empty %}
+                {% include "ApidaeBundle:filtres:ModesPaiementFiltres.html.twig" %}
+            {% endif %}
             <input type="submit" value="Rechercher avec critères" />
         </form>
         {% endif %}
