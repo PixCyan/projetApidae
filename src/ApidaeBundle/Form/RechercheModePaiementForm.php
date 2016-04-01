@@ -3,6 +3,7 @@
 namespace ApidaeBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 
 class RechercheObjetForm extends AbstractType
@@ -13,7 +14,7 @@ class RechercheObjetForm extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('chaine', 'text', array('label' => 'Rechercher'));
+        $builder->add('chaine',  TextType::class, array('label' => 'Rechercher'));
     }
 
 }

@@ -9,7 +9,6 @@ use ApidaeBundle\Fonctions\Fonctions;
 use ApidaeBundle\Form\RechercheObjetForm;
 use ApidaeBundle\Form\TraductionObjetApidaeType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Langue;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -23,7 +22,6 @@ class GestionOffreController extends Controller
     public function modifierOffreAction($offreId, Request $request) {
         $em = $this->getDoctrine()->getManager();
         $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
-        $categoriesMenu = $this->getCategoriesMenu();
         //TODO getOffre
 
 
@@ -43,46 +41,27 @@ class GestionOffreController extends Controller
                     'L\'objet Apidae a bien été modifiée.'
                 );
                 return $this->redirectToRoute('gestionOffres');
+            } else {
+                $this->addFlash(
+                    'notice',
+                    'Ceci est un test.'
+                );
             }
         }
         return $this->render('ApidaeBundle:GestionOffre:modifierOffre.html.twig', array(
-            'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'objet' => $objet, 'form' => $formTrad->createView()));
+           'langue' => $langue, 'objet' => $objet, 'form' => $formTrad->createView()));
     }
 
     public function gestionOffresAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
-        $categoriesMenu = $this->getCategoriesMenu();
         $userCourant = $this->getUser();
 
         $form = $this->createForm(new RechercheObjetForm());
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            //TODO changer
-            $objets = $em->getRepository(ObjetApidae::class)->getObjetByNom($form->get('chaine')->getData());
-            if($objets == null) {
-                $this->addFlash(
-                    'notice',
-                    'Aucun objet apidae ne correspond à votre recherche.'
-                );
-            }
-            return $this->render('ApidaeBundle:GestionOffre:gestionOffres.html.twig', array(
-                'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $userCourant, 'objets' => $objets,
-                'form' => $form->createView()));
-        }
-        return $this->render('ApidaeBundle:GestionOffre:gestionOffres.html.twig', array(
-            'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $userCourant, 'form' => $form->createView()));
-    }
 
-    public function rechercheOffreAction(Request $request) {
-        $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
-        $categoriesMenu = $this->getCategoriesMenu();
-        $userCourant = $this->getUser();
-        $form = $this->createForm(new RechercheObjetForm());
-        $form->handleRequest($request);
+        //Gestion du formulaire de recherche
         if ($form->isSubmitted() && $form->isValid()) {
-            //TODO changer
             //----- Changements
             $recherche = str_replace(array ('<', '>', '.', ','), array ('&lt;', '&gt;', ' ', ' '),
                 trim(strip_tags($form->get('chaine')->getData())));
@@ -97,13 +76,12 @@ class GestionOffreController extends Controller
 
                 //--- Titre des offres :
                 foreach($a_regexp as $regex) {
-                    $regex = "([^[:alpha:]]|^)" . $regex;
-                    print($regex);
+                    $regex = "([^[:alpha:]]|$)" . $regex. " ";
+                    //print($regex);
                     $res = $em->getRepository(ObjetApidae::class)->getObjetByNom($regex);
                     //array_merge($objets, $res);
                     $objets = $res;
                 }
-
             }
             //----------
             //$objets = $em->getRepository(ObjetApidae::class)->getObjetByNom($form->get('chaine')->getData());
@@ -114,21 +92,11 @@ class GestionOffreController extends Controller
                 );
             }
             return $this->render('ApidaeBundle:GestionOffre:gestionOffres.html.twig', array(
-                'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $userCourant, 'objets' => $objets,
-                'form' => $form));
+                'langue' => $langue, 'user' => $userCourant, 'objets' => $objets,
+                'form' => $form->createView()));
         }
         return $this->render('ApidaeBundle:GestionOffre:gestionOffres.html.twig', array(
-            'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'user' => $userCourant, 'form' => $form));
+           'langue' => $langue, 'user' => $userCourant, 'form' => $form->createView()));
     }
 
-    private function getCategoriesMenu() {
-        $categories = array();
-        $em = $this->getDoctrine()->getManager();
-        $categories['Restaurants'] = $em->getRepository(Categorie::class)->getCategoriesRestaurants();
-        $categories['Hébergements'] = $em->getRepository(Categorie::class)->getCategoriesHebergements();
-        $categories['Activités'] = $em->getRepository(Categorie::class)->getCategoriesActivites();
-        $categories['Evénements'] = $em->getRepository(Categorie::class)->getCategoriesEvenements();
-
-        return $categories;
-    }
 }

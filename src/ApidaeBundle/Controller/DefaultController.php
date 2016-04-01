@@ -71,8 +71,8 @@ class DefaultController extends Controller
 
             //--- Titre des offres :
             foreach($a_regexp as $regex) {
-                $regex = "([^[:alpha:]]|^)" . $regex;
-                print($regex);
+                $regex = "([^[:alpha:]]|$)" . $regex. " ";
+                //print($regex);
                 $res = $em->getRepository(ObjetApidae::class)->getObjetByNom($regex);
                 //array_merge($objets, $res);
                 $objets = $res;
