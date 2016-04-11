@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class DefaultController extends Controller
 {
@@ -146,23 +147,29 @@ class DefaultController extends Controller
         } else {
             $categorie = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
             if(!$categorie) {
-                //TODO ERROR
                 throw $this->createNotFoundException('Cette categorie est vide.');
             } else {
                 $objets = $categorie->getObjets();
             }
         }
 
+
+
         //unset($_SESSION['listeObjets']);
         $session->remove('listeObjets');
         $session->set('listeObjets', $categorie->getObjets());
 
-        $services = $this->getServicesFromObjets($categorie->getObjets());
+        $services = $this->getServicesFromObjets($objets);
         $modesPaiement = $this->getModesPaimentFromObjets($objets);
+        $labelsQualite = $this->getClassementsFromObjets($objets);
+        $tourismeAdapte = $this->getTourismeAdapteFromObjets($objets);
+
+        print(count($modesPaiement));
 
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie,
-                'user' => $user, 'services' => $services, 'modesPaiement' => $modesPaiement));
+                'user' => $user, 'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite,
+                'tourismeAdapte' => $tourismeAdapte));
     }
 
     public function listeEvenementsAction($periode) {
@@ -185,44 +192,57 @@ class DefaultController extends Controller
 
 
     public function rechercheAffinneeAction(Request $request, $typeObjet) {
+        /*if($request->isXmlHttpRequest()) {
+            pour l'ajax ici
+        }*/
+
         $user = $this->getUser();
         $session = $request->getSession();
-        $services = $_POST['services'];
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
-        //var_dump($services);
-        //TODO objets
-        $objets = array();
-        //test
-        $service = $this->em->getRepository(Service::class)->findOneBySerId($services[0]);
-        if($service) {
-            echo $service->getSerLibelle().'<br/>';
+
+        if($request->get('services')) {
+            $services = $request->get('services');
         }
+        if($request->get('classements')) {
+            $classements = $request->get('classements');
+        }
+
+        $objetsRes = new ArrayCollection();
+
+        //--- test
+        //var_dump($services);
         if($liste = $session->get('listeObjets')) {
             foreach($liste as $objet) {
-                echo $objet->getIdObjet().'<br/>';
-                //TEMP
-                foreach($objet->getServices() as $ser) {
-                    //echo 'service = '.$ser->getSerLibelle().'<br/>';
-                    if($ser->getSerId() == $service->getSerId()) {
-                        //echo '==';
-                        $objets[] = $objet;
+                //echo $objet->getIdObjet().'<br/>';
+                if($services) {
+                    foreach ($services as $service) {
+                        $s = $this->em->getRepository(Service::class)->findOneBySerId($service);
+                        echo 'lib = '.$s->getSerLibelle().'<br/>';
+                        //var_dump($objet->getServices());
+                        //TEMP
+                        foreach($objet->getServices() as $value) {
+                            if($value->getSerId() == $s->getSerId()) {
+                                $objetsRes->add($objet);
+                            }
+                        }
+                        /*if($objet->getServices()->contains($s)) {
+                            $objetsRes->add($objet);
+                        }*/
                     }
                 }
-                /*if($objet->getServices()->contains($service)) {
-                    echo 'contains';
-                    $objets[] = $objet;
-                }*/
             }
         }
 
         $session->remove('listeObjets');
-        $session->set('listeObjets', $objets);
-        $services = $this->getServicesFromObjets($objets);
-        $modesPaiement = $this->getModesPaimentFromObjets($objets);
+        $session->set('listeObjets', $objetsRes);
+        $services = $this->getServicesFromObjets($objetsRes);
+        $modesPaiement = $this->getModesPaimentFromObjets($objetsRes);
+        $labelsQualite = $this->getClassementsFromObjets($objetsRes);
+
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-            array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user,
-                'services' => $services, 'modesPaiement' => $modesPaiement));
+            array('objets' => $objetsRes, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user,
+                'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite));
     }
 
     /**
@@ -249,22 +269,6 @@ class DefaultController extends Controller
      * @return array
      */
     private function getServicesFromObjets($rechercheActuelle) {
-        /*$services = array();
-        foreach($rechercheActuelle as $objet) {
-            foreach($objet->getServices() as $service) {
-                if(!in_array($service, $services)) {
-                    $services[] = $service;
-                }
-            }
-        }
-        foreach($rechercheActuelle as $objet) {
-            foreach($objet->getServices() as $service) {
-                if(!isset($services[$service->getSerId()])) {
-                    print("Ser = ".$service->getSerLibelle()." : ".$service->getSerId()."<br/>");
-                    $services[$service->getSerId()] = $service;
-                }
-            }
-        }*/
         $services = new ArrayCollection();
         foreach($rechercheActuelle as $objet) {
             foreach($objet->getServices() as $service) {
@@ -288,6 +292,30 @@ class DefaultController extends Controller
             }
         }
         return $mp;
+    }
+
+    private function getClassementsFromObjets($rechercheActuelle) {
+        $lq = new ArrayCollection();
+        foreach($rechercheActuelle as $objet) {
+            foreach($objet->getLabelsQualite() as $label) {
+                if(!$lq->contains($label)) {
+                    $lq->add($label);
+                }
+            }
+        }
+        return $lq;
+    }
+
+    private function getTourismeAdapteFromObjets($rechercheActuelle) {
+        $ta = new ArrayCollection();
+        foreach($rechercheActuelle as $objet) {
+            foreach($objet->getServices() as $handicap) {
+                if(!$ta->contains($handicap) && ($handicap->getSerType() == "TourismeAdapte")) {
+                    $ta->add($handicap);
+                }
+            }
+        }
+        return $ta;
     }
 
     

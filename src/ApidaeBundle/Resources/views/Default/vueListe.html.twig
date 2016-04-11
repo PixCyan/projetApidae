@@ -6,11 +6,17 @@
         <p> To Do Form</p>
         {% if services is defined and services is not empty and objets|length != 1 %}
         <form id="form_recherche" action="{{ path('rechercheAffinnee', {'typeObjet': typeObjet}) }}" method="post">
+            {% if modesPaiement is defined and modesPaiement is not empty %}
+                {% include "ApidaeBundle:filtres:ModesPaiementFiltres.html.twig" %}
+            {% endif %}
             {% if services is defined and services is not empty %}
                 {% include "ApidaeBundle:filtres:ServicesFiltres.html.twig" %}
             {% endif %}
-            {% if modesPaiement is defined and modesPaiement is not empty %}
-                {% include "ApidaeBundle:filtres:ModesPaiementFiltres.html.twig" %}
+            {% if labels is defined and labels is not empty %}
+                {% include "ApidaeBundle:filtres:Classements.html.twig" %}
+            {% endif %}
+            {% if tourismeAdapte is defined and tourismeAdapte is not empty %}
+                {% include "ApidaeBundle:filtres:TourismeAdapte.html.twig" %}
             {% endif %}
             <input type="submit" value="Rechercher avec critères" />
         </form>
@@ -22,4 +28,34 @@
         </div>
     {% endfor %}
     {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
+
+    <!-- Test ajax -->
+    <script>
+       //appel d'une fonction lorsque l'on coche une case
+        //va chercher ls ojets
+        //les renvoi dans le bon conteneur
+        function testJS() {
+            alert('texte');
+        }
+        function chercher() {
+            alert('Filtre');
+            $.ajax({
+                type        : $(this).attr( 'method' ),
+                url         : $(this).attr( 'action' ),
+                data:
+                {
+                    typeObjet : {{ typeObjet }}
+                },
+                success: function(reponse) {
+                    //TODO function de réponse ajax
+                    alert('Ca marche');
+                }
+            });
+
+       }
+
+    </script>
+
+
+
 {% endblock %}
