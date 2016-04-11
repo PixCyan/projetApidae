@@ -3,8 +3,10 @@
     <h1> {{ typeObjet }} {% if categorie is defined and categorie is not empty %} : {{ categorie.catLibelle|langueLib(langue.lanShortCut) }} {% endif %}</h1>
     <article class="filtresListe">
         <h2> Filtres </h2>
-        <p> To Do Form</p>
-        {% if services is defined and services is not empty and objets|length != 1 %}
+        {% if services is defined and services is not empty and objets|length != 1
+            or modesPaiement is defined and modesPaiement is not empty and objets|length != 1
+            or labels is defined and labels is not empty and objets|length != 1
+            or tourismeAdapte is defined  and tourismeAdapte is not empty and objets|length != 1 %}
         <form id="form_recherche" action="{{ path('rechercheAffinnee', {'typeObjet': typeObjet}) }}" method="post">
             {% if modesPaiement is defined and modesPaiement is not empty %}
                 {% include "ApidaeBundle:filtres:ModesPaiementFiltres.html.twig" %}

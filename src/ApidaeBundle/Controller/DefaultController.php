@@ -21,6 +21,10 @@ class DefaultController extends Controller
     //0 = FR, 1 = EN
     private $lan = 0;
 
+    /**
+     * Renvoi la page d'accueil avec les suggestions
+     * @return Response
+     */
     public function indexAction()
     {
         $user = $this->getUser();
@@ -31,6 +35,11 @@ class DefaultController extends Controller
             'langue' => $langue, 'user' => $user));
     }
 
+    /**
+     * Renvoie la fiche détaillée d'un objetApidae d'après son id
+     * @param $id
+     * @return Response
+     */
     public function offreAction($id) {
         $user = $this->getUser();
         //phpinfo();
@@ -51,6 +60,11 @@ class DefaultController extends Controller
                 'user' => $user));
     }
 
+    /**
+     * Effectue une recherche d'après des mots clés donnés dans la barre de recherche
+     * @param Request $request
+     * @return Response
+     */
     public function rechercheSimpleAction(Request $request) {
         $session = $request->getSession();
         $user = $this->getUser();
@@ -91,7 +105,6 @@ class DefaultController extends Controller
         }
         //------------
 
-
         if(empty($objets)) {
             $this->addFlash(
                 'notice',
@@ -109,6 +122,13 @@ class DefaultController extends Controller
                 'user' => $user, 'services' => $services));
     }
 
+    /**
+     * Renvoie la liste de tous les objets d'une categorie donnée (Catégories définies par le menu)
+     * @param $typeObjet
+     * @param $categorieId
+     * @param Request $request
+     * @return Response
+     */
     public function listeAction($typeObjet, $categorieId, Request $request)
     {
         $session = $request->getSession();
@@ -153,8 +173,6 @@ class DefaultController extends Controller
             }
         }
 
-
-
         //unset($_SESSION['listeObjets']);
         $session->remove('listeObjets');
         $session->set('listeObjets', $categorie->getObjets());
@@ -164,14 +182,18 @@ class DefaultController extends Controller
         $labelsQualite = $this->getClassementsFromObjets($objets);
         $tourismeAdapte = $this->getTourismeAdapteFromObjets($objets);
 
-        print(count($modesPaiement));
-
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie,
                 'user' => $user, 'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite,
                 'tourismeAdapte' => $tourismeAdapte));
     }
 
+
+    /**
+     * Renvoie la liste de tous les objets "Evènement" selon la période donnée
+     * @param $periode l'interval entre deux dates
+     * @return Response
+     */
     public function listeEvenementsAction($periode) {
         $user = $this->getUser();
         //$categoriesMenu = $this->getCategoriesMenu();
@@ -191,6 +213,12 @@ class DefaultController extends Controller
     }
 
 
+    /**
+     * Effectue une recherche d'apèrs les filtres cochés
+     * @param Request $request
+     * @param $typeObjet
+     * @return Response
+     */
     public function rechercheAffinneeAction(Request $request, $typeObjet) {
         /*if($request->isXmlHttpRequest()) {
             pour l'ajax ici
@@ -218,9 +246,9 @@ class DefaultController extends Controller
                 if($services) {
                     foreach ($services as $service) {
                         $s = $this->em->getRepository(Service::class)->findOneBySerId($service);
-                        echo 'lib = '.$s->getSerLibelle().'<br/>';
+                        //echo 'lib = '.$s->getSerLibelle().'<br/>';
                         //var_dump($objet->getServices());
-                        //TEMP
+                        //TEMPORAIRE
                         foreach($objet->getServices() as $value) {
                             if($value->getSerId() == $s->getSerId()) {
                                 $objetsRes->add($objet);
@@ -239,6 +267,9 @@ class DefaultController extends Controller
         $services = $this->getServicesFromObjets($objetsRes);
         $modesPaiement = $this->getModesPaimentFromObjets($objetsRes);
         $labelsQualite = $this->getClassementsFromObjets($objetsRes);
+        if($typeObjet == "Hebergements") {
+            //TODO filtre type d'habitation
+        }
 
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objetsRes, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user,
@@ -281,6 +312,11 @@ class DefaultController extends Controller
         return $services;
     }
 
+    /**
+     * Get tous les modes de paiements liés aux objts de la liste actuelle
+     * @param $rechercheActuelle
+     * @return ArrayCollection
+     */
     private function getModesPaimentFromObjets($rechercheActuelle) {
         $mp = new ArrayCollection();
         foreach($rechercheActuelle as $objet) {
@@ -294,6 +330,11 @@ class DefaultController extends Controller
         return $mp;
     }
 
+    /**
+     * Get tous les classements (labels qualité) liés aux objets de la liste donnée
+     * @param $rechercheActuelle
+     * @return ArrayCollection
+     */
     private function getClassementsFromObjets($rechercheActuelle) {
         $lq = new ArrayCollection();
         foreach($rechercheActuelle as $objet) {
@@ -306,6 +347,11 @@ class DefaultController extends Controller
         return $lq;
     }
 
+    /**
+     * Get tous les services de tourisme adapté liés aux objets de la liste donnée
+     * @param $rechercheActuelle
+     * @return ArrayCollection
+     */
     private function getTourismeAdapteFromObjets($rechercheActuelle) {
         $ta = new ArrayCollection();
         foreach($rechercheActuelle as $objet) {
