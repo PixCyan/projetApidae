@@ -4,6 +4,7 @@ namespace ApidaeBundle\Controller;
 
 use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Evenement;
+use ApidaeBundle\Entity\LabelQualite;
 use ApidaeBundle\Entity\Langue;
 use ApidaeBundle\Entity\Service;
 use ApidaeBundle\Entity\TraductionObjetApidae;
@@ -113,7 +114,7 @@ class DefaultController extends Controller
             $services = array();
         } else {
             $services = $this->getServicesFromObjets($objets);
-            $session->set('listeObjets', $objets);
+            $session->set('listeObjets', $this->getIdsObjetsFromObjets($objets));
         }
 
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
@@ -175,17 +176,24 @@ class DefaultController extends Controller
 
         //unset($_SESSION['listeObjets']);
         $session->remove('listeObjets');
-        $session->set('listeObjets', $categorie->getObjets());
+        $session->set('listeObjets', $this->getIdsObjetsFromObjets($objets));
 
         $services = $this->getServicesFromObjets($objets);
         $modesPaiement = $this->getModesPaimentFromObjets($objets);
         $labelsQualite = $this->getClassementsFromObjets($objets);
         $tourismeAdapte = $this->getTourismeAdapteFromObjets($objets);
+        if($typeObjet == "Hebergements") {
+            $typesHabitation = $this->getTypeHabitationFromObjets($objets);
+        } else {
+            $typesHabitation =[];
+        }
+
+        //var_dump($typesHabitation);
 
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie,
                 'user' => $user, 'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite,
-                'tourismeAdapte' => $tourismeAdapte));
+                'tourismeAdapte' => $tourismeAdapte, 'typesHabitation' => $typesHabitation));
     }
 
 
@@ -223,7 +231,6 @@ class DefaultController extends Controller
         /*if($request->isXmlHttpRequest()) {
             pour l'ajax ici
         }*/
-
         $user = $this->getUser();
         $session = $request->getSession();
         $this->em = $this->getDoctrine()->getManager();
@@ -231,49 +238,91 @@ class DefaultController extends Controller
 
         if($request->get('services')) {
             $services = $request->get('services');
+        } else{
+            $services = [];
         }
         if($request->get('classements')) {
             $classements = $request->get('classements');
+        } else {
+            $classements = [];
+        }
+        if($request->get('handicaps')) {
+            $handicaps = $request->get('handicaps');
+        } else {
+            $handicaps = [];
+        }
+        if($request->get('categories')) {
+            $categories = $request->get('categories');
+        } else {
+            $categories = [];
         }
 
         $objetsRes = new ArrayCollection();
 
         //--- test
         //var_dump($services);
-        if($liste = $session->get('listeObjets')) {
+        if($liste = $this->getObjetsFromIdsObjets($session->get('listeObjets'))) {
             foreach($liste as $objet) {
-                //echo $objet->getIdObjet().'<br/>';
+                //echo $objet->getIdObjet().' libelle :  '.$objet->getNom().'<br/>';
                 if($services) {
                     foreach ($services as $service) {
                         $s = $this->em->getRepository(Service::class)->findOneBySerId($service);
                         //echo 'lib = '.$s->getSerLibelle().'<br/>';
-                        //var_dump($objet->getServices());
                         //TEMPORAIRE
-                        foreach($objet->getServices() as $value) {
+                        /*foreach($objet->getServices() as $value) {
+                            //echo("id ser obj : ".$value->getSerId()." / id service : ".$s->getSerId()."<br/>");
                             if($value->getSerId() == $s->getSerId()) {
                                 $objetsRes->add($objet);
                             }
-                        }
-                        /*if($objet->getServices()->contains($s)) {
-                            $objetsRes->add($objet);
                         }*/
+                        if($objet->getServices()->contains($s) && !$objetsRes->contains($objet)) {
+                            $objetsRes->add($objet);
+                        }
+                    }
+                }
+                if($classements) {
+                    foreach ($classements as $classement) {
+                        $c = $this->em->getRepository(LabelQualite::class)->findOneByLabId($classement);
+                        //echo 'lib = '.$s->getSerLibelle().'<br/>';
+                        if($objet->getLabelsQualite()->contains($c) && !$objetsRes->contains($objet)) {
+                            $objetsRes->add($objet);
+                        }
+                    }
+                }
+                if($handicaps) {
+                    foreach ($handicaps as $handicap) {
+                        $s = $this->em->getRepository(Service::class)->findOneBySerId($handicap);
+                        if($objet->getServices()->contains($s) && !$objetsRes->contains($objet)) {
+                            $objetsRes->add($objet);
+                        }
+                    }
+                }
+                if($categories) {
+                    foreach ($categories as $categorie) {
+                        $c = $this->em->getRepository(Categorie::class)->findOneBySerId($categorie);
+                        if($objet->getCategories()->contains($c) && !$objetsRes->contains($objet)) {
+                            $objetsRes->add($objet);
+                        }
                     }
                 }
             }
         }
 
         $session->remove('listeObjets');
-        $session->set('listeObjets', $objetsRes);
+        $session->set('listeObjets', $this->getIdsObjetsFromObjets($objetsRes));
         $services = $this->getServicesFromObjets($objetsRes);
         $modesPaiement = $this->getModesPaimentFromObjets($objetsRes);
         $labelsQualite = $this->getClassementsFromObjets($objetsRes);
         if($typeObjet == "Hebergements") {
-            //TODO filtre type d'habitation
+            $typesHabitation = $this->getTypeHabitationFromObjets($objetsRes);
+        } else {
+            $typesHabitation =[];
         }
 
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objetsRes, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user,
-                'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite));
+                'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite,
+                'typesHabitation' => $typesHabitation));
     }
 
     /**
@@ -364,8 +413,47 @@ class DefaultController extends Controller
         return $ta;
     }
 
-    
-    
+    /**
+     * Retourne un tableau de categories liés à la liste d'objets passé en paramètre et dont le type de categorie est "TypeHabitation"
+     * @param $rechercheActuelle
+     * @return ArrayCollection
+     */
+    private function getTypeHabitationFromObjets($rechercheActuelle) {
+        $typeHabitation = new ArrayCollection();
+        foreach($rechercheActuelle as $objet) {
+            foreach($objet->getCategories() as $cat) {
+                if(!$typeHabitation->contains($cat) && ($cat->getCatRefType() == "TypeHabitation")) {
+                    $typeHabitation->add($cat);
+                }
+            }
+        }
+        return $typeHabitation;
+    }
 
+    /**
+     * Retourne un tableau d'id d'après un tableau d'objets Apidae
+     * @param $objets
+     * @return array
+     */
+    private function getIdsObjetsFromObjets($objets) {
+        $idsObjets = [];
+        foreach ($objets as $value) {
+            $idsObjets[] = $value->getIdObjet();
+        }
+        return $idsObjets;
+    }
 
+    /**
+     * Retourne un tableau d'objets Apidae d'après un tableau d'IDs
+     * @param $idsObjets
+     * @return array
+     */
+    private function getObjetsFromIdsObjets($idsObjets) {
+        $objets = [];
+        foreach($idsObjets as $value) {
+            $o = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($value);
+            $objets[] = $o;
+        }
+        return $objets;
+    }
 }

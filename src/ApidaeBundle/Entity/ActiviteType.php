@@ -44,6 +44,13 @@ class ActiviteType
     private $ordre;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="refType", type="string", length=255)
+     */
+    private $refType;
+
+    /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Activite", mappedBy="activiteType")
      */
     protected $activites;
@@ -158,6 +165,22 @@ class ActiviteType
     public function getActivites()
     {
         return $this->activites;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRefType()
+    {
+        return $this->refType;
+    }
+
+    /**
+     * @param mixed $refType
+     */
+    public function setRefType($refType)
+    {
+        $this->refType = $refType;
     }
 }
 

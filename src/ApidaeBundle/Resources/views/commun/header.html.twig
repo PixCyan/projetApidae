@@ -34,9 +34,11 @@
            </li>
            <li class="LiMenu"> Activités
                <ul>
-                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3203'}) }}">Patrimoine, Musée, Galeries </a></li>
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3203'}) }}">Patrimoine, Musées, Galeries </a></li>
                    <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3283'}) }}">Itinéraires, Parcours </a></li>
-                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '1890'}) }}">Stage</a></li>
+                   <!-- réunis en un seul dans json
+                   + ajout randonnée -->
+                   <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '1890'}) }}">Stages</a></li>
                    <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '1830'}) }}">Cours</a></li>
                    <li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '1789'}) }}">Activités sportives</a></li>
 

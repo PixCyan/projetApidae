@@ -3,6 +3,7 @@
 namespace ApidaeBundle\Controller;
 
 use ApidaeBundle\Entity\Activite;
+use ApidaeBundle\Entity\ActiviteType;
 use ApidaeBundle\Entity\Duree;
 use ApidaeBundle\Entity\Evenement;
 use ApidaeBundle\Entity\Hebergement;
@@ -195,8 +196,20 @@ class TraitementController extends Controller
 
 			}
 		}
-
-		//$this->em->flush();
+		if(isset($data->$chaineInformations->activites)) {
+			$this->traitementTypeCategories($data->$chaineInformations->activites, $objetApidae, $languesSite);
+		}
+		if(isset($data->$chaineInformations->themes)) {
+			$this->traitementTypeCategories($data->$chaineInformations->themes, $objetApidae, $languesSite);
+		}
+		/*
+                if(isset($data->$chaineInformations->activitesSportives)) {
+                    $this->traitementTypeCategories($data->$chaineInformations->activitesSportives, $objetApidae, $languesSite);
+                }
+                //TEST prestationActivite
+                if(isset($data->prestations->activites)) {
+                    $this->traitementTypeCategories($data->prestations->activites, $objetApidae, $languesSite);
+                }*/
 
 		//--------------------Langue ----------------------
 		$i = 0;
@@ -550,6 +563,7 @@ class TraitementController extends Controller
 			if(isset($data->$chaineInformations->durees->nombreJours)) {
 				$tab['nbJours'] = $data->$chaineInformations->nombreJours;
 			}
+
 			$objetApidae->setCapacite($tab);
 			for($i = 0; $i < count($data->$chaineInformations->durees); $i++) {
 				$v = $this->traitementReference($data->$chaineInformations->durees[$i]->elementReferenceType,
@@ -588,21 +602,40 @@ class TraitementController extends Controller
 		} else if(isset($data->$chaineInformations->patrimoineCulturelType)) {
 			$this->traitementActiviteTypes($data->$chaineInformations->patrimoineCulturelType, $languesSite, $objetApidae);
 		}
+//ActivitePrestation ...
+		if(isset($data->$chaineInformations->activitesSportives)) {
+			foreach ($data->$chaineInformations->activitesSportives as $v) {
+				$this->traitementActiviteTypes($v, $languesSite, $objetApidae);
+			}
+		}
+		//TEST prestationActivite
+		if(isset($data->prestations->activites)) {
+			foreach($data->prestations->activites as $v) {
+				$this->traitementActiviteTypes($v, $languesSite, $objetApidae);
+			}
+		}
 
 		//-------------------- Portee ----------------------
-		//TODO portee
 		if(isset($data->$chaineInformations->portee)) {
 			$tab = array();
 			$v = $this->traitementReference($data->$chaineInformations->portee->elementReferenceType, $data->$chaineInformations->portee->id);
 			if($v != null) {
 				$tab['libelle'] = $this->traitementLibelleLangues($languesSite, $v);
 				$tab['ordre'] = $v->ordre;
-				$objetApidae->setCapacite($tab);
 			}
+			if(isset($data->ouverture->periodesOuvertures)) {
+				$tab['dateFin'] = $data->ouverture->periodesOuvertures[0]->dateFin;
+				//echo date('Y-m-d', strtotime($tab['dateFin']));
+				//echo date_format(date_create($tab['dateFin']), "Y-m-d");
+			}
+			if(isset($data->ouverture->periodesOuvertures)) {
+				$tab['dateDebut'] = $data->ouverture->periodesOuvertures[0]->dateDebut;
+			}
+			$objetApidae->setCapacite($tab);
 		}
 
 		//-------------------- ObjetsLies ----------------------
-		//TODO objetsLies
+		//TODO objetsLies traitement
 		if(isset($data->liens)) {
 			for ($i = 0; $i < count($data->liens); $i++) {
 				if(isset($data->liens->liensObjetsTouristiquesTypes[$i]->objetTouristique->id)) {
@@ -982,6 +1015,7 @@ class TraitementController extends Controller
 		$act->setLibelle($this->traitementLibelleLangues($languesSite, $v));
 		$act->setIdActivite($v->id);
 		$act->setOrdre($v->ordre);
+		$act->setRefType($v->elementReferenceType);
 		$objetApidae->setActiviteType($act);
 		if(!$act->getActivites()->contains($objetApidae)) {
 			$act->addActivite($objetApidae);

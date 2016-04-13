@@ -79,7 +79,7 @@ class CategorieRepository extends \Doctrine\ORM\EntityRepository {
     }
 
     //------ Activités
-    //get Musées Patrimoines et Galeries
+    //get  Patrimoines, Galeries et Musées
     public function getMusees() {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();

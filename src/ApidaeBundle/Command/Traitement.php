@@ -212,7 +212,14 @@ class Traitement extends ContainerAwareCommand {
         if(isset($data->$chaineInformations->themes)) {
             $this->traitementTypeCategories($data->$chaineInformations->themes, $objetApidae, $languesSite);
         }
-
+/*
+        if(isset($data->$chaineInformations->activitesSportives)) {
+            $this->traitementTypeCategories($data->$chaineInformations->activitesSportives, $objetApidae, $languesSite);
+        }
+        //TEST prestationActivite
+        if(isset($data->prestations->activites)) {
+            $this->traitementTypeCategories($data->prestations->activites, $objetApidae, $languesSite);
+        }*/
 
         //--------------------Langue ----------------------
         $i = 0;
@@ -604,6 +611,20 @@ class Traitement extends ContainerAwareCommand {
             $this->traitementActiviteTypes($data->$chaineInformations->rubrique, $languesSite, $objetApidae);
         } else if(isset($data->$chaineInformations->patrimoineCulturelType)) {
             $this->traitementActiviteTypes($data->$chaineInformations->patrimoineCulturelType, $languesSite, $objetApidae);
+        }
+//ActivitePrestation ...
+        if($objetApidae->getObjTypeApidae() == "ACTIVITE" || $objetApidae->getObjTypeApidae() == "EQUIPEMENT") {
+            if(isset($data->$chaineInformations->activitesSportives)) {
+                foreach ($data->$chaineInformations->activitesSportives as $v) {
+                    $this->traitementActiviteTypes($v, $languesSite, $objetApidae);
+                }
+            }
+            //TEST prestationActivite
+            if(isset($data->prestations->activites)) {
+                foreach($data->prestations->activites as $v) {
+                    $this->traitementActiviteTypes($v, $languesSite, $objetApidae);
+                }
+            }
         }
 
         //-------------------- Portee ----------------------
@@ -1006,6 +1027,7 @@ class Traitement extends ContainerAwareCommand {
         $act->setLibelle($this->traitementLibelleLangues($languesSite, $v));
         $act->setIdActivite($v->id);
         $act->setOrdre($v->ordre);
+        $act->setRefType($v->elementReferenceType);
         $objetApidae->setActiviteType($act);
         if(!$act->getActivites()->contains($objetApidae)) {
             $act->addActivite($objetApidae);
