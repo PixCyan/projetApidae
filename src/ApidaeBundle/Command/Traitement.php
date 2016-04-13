@@ -609,9 +609,9 @@ class Traitement extends ContainerAwareCommand {
             $this->traitementActiviteTypes($data->$chaineInformations->activiteType, $languesSite, $objetApidae);
         } else if(isset($data->$chaineInformations->rubrique)) {
             $this->traitementActiviteTypes($data->$chaineInformations->rubrique, $languesSite, $objetApidae);
-        } else if(isset($data->$chaineInformations->patrimoineCulturelType)) {
+        } /*else if(isset($data->$chaineInformations->patrimoineCulturelType)) {
             $this->traitementActiviteTypes($data->$chaineInformations->patrimoineCulturelType, $languesSite, $objetApidae);
-        }
+        }*/
 //ActivitePrestation ...
         if($objetApidae->getObjTypeApidae() == "ACTIVITE" || $objetApidae->getObjTypeApidae() == "EQUIPEMENT") {
             if(isset($data->$chaineInformations->activitesSportives)) {
