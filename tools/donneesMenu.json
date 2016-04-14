@@ -1,0 +1,277 @@
+[
+	{
+		"libelle" : "@Fr:Hôtels@En:Hotels@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"categories" : [
+			{
+				"libelle" : "Hôtels",
+				"id" : 2734
+			}, {
+				"libelle" : "Hôtels - Restaurants",
+				"id" : 2736
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Gîtes, Locations meublées@En:Gîtes, locations@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"categories" : [
+			{
+				"libelle" : "Gîtes/Meublés",
+				"id" : 2620
+			}, {
+				"libelle" : "Gîtes d'étapes/Séjours",
+				"id" : 2647
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Chambres d'hôtes@En:Bed and breakfast@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"categories" : [
+			{
+				"libelle" : "Chambres d'hôtes",
+				"id" : 2619
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Centres de vacances@En:Holiday centers@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"categories" : [
+			{
+				"libelle" : "Centres de vacances",
+				"id" : 2642
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Auberges de jeunesse@En:Youth hostels@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"categories" : [
+			{
+				"libelle" : "Centres de vacances",
+				"id" : 2640
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Campings et Aires de camping-cars@En:Campsites and campers reception area@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"categories" : [
+			{
+				"libelle" : "Aire de service/accueil camping-cars",
+				"id" : 2418
+			}, {
+				"libelle" : "Campings",
+				"id" : 2410
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Insolites@En:Unusual accommodations@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"categories" : [
+			{
+				"libelle" : "Hébergements insolites",
+				"id" : 2626
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Autres@En:Others@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"categories" : [
+			{
+				"libelle" : "Résidence",
+				"id" : 2650
+			}, {
+				"libelle" : "Autres hébergements",
+				"id" : 2646
+			}, {
+				"libelle" : "Résidence de tourisme",
+				"id" : 2649
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Séjours tout compris@En:Packages tours@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"categories" : [
+			{
+				"libelle" : "Ventes de séjours packagés",
+				"id" : 1645
+			}
+		]
+	},
+	{
+		"libelle" : "@Fr:Traditionnels@En:Traditional@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"categories" : [
+			{
+				"libelle" : "Ventes de séjours packagés@",
+				"id" : 1645
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Gastronomique@En:Gastronomic@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"categories" : [
+			{
+				"libelle" : "Restaurant gastronomique",
+				"id" : 3825
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Pizzerias@En:Pizzerias@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"categories" : [
+			{
+				"libelle" : "Pizzerias",
+				"id" : 2886
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Crêperie@En:Crêperie@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"categories" : [
+			{
+				"libelle" : "Crêperie",
+				"id" : 2882
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Restauration rapide@En:Fast food@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"categories" : [
+			{
+				"libelle" : "Restauration rapide",
+				"id" : 2887
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Brasserie@En:Brasserie@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"categories" : [
+			{
+				"libelle" : "Brasserie",
+				"id" : 2880
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Pubs, Bars, Salons de thé @En:Pubs and bars, Tea room@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"categories" : [
+			{
+				"libelle" : "Bar à bière",
+				"id" : 3404
+			}, {
+				"libelle" : "Bar et pub",
+				"id" : 3215
+			}, {
+				"libelle" : "Salon de thé",
+				"id" : 2239
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Spécialités étrangères@En:Foreign specialities@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"categories" : [
+			{
+				"libelle" : "Spécialités étrangères",
+				"id" : 2893
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Auberges@En:Auberges@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"categories" : [
+			{
+				"libelle" : "Auberges de village",
+				"id" : 3915
+			}, {
+				"libelle" : "Tables et auberges de France",
+				"id" : 2919
+			}
+		]
+	},
+	{
+		"libelle" : "@Fr:Patrimoine; Musées, Galeries@En:Historic patrimony, Museums, Galleries@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"categories" : [
+			{
+				"libelle" : "Site et monument historiques",
+				"id" : 3203
+			}, {
+				"libelle" : "Galeries",
+				"id" : 3347
+			},  {
+				"libelle" : "Musée",
+				"id" : 3201
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Randonnées@En:Pedestrian sports@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"categories" : [
+			{
+				"libelle" : "Sports pédestres",
+				"id" : 3184
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Itiniéraires, parcours@En:Itineraries, Routes/Courses@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"categories" : [
+			{
+				"libelle" : "Itinéraire cyclotourisme",
+				"id" : 3283
+			}, {
+				"libelle" : "Itinéraire de randonnée pédestre",
+				"id" : 3333
+			}, {
+				"libelle" : "Parcours / sentier thématique",
+				"id" : 3331
+			}, {
+				"libelle" : "Parcours de santé",
+				"id" : 3330
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Cours, Stages@En:Lessons, Courses@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"categories" : [
+			{
+				"libelle" : "Cours",
+				"id" : 1830
+			}, {
+				"libelle" : "Stage",
+				"id" : 1890
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Activités aériennes@En:Lessons, Courses@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"categories" : [
+			{
+				"libelle" : "Sports aériens",
+				"id" : 49
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Plage / Espace de baignade@En:Beach / Bathing Area@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"categories" : [
+			{
+				"libelle" : "Plage / Espace de baignade",
+				"id" : 3298
+			}
+		]
+	},
+	{
+		"libelle" : "@Fr:Aujourd'hui@En:Today@",
+		"typeObjet" : "@Fr:Evénements@En:Events@",
+		"periode" : 1
+	}, {
+		"libelle" : "@Fr:Dans la semaine@En:This week@",
+		"typeObjet" : "@Fr:Evénements@En:Events@",
+		"periode" : 7
+	}, {
+		"libelle" : "@Fr:Les 30 prochains jours@En:30 next days@",
+		"typeObjet" : "@Fr:Evénements@En:Events@",
+		"periode" : 30
+	}
+]
+	

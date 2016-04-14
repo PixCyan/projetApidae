@@ -11,6 +11,7 @@ use ApidaeBundle\Entity\InformationsTarif;
 use ApidaeBundle\Entity\ObjetLie;
 use ApidaeBundle\Entity\Restaurant;
 use ApidaeBundle\Entity\TarifType;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -612,6 +613,9 @@ class Traitement extends ContainerAwareCommand {
         } /*else if(isset($data->$chaineInformations->patrimoineCulturelType)) {
             $this->traitementActiviteTypes($data->$chaineInformations->patrimoineCulturelType, $languesSite, $objetApidae);
         }*/
+
+
+        //TODO voir pour créer une classe de prestationActivite
 //ActivitePrestation ...
         if($objetApidae->getObjTypeApidae() == "ACTIVITE" || $objetApidae->getObjTypeApidae() == "EQUIPEMENT") {
             if(isset($data->$chaineInformations->activitesSportives)) {
@@ -760,19 +764,6 @@ class Traitement extends ContainerAwareCommand {
             $lanLib =$this->traitementLibelleLangues($languesSite, $v);
             $this->traitementCategorieDetails($lanLib, $categorie, $objetApidae);
         }
-    }
-
-    private function traitementLibelleLangues($languesSite, $objet) {
-        $chaineFinale= "";
-        //pour chaque langue :
-        foreach($languesSite as $key => $val) {
-            $shortCut = $val[0] . $val[1];
-            $lib = "libelle".$shortCut;
-            if(isset($objet->$lib)) {
-                $chaineFinale .= '@'.$shortCut.':'.$objet->$lib;
-            }
-        }
-        return $chaineFinale;
     }
 
     private function updateMultimedia($multi, $languesSite, $i, $data, $objetApidae, $update) {
@@ -1038,5 +1029,18 @@ class Traitement extends ContainerAwareCommand {
         } else {
             $this->em->persist($act);
         }
+    }
+
+    private function traitementLibelleLangues($languesSite, $objet) {
+        $chaineFinale= "";
+        //pour chaque langue :
+        foreach($languesSite as $key => $val) {
+            $shortCut = $val[0] . $val[1];
+            $lib = "libelle".$shortCut;
+            if(isset($objet->$lib)) {
+                $chaineFinale .= '@'.$shortCut.':'.$objet->$lib;
+            }
+        }
+        return $chaineFinale.'@';
     }
 }

@@ -1,0 +1,82 @@
+{% if langue.lanShortCut == 'Fr' %}
+	 <li class="LiMenu">Hébergements
+	 	 <ul> 
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Hébergements', 'categorieId': '2734'}) }}">Hôtels</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Hébergements', 'categorieId': '2620'}) }}">Gîtes, Locations meublées</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Hébergements', 'categorieId': '2619'}) }}">Chambres d'hôtes</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Hébergements', 'categorieId': '2642'}) }}">Centres de vacances</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Hébergements', 'categorieId': '2642'}) }}">Auberges de jeunesse</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Hébergements', 'categorieId': '2418'}) }}">Campings et Aires de camping-cars</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Hébergements', 'categorieId': '2626'}) }}">Insolites</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Hébergements', 'categorieId': '2650'}) }}">Autres</a></li>
+	 	 </ul> 
+ 	 </li> 
+	 <li class="LiMenu">Restaurants
+	 	 <ul> 
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '3825'}) }}">Gastronomique</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2886'}) }}">Pizzerias</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2882'}) }}">Crêperie</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2887'}) }}">Restauration rapide</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2880'}) }}">Brasserie</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '3215'}) }}">Pubs, Bars, Salons de thé </a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2893'}) }}">Spécialités étrangères</a></li>
+	 	 </ul> 
+ 	 </li> 
+	 <li class="LiMenu">Activites
+	 	 <ul> 
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3203'}) }}">Patrimoine; Musées, Galeries</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3184'}) }}">Randonnées</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3283'}) }}">Itiniéraires, parcours</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '1830'}) }}">Cours, Stages</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3298'}) }}">Plage / Espace de baignade</a></li>
+	 	 </ul> 
+ 	 </li> 
+	 <li class="LiMenu">Evénements
+	 	 <ul> 
+	 	 	<li><a href="{{ path('listeEvenement', {'typeObjet': 'Evénements', 'periode': '1'}) }}">Aujourd'hui</a></li>
+	 	 	<li><a href="{{ path('listeEvenement', {'typeObjet': 'Evénements', 'periode': '7'}) }}">Dans la semaine</a></li>
+	 	 	<li><a href="{{ path('listeEvenement', {'typeObjet': 'Evénements', 'periode': '30'}) }}">Les 30 prochains jours</a></li>
+	 	 </ul>
+ 	 </li> 
+{% endif %} 
+{% if langue.lanShortCut == 'En' %}
+	 <li class="LiMenu">Accomodations
+	 	 <ul> 
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Accomodations', 'categorieId': '2734'}) }}">Hotels</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Accomodations', 'categorieId': '2620'}) }}">Gîtes, locations</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Accomodations', 'categorieId': '2619'}) }}">Bed and breakfast</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Accomodations', 'categorieId': '2642'}) }}">Holiday centers</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Accomodations', 'categorieId': '2642'}) }}">Youth hostels</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Accomodations', 'categorieId': '2418'}) }}">Campsites and campers reception area</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Accomodations', 'categorieId': '2626'}) }}">Unusual accommodations</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Accomodations', 'categorieId': '2650'}) }}">Others</a></li>
+	 	 </ul> 
+ 	 </li> 
+	 <li class="LiMenu">Restaurants
+	 	 <ul> 
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '3825'}) }}">Gastronomic</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2886'}) }}">Pizzerias</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2882'}) }}">Crêperie</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2887'}) }}">Fast food</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2880'}) }}">Brasserie</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '3215'}) }}">Pubs and bars, Tea room</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Restaurants', 'categorieId': '2893'}) }}">Foreign specialities</a></li>
+	 	 </ul> 
+ 	 </li> 
+	 <li class="LiMenu">Activites
+	 	 <ul> 
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3203'}) }}">Historic patrimony, Museums, Galleries</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3184'}) }}">Pedestrian sports</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3283'}) }}">Itineraries, Routes/Courses</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '1830'}) }}">Lessons, Courses</a></li>
+	 	 	<li><a href="{{ path('liste', {'typeObjet': 'Activites', 'categorieId': '3298'}) }}">Beach / Bathing Area</a></li>
+	 	 </ul> 
+ 	 </li> 
+	 <li class="LiMenu">Events
+	 	 <ul> 
+	 	 	<li><a href="{{ path('listeEvenement', {'typeObjet': 'Events', 'periode': '1'}) }}">Today</a></li>
+	 	 	<li><a href="{{ path('listeEvenement', {'typeObjet': 'Events', 'periode': '7'}) }}">This week</a></li>
+	 	 	<li><a href="{{ path('listeEvenement', {'typeObjet': 'Events', 'periode': '30'}) }}">30 next days</a></li>
+	 	 </ul>
+ 	 </li> 
+{% endif %} 
