@@ -137,6 +137,7 @@ class DefaultController extends Controller
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
 
+        // Ancien traitement
         if($categorieId == '2734') {
             $categories = $this->em->getRepository(Categorie::class)->getHotels();
             $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
@@ -173,6 +174,14 @@ class DefaultController extends Controller
                 $objets = $categorie->getObjets();
             }
         }
+
+        /*
+        $jsonMenu = file_get_contents("/var/www/local/Symfony/projetApidae/tools/donneesMenu.json");
+        $donneesMenu = json_decode($jsonMenu);
+        foreach($donneesMenu as $value) {
+
+
+        }*/
 
         //unset($_SESSION['listeObjets']);
         $session->remove('listeObjets');
@@ -267,14 +276,6 @@ class DefaultController extends Controller
                 if($services) {
                     foreach ($services as $service) {
                         $s = $this->em->getRepository(Service::class)->findOneBySerId($service);
-                        //echo 'lib = '.$s->getSerLibelle().'<br/>';
-                        //TEMPORAIRE
-                        /*foreach($objet->getServices() as $value) {
-                            //echo("id ser obj : ".$value->getSerId()." / id service : ".$s->getSerId()."<br/>");
-                            if($value->getSerId() == $s->getSerId()) {
-                                $objetsRes->add($objet);
-                            }
-                        }*/
                         if($objet->getServices()->contains($s) && !$objetsRes->contains($objet)) {
                             $objetsRes->add($objet);
                         }

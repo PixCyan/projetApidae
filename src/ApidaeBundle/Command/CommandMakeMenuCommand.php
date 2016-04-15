@@ -108,17 +108,43 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
         return $objets;
     }
 
+    /**
+     * Renvoie une chaine qui génère les b  lise li du menu
+     * @param $v
+     * @param $langue
+     * @return string
+     *
+     */
     private function traitementChaine($v, $langue) {
-
         if(isset($v->categories)) {
-            $liDebut = "\t \t \t<li><a href=\"{{ path('liste', {'typeObjet': '".$this->getLangueLib($v->typeObjet, $langue->getLanShortCut() )
-                ."', 'categorieId': '".$v->categories[0]->id."'}) }}\">";
+            $liDebut = "\t \t \t<li><a href=\"{{ path('liste', {'typeObjet': '".
+                $this->traitementChaineUrl($this->getLangueLib($v->typeObjet, $langue->getLanShortCut() ))
+                ."', 'categorieId': '".$v->categories[0]->id."', 'libelleCategorie': '".
+                $this->traitementChaineUrl($this->getLangueLib($v->libelle, $langue->getLanShortCut()))."'}) }}\">";
         } else {
-            $liDebut = "\t \t \t<li><a href=\"{{ path('listeEvenement', {'typeObjet': '".$this->getLangueLib($v->typeObjet, $langue->getLanShortCut() )
-                ."', 'periode': '".$v->periode."'}) }}\">";
+            $liDebut = "\t \t \t<li><a href=\"{{ path('listeEvenement', {'typeObjet': '".
+                $this->traitementChaineUrl($this->getLangueLib($v->typeObjet, $langue->getLanShortCut()))
+                ."', 'periode': '".$v->periode."', 'libelleCategorie': '".
+                $this->traitementChaineUrl($this->getLangueLib($v->libelle, $langue->getLanShortCut()))."'}) }}\">";
         }
         $liFin = $this->getLangueLib($v->libelle, $langue->getLanShortCut()) ."</a></li>";
         return $liDebut.$liFin;
+    }
+
+    /**
+     * Renvoie une chaine traitée pour être passé dans l'url
+     * (enlève les accents, gère les espaces...)
+     * @param $chaine
+     * @return mixed
+     */
+    private function traitementChaineUrl($chaine) {
+        $str =  str_replace(",", "", str_replace(" ", "_", str_replace("'", "", $chaine)));
+        //$str = strtr($str, 'ÁÀÂÄÃÅÇÉÈÊËÍÏÎÌÑÓÒÔÖÕÚÙÛÜÝ', 'AAAAAACEEEEEIIIINOOOOOUUUUY');
+        //$str = strtr($str, 'áàâäãåçéèêëíìîïñóòôöõúùûüýÿ', 'aaaaaaceeeeiiiinooooouuuuyy');
+        $str = htmlentities($str, ENT_NOQUOTES, 'UTF-8');
+        $str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
+
+        return strtolower($str);
     }
 
     function getLangueLib($str, $locale='') {

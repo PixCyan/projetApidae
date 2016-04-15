@@ -36,6 +36,9 @@ class Traitement extends ContainerAwareCommand {
     private $em;
     private $communes;
     private $fichierRef;
+    private $total;
+    private $sansCategorie;
+    private $sansType;
 
     // …
     protected function configure() {
@@ -49,6 +52,12 @@ class Traitement extends ContainerAwareCommand {
         $this->em = $this->getApplication()->getKernel()->getContainer()->get('doctrine')->getManager();
         $languesSite[0] = "Français";
         $languesSite[1] = "English";
+
+
+        $this->total = 0;
+        $this->sansCategorie = 0;
+        $this->sansType = 0;
+
         //Récupération fichiers :
         try {
             $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
@@ -92,6 +101,7 @@ class Traitement extends ContainerAwareCommand {
                 }
             }
             //---
+            $output->writeln("Total objet = ".$this->total." \n Sans categorie = ".$this->sansCategorie." \n Sans type = ".$this->sansType);
             $output->writeln("Fin de traitement.");
         } catch(Exception $e) {
             $output->writeln("Problème : ".$e->getMessage());
@@ -99,6 +109,7 @@ class Traitement extends ContainerAwareCommand {
     }
 
     private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite) {
+        $this->total++;
         //-------------------- ObjetApidae ----------------------
         $update = true;
         if($selectionApidae->getSelLibelle() == "Restaurants") {
@@ -170,6 +181,17 @@ class Traitement extends ContainerAwareCommand {
 
         //-------------------- Categories ----------------------
         //Récupération de la/des catégorie(s)
+        /*if(!isset($data->$chaineInformations->categories)) {
+            $this->sansCategorie++;
+            print("Pas de categorie \n");
+        }
+        if(!isset($data->$chaineInformations->typesManifestation) &&
+            !isset($data->$chaineInformations->typesHabitation) &&
+            !isset($data->$chaineInformations->$chaineType)) {
+            $this->sansType++;
+            print("Pas de type \n");
+        }*/
+
         if(isset($data->$chaineInformations->categories)) {
             foreach($data->$chaineInformations->categories as $categorie) {
                 $v = $this->traitementReference($categorie->elementReferenceType,$categorie->id);
