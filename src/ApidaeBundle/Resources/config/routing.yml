@@ -15,7 +15,7 @@ liste:
     defaults: { _controller: ApidaeBundle:Default:liste }
 
 listeEvenement:
-    path: /listeEvenements/{periode}
+    path: /listeEvenements/{periode}-jours
     defaults: { _controller: ApidaeBundle:Default:listeEvenements }
 
 panier:
