@@ -10,6 +10,7 @@ use ApidaeBundle\Entity\Hebergement;
 use ApidaeBundle\Entity\InformationsTarif;
 use ApidaeBundle\Entity\ObjetLie;
 use ApidaeBundle\Entity\Restaurant;
+use ApidaeBundle\Entity\SejourPackage;
 use ApidaeBundle\Entity\TarifType;
 use Exception;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -110,33 +111,46 @@ class Traitement extends ContainerAwareCommand {
 
     private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite) {
         $this->total++;
+        $typeObjet = $data->type;
+        //print($typeObjet);
         //-------------------- ObjetApidae ----------------------
         $update = true;
-        if($selectionApidae->getSelLibelle() == "Restaurants") {
+        if($typeObjet == "RESTAURATION") {
             $objetApidae = $this->em->getRepository(Restaurant::class)->findOneByIdObj($data->id);
             if($objetApidae == null) {
                 $update = false;
                 $objetApidae = new Restaurant();
             }
-        } else if($selectionApidae->getSelLibelle() == "Hébergements") {
+        } else if($typeObjet == "HOTELLERIE"
+                || $typeObjet == "HEBERGEMENT_LOCATIF"
+                || $typeObjet == "HEBERGEMENT_COLLECTIF"
+                || $typeObjet == "HOTELLERIE_PLEIN_AIR" ) {
             $objetApidae = $this->em->getRepository(Hebergement::class)->findOneByIdObj($data->id);
             if($objetApidae == null) {
                 $update = false;
                 $objetApidae = new Hebergement();
             }
-        } else if($selectionApidae->getSelLibelle() == "Activités") {
+        } else if($typeObjet == "ACTIVITE"
+                && $typeObjet == "PATRIMOINE_CULTUREL") {
             $objetApidae = $this->em->getRepository(Activite::class)->findOneByIdObj($data->id);
             if($objetApidae == null) {
                 $update = false;
                 $objetApidae = new Activite();
             }
-        } else if($selectionApidae->getSelLibelle() == "Evénements") {
+        } else if($typeObjet  == "FETE_ET_MANIFESTATION") {
             $objetApidae = $this->em->getRepository(Evenement::class)->findOneByIdObj($data->id);
             if($objetApidae == null) {
                 $update = false;
                 $objetApidae = new Evenement();
             }
+        } else if($typeObjet  == "SEJOUR_PACKAGE") {
+            $objetApidae = $this->em->getRepository(SejourPackage::class)->findOneByIdObj($data->id);
+            if($objetApidae == null) {
+                $update = false;
+                $objetApidae = new SejourPackage();
+            }
         }
+
         if(!$update) {
             $this->updateObjetApidae($objetApidae, $data, $selectionApidae, $languesSite, false);
         } else {

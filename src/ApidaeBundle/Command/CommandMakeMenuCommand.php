@@ -59,18 +59,14 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
                 $ul = null;
                 foreach($menuFinal as $v) {
                     if($v == $menuFinal[0]) {
-
                         $ul = $this->getLangueLib($v->typeObjet, $langue->getLanShortCut());
                         $liTitre = "\t <li class=\"LiMenu\">".$ul."\n";
                         fputs($fichierMenu, $liTitre."\t \t <ul> \n");
-
                     } else if($ul != $this->getLangueLib($v->typeObjet, $langue->getLanShortCut())) {
-
                         $ul = $this->getLangueLib($v->typeObjet, $langue->getLanShortCut());
                         $liTitre = "\t <li class=\"LiMenu\">".$ul."\n";
                         fputs($fichierMenu, "\t \t </ul> \n \t </li> \n".$liTitre);
                         fputs($fichierMenu, "\t \t <ul> \n");
-
                     }
                     $chaineLi = $this->traitementChaine($v, $langue);
 

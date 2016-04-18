@@ -23,6 +23,7 @@ use ApidaeBundle\Entity\MoyenCommunication;
 use ApidaeBundle\Entity\Multimedia;
 use ApidaeBundle\Entity\Ouverture;
 use ApidaeBundle\Entity\TypePublic;
+use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class TraitementController extends Controller
@@ -37,6 +38,10 @@ class TraitementController extends Controller
 		$this->em = $this->getDoctrine()->getManager();
 		$languesSite[0] = "Français";
 		$languesSite[1] = "English";
+
+		$this->total = 0;
+		$this->sansCategorie = 0;
+		$this->sansType = 0;
 
 		//Récupération fichiers :
 		try {
@@ -81,13 +86,14 @@ class TraitementController extends Controller
 				}
 			}
 			//---
-			$output->writeln("Fin de traitement.");
+			print("Fin de traitement.");
 		} catch(Exception $e) {
-			$output->writeln("Problème : ".$e->getMessage());
+			print("Problème : ".$e->getMessage());
 		}
 	}
 
 	private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite) {
+		$selType= $selectionApidae->getSelLibelle();
 		//-------------------- ObjetApidae ----------------------
 		$update = true;
 		if($selectionApidae->getSelLibelle() == "Restaurants") {
@@ -159,6 +165,17 @@ class TraitementController extends Controller
 
 		//-------------------- Categories ----------------------
 		//Récupération de la/des catégorie(s)
+		/*if(!isset($data->$chaineInformations->categories)) {
+            $this->sansCategorie++;
+            print("Pas de categorie \n");
+        }
+        if(!isset($data->$chaineInformations->typesManifestation) &&
+            !isset($data->$chaineInformations->typesHabitation) &&
+            !isset($data->$chaineInformations->$chaineType)) {
+            $this->sansType++;
+            print("Pas de type \n");
+        }*/
+
 		if(isset($data->$chaineInformations->categories)) {
 			foreach($data->$chaineInformations->categories as $categorie) {
 				$v = $this->traitementReference($categorie->elementReferenceType,$categorie->id);
@@ -599,19 +616,24 @@ class TraitementController extends Controller
 			$this->traitementActiviteTypes($data->$chaineInformations->activiteType, $languesSite, $objetApidae);
 		} else if(isset($data->$chaineInformations->rubrique)) {
 			$this->traitementActiviteTypes($data->$chaineInformations->rubrique, $languesSite, $objetApidae);
-		} else if(isset($data->$chaineInformations->patrimoineCulturelType)) {
-			$this->traitementActiviteTypes($data->$chaineInformations->patrimoineCulturelType, $languesSite, $objetApidae);
-		}
+		} /*else if(isset($data->$chaineInformations->patrimoineCulturelType)) {
+            $this->traitementActiviteTypes($data->$chaineInformations->patrimoineCulturelType, $languesSite, $objetApidae);
+        }*/
+
+
+		//TODO voir pour créer une classe de prestationActivite
 //ActivitePrestation ...
-		if(isset($data->$chaineInformations->activitesSportives)) {
-			foreach ($data->$chaineInformations->activitesSportives as $v) {
-				$this->traitementActiviteTypes($v, $languesSite, $objetApidae);
+		if($objetApidae->getObjTypeApidae() == "ACTIVITE" || $objetApidae->getObjTypeApidae() == "EQUIPEMENT") {
+			if(isset($data->$chaineInformations->activitesSportives)) {
+				foreach ($data->$chaineInformations->activitesSportives as $v) {
+					$this->traitementActiviteTypes($v, $languesSite, $objetApidae);
+				}
 			}
-		}
-		//TEST prestationActivite
-		if(isset($data->prestations->activites)) {
-			foreach($data->prestations->activites as $v) {
-				$this->traitementActiviteTypes($v, $languesSite, $objetApidae);
+			//TEST prestationActivite
+			if(isset($data->prestations->activites)) {
+				foreach($data->prestations->activites as $v) {
+					$this->traitementActiviteTypes($v, $languesSite, $objetApidae);
+				}
 			}
 		}
 
@@ -748,19 +770,6 @@ class TraitementController extends Controller
 			$lanLib =$this->traitementLibelleLangues($languesSite, $v);
 			$this->traitementCategorieDetails($lanLib, $categorie, $objetApidae);
 		}
-	}
-
-	private function traitementLibelleLangues($languesSite, $objet) {
-		$chaineFinale= "";
-		//pour chaque langue :
-		foreach($languesSite as $key => $val) {
-			$shortCut = $val[0] . $val[1];
-			$lib = "libelle".$shortCut;
-			if(isset($objet->$lib)) {
-				$chaineFinale .= '@'.$shortCut.':'.$objet->$lib;
-			}
-		}
-		return $chaineFinale;
 	}
 
 	private function updateMultimedia($multi, $languesSite, $i, $data, $objetApidae, $update) {
@@ -1026,5 +1035,18 @@ class TraitementController extends Controller
 		} else {
 			$this->em->persist($act);
 		}
+	}
+
+	private function traitementLibelleLangues($languesSite, $objet) {
+		$chaineFinale= "";
+		//pour chaque langue :
+		foreach($languesSite as $key => $val) {
+			$shortCut = $val[0] . $val[1];
+			$lib = "libelle".$shortCut;
+			if(isset($objet->$lib)) {
+				$chaineFinale .= '@'.$shortCut.':'.$objet->$lib;
+			}
+		}
+		return $chaineFinale.'@';
 	}
 }
