@@ -186,7 +186,7 @@ class DefaultController extends Controller
         $modesPaiement = $this->getModesPaimentFromObjets($objets);
         $labelsQualite = $this->getClassementsFromObjets($objets);
         $tourismeAdapte = $this->getTourismeAdapteFromObjets($objets);
-        if($typeObjet == "Hebergements") {
+        if($typeObjet == "hebergements") {
             $typesHabitation = $this->getTypeHabitationFromObjets($objets);
         } else {
             $typesHabitation =[];

@@ -43,23 +43,6 @@
         function testJS() {
             alert('texte');
         }
-        function chercher() {
-            alert('Filtre');
-            $.ajax({
-                type        : $(this).attr( 'method' ),
-                url         : $(this).attr( 'action' ),
-                data:
-                {
-                    typeObjet : {{ typeObjet }}
-                },
-                success: function(reponse) {
-                    //TODO function de réponse ajax
-                    alert('Ca marche');
-                }
-            });
-
-       }
-
     </script>
 
 
