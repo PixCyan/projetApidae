@@ -9,7 +9,7 @@
 			}
 		]
 	}, {
-		"libelle" : "@Fr:Gîtes, Locations meublées@En:Gîtes, locations@",
+		"libelle" : "@Fr:Locations meublées@En:Locations@",
 		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
 		"selectionApidae" : [
 			{
@@ -18,6 +18,15 @@
 			}
 		]
 	}, {
+		"libelle" : "@Fr:Gîtes@En:Gîtes@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Gîtes",
+				"id" : 40526
+			}
+		]
+	},{
 		"libelle" : "@Fr:Chambres d'hôtes@En:Bed and breakfast@",
 		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
 		"selectionApidae" : [
@@ -32,7 +41,7 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Centres de vacances",
-				"id" : 2642
+				"id" : 40525
 			}
 		]
 	}, {
@@ -41,7 +50,7 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Auberge de jeunesse",
-				"id" : 2640
+				"id" : 40524
 			}
 		]
 	}, {
@@ -49,11 +58,8 @@
 		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
 		"selectionApidae" : [
 			{
-				"libelle" : "Aire de service/accueil camping-cars",
-				"id" : 2418
-			}, {
-				"libelle" : "Campings",
-				"id" : 2410
+				"libelle" : "Campings et Aires de camping-car",
+				"id" : 40519
 			}
 		]
 	}, {
@@ -62,7 +68,7 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Hébergements insolites",
-				"id" : 2626
+				"id" : 40523
 			}
 		]
 	}, {
@@ -71,13 +77,7 @@
 		"selectionApidae" : [
 			 {
 				"libelle" : "Autres hébergements",
-				"id" : 2646
-			}, {
-				"libelle" : "Résidence",
-				"id" : 2650
-			}, {
-				"libelle" : "Résidence de tourisme",
-				"id" : 2649
+				"id" : 40555
 			}
 		]
 	}, {
@@ -86,17 +86,16 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Ventes de séjours packagés",
-				"id" : 1645
+				"id" : 40527
 			}
 		]
-	},
-	{
+	}, {
 		"libelle" : "@Fr:Traditionnels@En:Traditional@",
 		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
 		"selectionApidae" : [
 			{
-				"libelle" : "Ventes de séjours packagés@",
-				"id" : 1645
+				"libelle" : "Traditionnels@",
+				"id" : 40530
 			}
 		]
 	}, {
@@ -105,7 +104,7 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Restaurant gastronomique",
-				"id" : 3825
+				"id" : 40529
 			}
 		]
 	}, {
@@ -114,7 +113,7 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Pizzerias",
-				"id" : 2886
+				"id" : 40532
 			}
 		]
 	}, {
@@ -123,7 +122,7 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Crêperie",
-				"id" : 2882
+				"id" : 40532
 			}
 		]
 	}, {
@@ -132,16 +131,7 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Restauration rapide",
-				"id" : 2887
-			}
-		]
-	}, {
-		"libelle" : "@Fr:Brasserie@En:Brasserie@",
-		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
-		"selectionApidae" : [
-			{
-				"libelle" : "Brasserie",
-				"id" : 2880
+				"id" : 40534
 			}
 		]
 	}, {
@@ -149,14 +139,8 @@
 		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
 		"selectionApidae" : [
 			{
-				"libelle" : "Bar à bière",
-				"id" : 3404
-			}, {
-				"libelle" : "Bar et pub",
-				"id" : 3215
-			}, {
-				"libelle" : "Salon de thé",
-				"id" : 2239
+				"libelle" : "Brasserie",
+				"id" : 40536
 			}
 		]
 	}, {
@@ -165,7 +149,7 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Spécialités étrangères",
-				"id" : 2893
+				"id" : 40533
 			}
 		]
 	}, {
@@ -173,11 +157,8 @@
 		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
 		"selectionApidae" : [
 			{
-				"libelle" : "Auberges de village",
-				"id" : 3915
-			}, {
-				"libelle" : "Tables et auberges de France",
-				"id" : 2919
+				"libelle" : "Auberges",
+				"id" : 40528
 			}
 		]
 	},
@@ -186,14 +167,8 @@
 		"typeObjet" : "@Fr:Activites@En:Activites@",
 		"selectionApidae" : [
 			{
-				"libelle" : "Site et monument historiques",
-				"id" : 3203
-			}, {
-				"libelle" : "Galeries",
-				"id" : 3347
-			},  {
-				"libelle" : "Musée",
-				"id" : 3201
+				"libelle" : "Patrimoine Musées Galeries",
+				"id" : 40537
 			}
 		]
 	}, {
@@ -201,38 +176,17 @@
 		"typeObjet" : "@Fr:Activites@En:Activites@",
 		"selectionApidae" : [
 			{
-				"libelle" : "Sports pédestres",
-				"id" : 3184
+				"libelle" : "Randonnées",
+				"id" : 40538
 			}
 		]
 	}, {
-		"libelle" : "@Fr:Itiniéraires, parcours@En:Itineraries, Routes/Courses@",
+		"libelle" : "@Fr:Itinéraires, parcours@En:Itineraries, Routes/Courses@",
 		"typeObjet" : "@Fr:Activites@En:Activites@",
 		"selectionApidae" : [
 			{
-				"libelle" : "Itinéraire cyclotourisme",
-				"id" : 3283
-			}, {
-				"libelle" : "Itinéraire de randonnée pédestre",
-				"id" : 3333
-			}, {
-				"libelle" : "Parcours / sentier thématique",
-				"id" : 3331
-			}, {
-				"libelle" : "Parcours de santé",
-				"id" : 3330
-			}
-		]
-	}, {
-		"libelle" : "@Fr:Cours, Stages@En:Lessons, Courses@",
-		"typeObjet" : "@Fr:Activites@En:Activites@",
-		"selectionApidae" : [
-			{
-				"libelle" : "Cours",
-				"id" : 1830
-			}, {
-				"libelle" : "Stage",
-				"id" : 1890
+				"libelle" : "Itinéraire Parcours",
+				"id" : 40558
 			}
 		]
 	}, {
@@ -241,7 +195,7 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Sports aériens",
-				"id" : 49
+				"id" : 40539
 			}
 		]
 	}, {
@@ -250,7 +204,7 @@
 		"selectionApidae" : [
 			{
 				"libelle" : "Plage, Espace de baignade",
-				"id" : 3298
+				"id" : 40559
 			}
 		]
 	},

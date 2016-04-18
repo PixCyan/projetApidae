@@ -131,7 +131,7 @@ class Traitement extends ContainerAwareCommand {
                 $objetApidae = new Hebergement();
             }
         } else if($typeObjet == "ACTIVITE"
-                && $typeObjet == "PATRIMOINE_CULTUREL") {
+                || $typeObjet == "PATRIMOINE_CULTUREL") {
             $objetApidae = $this->em->getRepository(Activite::class)->findOneByIdObj($data->id);
             if($objetApidae == null) {
                 $update = false;

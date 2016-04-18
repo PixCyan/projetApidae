@@ -6,6 +6,7 @@ use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Evenement;
 use ApidaeBundle\Entity\LabelQualite;
 use ApidaeBundle\Entity\Langue;
+use ApidaeBundle\Entity\SelectionApidae;
 use ApidaeBundle\Entity\Service;
 use ApidaeBundle\Entity\TraductionObjetApidae;
 use ApidaeBundle\Form\RechercheObjetForm;
@@ -138,7 +139,7 @@ class DefaultController extends Controller
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
 
         // Ancien traitement
-        if($categorieId == '2734') {
+        /*if($categorieId == '2734') {
             $categories = $this->em->getRepository(Categorie::class)->getHotels();
             $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
             $objets = $this->traitementObjetsCategories($categories);
@@ -173,15 +174,9 @@ class DefaultController extends Controller
             } else {
                 $objets = $categorie->getObjets();
             }
-        }
-
-        /*
-        $jsonMenu = file_get_contents("/var/www/local/Symfony/projetApidae/tools/donneesMenu.json");
-        $donneesMenu = json_decode($jsonMenu);
-        foreach($donneesMenu as $value) {
-
-
         }*/
+        $selection = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categorieId);
+        $objets = $selection->getObjets();
 
         //unset($_SESSION['listeObjets']);
         $session->remove('listeObjets');
@@ -200,7 +195,7 @@ class DefaultController extends Controller
         //var_dump($typesHabitation);
 
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-            array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $categorie,
+            array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $selection,
                 'user' => $user, 'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite,
                 'tourismeAdapte' => $tourismeAdapte, 'typesHabitation' => $typesHabitation));
     }

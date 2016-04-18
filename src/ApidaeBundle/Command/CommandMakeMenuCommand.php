@@ -5,6 +5,7 @@ namespace ApidaeBundle\Command;
 use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Evenement;
 use ApidaeBundle\Entity\Langue;
+use ApidaeBundle\Entity\SelectionApidae;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -38,8 +39,8 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
             $menuFinal = [];
             foreach($donneesMenu as $value) {
                 $objets = null;
-                if(isset($value->categories)) {
-                    $objets = $this->traitementCategories($value->categories);
+                if(isset($value->selectionApidae)) {
+                    $objets = $this->traitementSelection($value->selectionApidae);
                 } elseif(isset($value->periode)) {
                     if($value->periode == 1) {
                         $objets = $this->em->getRepository(Evenement::class)->getAujourdhui2();
@@ -87,8 +88,9 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
         }
     }
 
-    private function traitementCategories($categories) {
-        $objets = $this->em->getRepository(Categorie::class)->findOneByCatId($categories[0]->id);
+    private function traitementSelection($categories) {
+        $s = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categories[0]->id);
+        $objets = $s->getObjets();
         //var_dump($categories);
         if(!$objets && count($categories) > 1) {
             $i = 1;
@@ -97,7 +99,8 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
                 $t = count($categories)-1;
                 echo $t."\n";
                 //se stop si $objets != null et retourn $objets
-                $objets = $this->em->getRepository(Categorie::class)->findOneByCatId($categories[$i]->id);
+                $s = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categories[$i]->id);
+                $objets = $s->getObjets();
                 $i++;
             }
         }
@@ -112,10 +115,10 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
      *
      */
     private function traitementChaine($v, $langue) {
-        if(isset($v->categories)) {
+        if(isset($v->selectionApidae)) {
             $liDebut = "\t \t \t<li><a href=\"{{ path('liste', {'typeObjet': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->typeObjet, $langue->getLanShortCut() ))
-                ."', 'categorieId': '".$v->categories[0]->id."', 'libelleCategorie': '".
+                ."', 'categorieId': '".$v->selectionApidae[0]->id."', 'libelleCategorie': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->libelle, $langue->getLanShortCut()))."'}) }}\">";
         } else {
             $liDebut = "\t \t \t<li><a href=\"{{ path('listeEvenement', {'typeObjet': '".
