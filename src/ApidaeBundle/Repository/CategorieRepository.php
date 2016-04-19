@@ -11,6 +11,11 @@ use ApidaeBundle\Entity\Categorie;
  */
 class CategorieRepository extends \Doctrine\ORM\EntityRepository {
 
+
+
+
+    //---- Requetes ancien menu
+
     //------Hébergements
     //Get Hotel et Hotel-Restaurant
     public function getHotels() {
@@ -108,9 +113,6 @@ class CategorieRepository extends \Doctrine\ORM\EntityRepository {
         return $query->getResult();
     }
 
-
-
-    //---- Requetes ancien menu
 
     public function getCategoriesHebergements() {
         $em = $this->getEntityManager();

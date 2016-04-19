@@ -2,6 +2,7 @@
 
 namespace ApidaeBundle\Repository;
 use ApidaeBundle\Entity\ObjetApidae;
+use ApidaeBundle\Entity\Categorie;
 
 /**
  * ObjetApidaeRepository
@@ -10,6 +11,18 @@ use ApidaeBundle\Entity\ObjetApidae;
  * repository methods below.
  */
 class ObjetApidaeRepository extends \Doctrine\ORM\EntityRepository {
+
+    public function getCategorie($idCategorie) {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('ApidaeBundle:Categorie', 'c', 'o.id = c.id')
+            ->where('c.catId = ?1')
+            ->setParameters(array(1 => $idCategorie));
+        $query = $qb->getQuery();
+        return $query->getArrayResult();
+    }
 
     //get Musées Patrimoines et Galeries
     //TODO query pas bonne

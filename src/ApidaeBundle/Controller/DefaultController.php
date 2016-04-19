@@ -304,10 +304,10 @@ class DefaultController extends Controller
                 }
             }
         }*/
-        print($categorieId);
         $service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
         if(!$service) {
-            $c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            $c = $this->em->getRepository(ObjetApidae::class)->getCategorie($categorieId);
+            //$c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
             if(!$c) {
                 $labelsQualite = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
                 if(!$labelsQualite) {
@@ -316,7 +316,9 @@ class DefaultController extends Controller
                     $objetsRes = $labelsQualite->getObjetsApidae();
                 }
             } else {
-                $objetsRes = $c->getObjets();
+                //var_dump($c);
+                $objetsRes = $c;
+                //$objetsRes = $c->getObjets();
             }
         } else {
             $objetsRes = $service->getObjetsApidae();
@@ -330,18 +332,22 @@ class DefaultController extends Controller
             if($typeObjet == "Hebergements") {
                 $typesHabitation = $this->getTypeHabitationFromObjets($objetsRes);
             } else {
-                $typesHabitation =[];
+                $typesHabitation = [];
             }
         } else {
-            print('vide');
             $services = [];
             $modesPaiement = [];
             $labelsQualite = [];
             $typesHabitation = [];
         }
 
+        //use JMSSerializerBundle
+        /*$serializer = $this->container->get('jms_serializer');
+        $reports = $serializer->serialize($objetsRes, 'json');
+        return new Response('test');*/
+
         $response = new JsonResponse();
-        return $response->setData(array('objets' => json_encode($objetsRes),
+        return $response->setData(array('objets' => json_decode($this->container->get('serializer')->serialize($objetsRes, 'json')),
             'typeObjet' =>$typeObjet,
             'services' => $services,
             'modesPaiement' => $modesPaiement,
