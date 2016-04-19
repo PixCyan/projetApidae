@@ -8,7 +8,7 @@
             or labels is defined and labels is not empty and objets|length != 1
             or tourismeAdapte is defined  and tourismeAdapte is not empty and objets|length != 1
             or typesHabitation is defined  and typesHabitation is not empty and objets|length != 1 %}
-        <form id="form_recherche" action="{{ path('rechercheAffinnee', {'typeObjet': typeObjet}) }}" method="post">
+        <form id="form_recherche" action="" method="post">
             {% if typesHabitation is defined and typesHabitation is not empty %}
                 {% include "ApidaeBundle:filtres:TypesHabitationFiltres.html.twig" %}
             {% endif %}
@@ -34,17 +34,5 @@
         </div>
     {% endfor %}
     {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
-
-    <!-- Test ajax -->
-    <script>
-       //appel d'une fonction lorsque l'on coche une case
-        //va chercher ls ojets
-        //les renvoi dans le bon conteneur
-        function testJS() {
-            alert('texte');
-        }
-    </script>
-
-
 
 {% endblock %}

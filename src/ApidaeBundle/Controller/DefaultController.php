@@ -14,6 +14,7 @@ use ApidaeBundle\Fonctions\Fonctions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -231,13 +232,13 @@ class DefaultController extends Controller
      * @param $typeObjet
      * @return Response
      */
-    public function rechercheAffinneeAction(Request $request, $typeObjet) {
-        /*if($request->isXmlHttpRequest()) {
-            pour l'ajax ici
-        }*/
-        $user = $this->getUser();
+    public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId, $libelleCategorie) {
         $session = $request->getSession();
         $this->em = $this->getDoctrine()->getManager();
+        /*if($request->isXmlHttpRequest()) {
+            pour l'ajax ici
+        }
+
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
 
         if($request->get('services')) {
@@ -302,23 +303,55 @@ class DefaultController extends Controller
                     }
                 }
             }
-        }
-
-        $session->remove('listeObjets');
-        $session->set('listeObjets', $this->getIdsObjetsFromObjets($objetsRes));
-        $services = $this->getServicesFromObjets($objetsRes);
-        $modesPaiement = $this->getModesPaimentFromObjets($objetsRes);
-        $labelsQualite = $this->getClassementsFromObjets($objetsRes);
-        if($typeObjet == "Hebergements") {
-            $typesHabitation = $this->getTypeHabitationFromObjets($objetsRes);
+        }*/
+        print($categorieId);
+        $service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
+        if(!$service) {
+            $c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            if(!$c) {
+                $labelsQualite = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
+                if(!$labelsQualite) {
+                    $objetsRes = null;
+                } else {
+                    $objetsRes = $labelsQualite->getObjetsApidae();
+                }
+            } else {
+                $objetsRes = $c->getObjets();
+            }
         } else {
-            $typesHabitation =[];
+            $objetsRes = $service->getObjetsApidae();
+        }
+        $session->remove('listeObjets');
+        if($objetsRes) {
+            $session->set('listeObjets', $this->getIdsObjetsFromObjets($objetsRes));
+            $services = $this->getServicesFromObjets($objetsRes);
+            $modesPaiement = $this->getModesPaimentFromObjets($objetsRes);
+            $labelsQualite = $this->getClassementsFromObjets($objetsRes);
+            if($typeObjet == "Hebergements") {
+                $typesHabitation = $this->getTypeHabitationFromObjets($objetsRes);
+            } else {
+                $typesHabitation =[];
+            }
+        } else {
+            print('vide');
+            $services = [];
+            $modesPaiement = [];
+            $labelsQualite = [];
+            $typesHabitation = [];
         }
 
-        return $this->render('ApidaeBundle:Default:vueListe.html.twig',
+        $response = new JsonResponse();
+        return $response->setData(array('objets' => json_encode($objetsRes),
+            'typeObjet' =>$typeObjet,
+            'services' => $services,
+            'modesPaiement' => $modesPaiement,
+            'labels' => $labelsQualite,
+            'typesHabitation' => $typesHabitation));
+
+        /*return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objetsRes, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user,
                 'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite,
-                'typesHabitation' => $typesHabitation));
+                'typesHabitation' => $typesHabitation));*/
     }
 
     /**

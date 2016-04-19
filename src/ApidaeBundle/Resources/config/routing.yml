@@ -32,7 +32,7 @@ modifierOffre:
     defaults: { _controller: ApidaeBundle:GestionOffre:modifierOffre }
 
 rechercheAffinnee:
-    path: /recherche/{typeObjet}
+    path: /recherche/{typeObjet}/{categorieId}-{libelleCategorie}
     defaults: { _controller: ApidaeBundle:Default:rechercheAffinnee }
 
 rechercheSimple:

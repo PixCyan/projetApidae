@@ -1,7 +1,7 @@
 <di>
     <h4> Types d'habitation </h4>
     {% for t in typesHabitation %}
-        <input class="filtres" onClick="chercher('a')" type="checkbox" id="{{ t.catId }}" value="{{ t.catId }}" name="categories[]">
+        <input class="filtres" type="checkbox" id="{{ t.catId }}" value="{{ t.catId }}" name="categories[]">
         <label for="{{ t.catId }}"> {{ t.catLibelle|langueLib(langue.lanShortCut) }}</label><br/>
     {% endfor %}
 </di>
