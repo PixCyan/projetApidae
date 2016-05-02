@@ -20,7 +20,7 @@ class AppKernel extends Kernel
 
             new FOS\UserBundle\FOSUserBundle(),
             new UserBundle\UserBundle(),
-            //new JMS\SerializerBundle\JMSSerializerBundle(),
+            new JMS\SerializerBundle\JMSSerializerBundle(),
 
         );
 

@@ -12,11 +12,15 @@ use ApidaeBundle\Entity\TraductionObjetApidae;
 use ApidaeBundle\Form\RechercheObjetForm;
 use ApidaeBundle\Fonctions\Fonctions;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\SerializerBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class DefaultController extends Controller
 {
@@ -138,44 +142,6 @@ class DefaultController extends Controller
         $user = $this->getUser();
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
-
-        // Ancien traitement
-        /*if($categorieId == '2734') {
-            $categories = $this->em->getRepository(Categorie::class)->getHotels();
-            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            $objets = $this->traitementObjetsCategories($categories);
-        } elseif($categorieId == '2620') {
-            $categories = $this->em->getRepository(Categorie::class)->getGites();
-            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            $objets = $this->traitementObjetsCategories($categories);
-        } elseif($categorieId == '2418') {
-            $categories = $this->em->getRepository(Categorie::class)->getCampings();
-            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            $objets = $this->traitementObjetsCategories($categories);
-        } elseif($categorieId == '2646') {
-            $categories = $this->em->getRepository(Categorie::class)->getHebergementsAutres();
-            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            $objets = $this->traitementObjetsCategories($categories);
-        } elseif($categorieId == '3404') {
-            $categories = $this->em->getRepository(Categorie::class)->getBars();
-            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            $objets = $this->traitementObjetsCategories($categories);
-        } elseif($categorieId == '3203') {
-            $categories = $this->em->getRepository(Categorie::class)->getMusees();
-            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            $objets = $this->traitementObjetsCategories($categories);
-        } elseif($categorieId == '3283') {
-            $categories = $this->em->getRepository(Categorie::class)->getItineraires();
-            $categorie =  $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            $objets = $this->traitementObjetsCategories($categories);
-        } else {
-            $categorie = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            if(!$categorie) {
-                throw $this->createNotFoundException('Cette categorie est vide.');
-            } else {
-                $objets = $categorie->getObjets();
-            }
-        }*/
         $selection = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categorieId);
         $objets = $selection->getObjets();
 
@@ -204,7 +170,7 @@ class DefaultController extends Controller
 
     /**
      * Renvoie la liste de tous les objets "Evènement" selon la période donnée
-     * @param $periode l'interval entre deux dates
+     * @param $periode
      * @return Response
      */
     public function listeEvenementsAction($periode) {
@@ -232,11 +198,11 @@ class DefaultController extends Controller
      * @param $typeObjet
      * @return Response
      */
-    public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId, $libelleCategorie) {
+    public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId) {
         $session = $request->getSession();
         $this->em = $this->getDoctrine()->getManager();
-        /*if($request->isXmlHttpRequest()) {
-            pour l'ajax ici
+        if($request->isXmlHttpRequest()) {
+            //pour l'ajax ici
         }
 
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
@@ -303,11 +269,13 @@ class DefaultController extends Controller
                     }
                 }
             }
-        }*/
-        $service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
+        }
+
+
+        /*$service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
         if(!$service) {
-            $c = $this->em->getRepository(ObjetApidae::class)->getCategorie($categorieId);
-            //$c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            //$c = $this->em->getRepository(ObjetApidae::class)->getCategorie($categorieId);
+            $c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
             if(!$c) {
                 $labelsQualite = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
                 if(!$labelsQualite) {
@@ -339,25 +307,31 @@ class DefaultController extends Controller
             $modesPaiement = [];
             $labelsQualite = [];
             $typesHabitation = [];
-        }
+        }*/
+
+        //$serializer = $this->get('serializer');
+        //$serializer = new Serializer(array(new GetSetMethodNormalizer()), array('json' => new JsonEncoder()));
+        //$reports = $serializer->serialize($objetsRes, 'json');
 
         //use JMSSerializerBundle
-        /*$serializer = $this->container->get('jms_serializer');
-        $reports = $serializer->serialize($objetsRes, 'json');
-        return new Response('test');*/
+        //$serializer = SerializerBuilder::create()->build();
+        //$reports = $serializer->serialize($objetsRes, 'json');
 
-        $response = new JsonResponse();
-        return $response->setData(array('objets' => json_decode($this->container->get('serializer')->serialize($objetsRes, 'json')),
+        //$serializer = $this->container->get('jms_serializer');
+        //$reports = $serializer->serialize($objetsRes, 'json');
+
+       /* $response = new JsonResponse();
+        return $response->setData(array('objets' => $objetsRes
             'typeObjet' =>$typeObjet,
             'services' => $services,
             'modesPaiement' => $modesPaiement,
             'labels' => $labelsQualite,
-            'typesHabitation' => $typesHabitation));
+            'typesHabitation' => $typesHabitation));*/
 
-        /*return $this->render('ApidaeBundle:Default:vueListe.html.twig',
+        return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objetsRes, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user,
                 'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite,
-                'typesHabitation' => $typesHabitation));*/
+                'typesHabitation' => $typesHabitation));
     }
 
     /**
