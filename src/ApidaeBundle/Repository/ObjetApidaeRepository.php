@@ -17,12 +17,29 @@ class ObjetApidaeRepository extends \Doctrine\ORM\EntityRepository {
         $qb = $em->createQueryBuilder();
         $qb->select('o')
             ->from('ApidaeBundle:ObjetApidae', 'o')
-            ->innerJoin('ApidaeBundle:Categorie', 'c', 'o.id = c.id')
+            ->innerJoin('objetHascategorie', 'k', 'WITH', 'o.id = k.objet_apidae_id')
+            ->innerJoin('ApidaeBundle:Categorie', 'c', 'WITH', 'c.id = k.categorie_id')
             ->where('c.catId = ?1')
             ->setParameters(array(1 => $idCategorie));
         $query = $qb->getQuery();
         return $query;
         //return $query->getArrayResult();
+        /*
+         * $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->join('ApidaeBundle:Categorie', 'c')
+            ->where('c.catId = ?1')
+            ->setParameters(array(1 => $idCategorie));
+         */
+        //SELECT * FROM `objet_apidae` INNER JOIN categorie ON objet_apidae.id = categorie.id WHERE categorie.catId = 1616
+        /*
+         * select * from objet_apidae as o
+            inner join categorie as c
+            inner join objetHascategories as k
+            on c.id = k.categorie_id
+            and o.id = k.objet_apidae_id
+            and c.catId = 1616
+         */
     }
 
     public function getObjetsService($idService) {

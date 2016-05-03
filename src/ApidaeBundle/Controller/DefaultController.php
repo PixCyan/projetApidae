@@ -274,9 +274,11 @@ class DefaultController extends Controller
 
         //if($request->isXmlHttpRequest()) {
             $service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
+            //$service = $this->em->getRepository(ObjetApidae::class)->getObjetsService($categorieId);
             if(!$service) {
-                $query = $this->em->getRepository(ObjetApidae::class)->getObjetsCategorie($categorieId);
-                $c = $query->getArrayResult();
+                print ("tes");
+                $c = $this->em->getRepository(ObjetApidae::class)->getObjetsCategorie($categorieId);
+                //$c = $query->getArrayResult();
                 //$c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
                 if(!$c) {
                     $labelsQualite = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
@@ -287,22 +289,24 @@ class DefaultController extends Controller
                     }
                 } else {
                     //var_dump($c);
-                    $objetsRes = $c;
-                    //
+                    $objetsTableau = $c->getArrayResult();
+                    $objetsRes = $c->getResult();
                     //$objetsTableau = $c->toArray();
                     //$objetsRes = $c->getObjets();
                 }
             } else {
-                $objetsRes = $service->getObjetsApidae()->toArray();
+                $objetsRes = $service->getObjetsApidae();
+                $objetsTableau = $service->getObjetsApidae()->toArray();
             }
+
             $session->remove('listeObjets');
             if($objetsRes) {
-                $session->set('listeObjets', $this->getIdsObjetsFromObjets($query->getResult()));
-                $services = $this->getServicesFromObjets($query->getResult());
-                $modesPaiement = $this->getModesPaimentFromObjets($query->getResult());
-                $labelsQualite = $this->getClassementsFromObjets($query->getResult());
+                $session->set('listeObjets', $this->getIdsObjetsFromObjets($objetsRes));
+                $services = $this->getServicesFromObjets($objetsRes);
+                $modesPaiement = $this->getModesPaimentFromObjets($objetsRes);
+                $labelsQualite = $this->getClassementsFromObjets($objetsRes);
                 if($typeObjet == "Hebergements") {
-                    $typesHabitation = $this->getTypeHabitationFromObjets($query->getResult());
+                    $typesHabitation = $this->getTypeHabitationFromObjets($objetsRes);
                 } else {
                     $typesHabitation = [];
                 }
@@ -313,19 +317,8 @@ class DefaultController extends Controller
                 $typesHabitation = [];
             }
 
-            //$serializer = $this->get('serializer');
-            //$serializer = new Serializer(array(new GetSetMethodNormalizer()), array('json' => new JsonEncoder()));
-            //$reports = $serializer->serialize($objetsRes, 'json');
-
-            //use JMSSerializerBundle
-            //$serializer = SerializerBuilder::create()->build();
-            //$reports = $serializer->serialize($objetsRes, 'json');
-
-            //$serializer = $this->container->get('jms_serializer');
-            //$reports = $serializer->serialize($objetsRes, 'json');
-
             $response = new JsonResponse();
-            return $response->setData(array('objets' => $objetsRes,
+            return $response->setData(array('objets' => $objetsTableau,
                 'typeObjet' =>$typeObjet,
                 'services' => $services,
                 'modesPaiement' => $modesPaiement,
