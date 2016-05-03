@@ -18,9 +18,6 @@ use ApidaeBundle\Entity\ObjetApidae;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer;
-use Symfony\Component\Serializer\Serializer;
 
 class DefaultController extends Controller
 {
@@ -143,7 +140,11 @@ class DefaultController extends Controller
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
         $selection = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categorieId);
-        $objets = $selection->getObjets();
+        if($selection) {
+            $objets = $selection->getObjets();
+        } else {
+            $objets = $this->getObjetsFromIdsObjets($session->get('listeObjets'));
+        }
 
         //unset($_SESSION['listeObjets']);
         $session->remove('listeObjets');
@@ -201,7 +202,7 @@ class DefaultController extends Controller
     public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId) {
         $session = $request->getSession();
         $this->em = $this->getDoctrine()->getManager();
-        if($request->isXmlHttpRequest()) {
+        /*if($request->isXmlHttpRequest()) {
             //pour l'ajax ici
         }
 
@@ -269,69 +270,75 @@ class DefaultController extends Controller
                     }
                 }
             }
-        }
-
-
-        /*$service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
-        if(!$service) {
-            //$c = $this->em->getRepository(ObjetApidae::class)->getCategorie($categorieId);
-            $c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            if(!$c) {
-                $labelsQualite = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
-                if(!$labelsQualite) {
-                    $objetsRes = null;
-                } else {
-                    $objetsRes = $labelsQualite->getObjetsApidae();
-                }
-            } else {
-                //var_dump($c);
-                $objetsRes = $c;
-                //$objetsRes = $c->getObjets();
-            }
-        } else {
-            $objetsRes = $service->getObjetsApidae();
-        }
-        $session->remove('listeObjets');
-        if($objetsRes) {
-            $session->set('listeObjets', $this->getIdsObjetsFromObjets($objetsRes));
-            $services = $this->getServicesFromObjets($objetsRes);
-            $modesPaiement = $this->getModesPaimentFromObjets($objetsRes);
-            $labelsQualite = $this->getClassementsFromObjets($objetsRes);
-            if($typeObjet == "Hebergements") {
-                $typesHabitation = $this->getTypeHabitationFromObjets($objetsRes);
-            } else {
-                $typesHabitation = [];
-            }
-        } else {
-            $services = [];
-            $modesPaiement = [];
-            $labelsQualite = [];
-            $typesHabitation = [];
         }*/
 
-        //$serializer = $this->get('serializer');
-        //$serializer = new Serializer(array(new GetSetMethodNormalizer()), array('json' => new JsonEncoder()));
-        //$reports = $serializer->serialize($objetsRes, 'json');
+        //if($request->isXmlHttpRequest()) {
+            $service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
+            if(!$service) {
+                $query = $this->em->getRepository(ObjetApidae::class)->getObjetsCategorie($categorieId);
+                $c = $query->getArrayResult();
+                //$c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+                if(!$c) {
+                    $labelsQualite = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
+                    if(!$labelsQualite) {
+                        $objetsRes = null;
+                    } else {
+                        $objetsRes = $labelsQualite->getObjetsApidae();
+                    }
+                } else {
+                    //var_dump($c);
+                    $objetsRes = $c;
+                    //
+                    //$objetsTableau = $c->toArray();
+                    //$objetsRes = $c->getObjets();
+                }
+            } else {
+                $objetsRes = $service->getObjetsApidae()->toArray();
+            }
+            $session->remove('listeObjets');
+            if($objetsRes) {
+                $session->set('listeObjets', $this->getIdsObjetsFromObjets($query->getResult()));
+                $services = $this->getServicesFromObjets($query->getResult());
+                $modesPaiement = $this->getModesPaimentFromObjets($query->getResult());
+                $labelsQualite = $this->getClassementsFromObjets($query->getResult());
+                if($typeObjet == "Hebergements") {
+                    $typesHabitation = $this->getTypeHabitationFromObjets($query->getResult());
+                } else {
+                    $typesHabitation = [];
+                }
+            } else {
+                $services = [];
+                $modesPaiement = [];
+                $labelsQualite = [];
+                $typesHabitation = [];
+            }
 
-        //use JMSSerializerBundle
-        //$serializer = SerializerBuilder::create()->build();
-        //$reports = $serializer->serialize($objetsRes, 'json');
+            //$serializer = $this->get('serializer');
+            //$serializer = new Serializer(array(new GetSetMethodNormalizer()), array('json' => new JsonEncoder()));
+            //$reports = $serializer->serialize($objetsRes, 'json');
 
-        //$serializer = $this->container->get('jms_serializer');
-        //$reports = $serializer->serialize($objetsRes, 'json');
+            //use JMSSerializerBundle
+            //$serializer = SerializerBuilder::create()->build();
+            //$reports = $serializer->serialize($objetsRes, 'json');
 
-       /* $response = new JsonResponse();
-        return $response->setData(array('objets' => $objetsRes
-            'typeObjet' =>$typeObjet,
-            'services' => $services,
-            'modesPaiement' => $modesPaiement,
-            'labels' => $labelsQualite,
-            'typesHabitation' => $typesHabitation));*/
+            //$serializer = $this->container->get('jms_serializer');
+            //$reports = $serializer->serialize($objetsRes, 'json');
 
-        return $this->render('ApidaeBundle:Default:vueListe.html.twig',
+            $response = new JsonResponse();
+            return $response->setData(array('objets' => $objetsRes,
+                'typeObjet' =>$typeObjet,
+                'services' => $services,
+                'modesPaiement' => $modesPaiement,
+                'labels' => $labelsQualite,
+                'typesHabitation' => $typesHabitation));
+       /* } else {
+            $response = new JsonResponse();
+            return $response->setData(array('objets' => "test"));
+        }*/
+        /*return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objetsRes, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user,
                 'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite,
-                'typesHabitation' => $typesHabitation));
+                'typesHabitation' => $typesHabitation));*/
     }
 
     /**

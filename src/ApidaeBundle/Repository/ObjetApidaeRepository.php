@@ -12,7 +12,7 @@ use ApidaeBundle\Entity\Categorie;
  */
 class ObjetApidaeRepository extends \Doctrine\ORM\EntityRepository {
 
-    public function getCategorie($idCategorie) {
+    public function getObjetsCategorie($idCategorie) {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('o')
@@ -21,8 +21,23 @@ class ObjetApidaeRepository extends \Doctrine\ORM\EntityRepository {
             ->where('c.catId = ?1')
             ->setParameters(array(1 => $idCategorie));
         $query = $qb->getQuery();
-        return $query->getArrayResult();
+        return $query;
+        //return $query->getArrayResult();
     }
+
+    public function getObjetsService($idService) {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('ApidaeBundle:Service', 's', 'o.id = s.id')
+            ->where('s.serId = ?1')
+            ->setParameters(array(1 => $idService));
+        $query = $qb->getQuery();
+        return $query;
+        //return $query->getArrayResult();
+    }
+
 
     //get Musées Patrimoines et Galeries
     //TODO query pas bonne

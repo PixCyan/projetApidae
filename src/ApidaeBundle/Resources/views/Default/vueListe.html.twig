@@ -8,7 +8,7 @@
             or labels is defined and labels is not empty and objets|length != 1
             or tourismeAdapte is defined  and tourismeAdapte is not empty and objets|length != 1
             or typesHabitation is defined  and typesHabitation is not empty and objets|length != 1 %}
-        <form id="form_recherche" action="" method="post">
+        <form id="form_recherche" action="" method="POST">
             {% if typesHabitation is defined and typesHabitation is not empty %}
                 {% include "ApidaeBundle:filtres:TypesHabitationFiltres.html.twig" %}
             {% endif %}
