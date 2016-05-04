@@ -11,29 +11,25 @@ use ApidaeBundle\Entity\Categorie;
  * repository methods below.
  */
 class ObjetApidaeRepository extends \Doctrine\ORM\EntityRepository {
+    // Example - $qb->innerJoin('u.Group', 'g', Expr\Join::WITH, $qb->expr()->eq('u.status_id', '?1'))
+    // Example - $qb->innerJoin('u.Group', 'g', 'WITH', 'u.status = ?1')
+    // Example - $qb->innerJoin('u.Group', 'g', 'WITH', 'u.status = ?1', 'g.id')
+    //public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null);
 
     public function getObjetsCategorie($idCategorie) {
+        //requete testée et validée
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('o')
             ->from('ApidaeBundle:ObjetApidae', 'o')
-            ->innerJoin('objetHascategorie', 'k', 'WITH', 'o.id = k.objet_apidae_id')
-            ->innerJoin('ApidaeBundle:Categorie', 'c', 'WITH', 'c.id = k.categorie_id')
-            ->where('c.catId = ?1')
+            ->innerJoin('o.categories', 'c', 'WITH', 'c.catId = ?1')
             ->setParameters(array(1 => $idCategorie));
         $query = $qb->getQuery();
         return $query;
         //return $query->getArrayResult();
+
         /*
-         * $qb->select('o')
-            ->from('ApidaeBundle:ObjetApidae', 'o')
-            ->join('ApidaeBundle:Categorie', 'c')
-            ->where('c.catId = ?1')
-            ->setParameters(array(1 => $idCategorie));
-         */
-        //SELECT * FROM `objet_apidae` INNER JOIN categorie ON objet_apidae.id = categorie.id WHERE categorie.catId = 1616
-        /*
-         * select * from objet_apidae as o
+           select * from objet_apidae as o
             inner join categorie as c
             inner join objetHascategories as k
             on c.id = k.categorie_id
@@ -47,14 +43,15 @@ class ObjetApidaeRepository extends \Doctrine\ORM\EntityRepository {
         $qb = $em->createQueryBuilder();
         $qb->select('o')
             ->from('ApidaeBundle:ObjetApidae', 'o')
-            ->innerJoin('ApidaeBundle:Service', 's', 'o.id = s.id')
-            ->where('s.serId = ?1')
+            ->innerJoin('o.services', 's', 'WITH', 's.serId = ?1')
             ->setParameters(array(1 => $idService));
         $query = $qb->getQuery();
         return $query;
         //return $query->getArrayResult();
     }
+    
 
+    //-----------------------------------------------------------------------------------------------------------
 
     //get Musées Patrimoines et Galeries
     //TODO query pas bonne

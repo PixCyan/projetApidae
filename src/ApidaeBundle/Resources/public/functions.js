@@ -4,7 +4,7 @@
 $("document").ready(function() {
     $(".filtres").click(function() {
         console.log('ok');
-        console.log('http://local.dev/Symfony/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val() + "/test");
+        console.log('http://local.dev/Symfony/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val() + "/" + $(this).name());
         $.ajax({
             type : 'POST',
             url  : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val()  + "/test",

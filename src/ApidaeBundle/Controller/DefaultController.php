@@ -18,6 +18,10 @@ use ApidaeBundle\Entity\ObjetApidae;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Symfony\Component\Serializer\Serializer;
 
 class DefaultController extends Controller
 {
@@ -29,8 +33,7 @@ class DefaultController extends Controller
      * Renvoi la page d'accueil avec les suggestions
      * @return Response
      */
-    public function indexAction()
-    {
+    public function indexAction() {
         $user = $this->getUser();
         $this->em = $this->getDoctrine()->getManager();
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
@@ -127,7 +130,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoie la liste de tous les objets d'une categorie donnée (Catégories définies par le menu)
+     * Affiche la liste de tous les objets d'une categorie donnée (Catégories définies par le menu)
      * @param $typeObjet
      * @param $categorieId
      * @param Request $request
@@ -202,10 +205,7 @@ class DefaultController extends Controller
     public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId) {
         $session = $request->getSession();
         $this->em = $this->getDoctrine()->getManager();
-        /*if($request->isXmlHttpRequest()) {
-            //pour l'ajax ici
-        }
-
+/*
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
 
         if($request->get('services')) {
@@ -228,9 +228,7 @@ class DefaultController extends Controller
         } else {
             $categories = [];
         }
-
         $objetsRes = new ArrayCollection();
-
         //--- test
         //var_dump($services);
         if($liste = $this->getObjetsFromIdsObjets($session->get('listeObjets'))) {
@@ -272,11 +270,23 @@ class DefaultController extends Controller
             }
         }*/
 
+        /*$encoder = array(new JsonEncoder());
+       $normalizer = array(new ObjectNormalizer());
+       $serializer = new Serializer($normalizer, $encoder);
+       $normalizer[0]->setCircularReferenceHandler(function ($object) {
+           return $object->getId();
+       });
+       $objetsTableau =  $serializer->serialize($c->getResult(), 'json');
+       }*/
+
         //if($request->isXmlHttpRequest()) {
-            $service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
-            //$service = $this->em->getRepository(ObjetApidae::class)->getObjetsService($categorieId);
-            if(!$service) {
-                print ("tes");
+            $listeActuelle = $this->getObjetsFromIdsObjets($session->get('listeObjets'));
+
+
+            //$service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
+            $service = $this->em->getRepository(ObjetApidae::class)->getObjetsService($categorieId);
+            if(!$service->getResult()) {
+                print ("test");
                 $c = $this->em->getRepository(ObjetApidae::class)->getObjetsCategorie($categorieId);
                 //$c = $query->getArrayResult();
                 //$c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
@@ -290,13 +300,16 @@ class DefaultController extends Controller
                 } else {
                     //var_dump($c);
                     $objetsTableau = $c->getArrayResult();
-                    $objetsRes = $c->getResult();
+                    $objetsRes = $this->traitementRequeteForJson($c->getResult(), $listeActuelle);
+
                     //$objetsTableau = $c->toArray();
                     //$objetsRes = $c->getObjets();
                 }
             } else {
-                $objetsRes = $service->getObjetsApidae();
-                $objetsTableau = $service->getObjetsApidae()->toArray();
+                $objetsTableau = $service->getArrayResult();
+                $objetsRes = $service->getResult();
+                //$objetsRes = $service->getObjetsApidae();
+                //$objetsTableau = $service->getObjetsApidae()->toArray();
             }
 
             $session->remove('listeObjets');
@@ -464,5 +477,27 @@ class DefaultController extends Controller
             $objets[] = $o;
         }
         return $objets;
+    }
+
+    /**
+     * Traite la requete en comparant ses résultats aux objets de la liste affichés (session)
+     * Retourne un array des objets de la liste qui sont similaires à la requete
+     * @param $objsRequete
+     * @param $listeResActuelle
+     * @return array
+     */
+    private function traitementRequeteForJson($objsRequete, $listeResActuelle) {
+        $res = [];
+        if($listeResActuelle) {
+            $liste = new ArrayCollection($listeResActuelle);
+            foreach($objsRequete as $value ) {
+                if($liste->contains($value)) {
+                    $res[] = $value;
+                }
+            }
+        } else {
+            $res = $listeResActuelle;
+        }
+        return $res;
     }
 }
