@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\DiscriminatorColumn;
 use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\InheritanceType;
-
+use JMS\Serializer\Annotation\MaxDepth;
 
 
 //SINGLE_TABLE or JOINED pour @InheritanceType
@@ -81,18 +81,21 @@ abstract class ObjetApidae
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHascategories")
+     * @MaxDepth(2)
      */
     protected $categories;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Panier", mappedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasPanier")
+     * @MaxDepth(2)
      */
     protected $paniers;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\SelectionApidae", mappedBy="objets", cascade={"merge"})
      * @ORM\JoinTable(name="objetHasSelection")
+     * @MaxDepth(2)
      */
     protected $selectionsApidae;
 
@@ -118,6 +121,7 @@ abstract class ObjetApidae
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\LabelQualite", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasLabelQualite")
+     * @MaxDepth(2)
      */
     protected $labelsQualite;
 

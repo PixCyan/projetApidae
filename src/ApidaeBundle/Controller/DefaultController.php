@@ -12,6 +12,7 @@ use ApidaeBundle\Entity\TraductionObjetApidae;
 use ApidaeBundle\Form\RechercheObjetForm;
 use ApidaeBundle\Fonctions\Fonctions;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
@@ -281,8 +282,14 @@ class DefaultController extends Controller
 
         //if($request->isXmlHttpRequest()) {
             $listeActuelle = $this->getObjetsFromIdsObjets($session->get('listeObjets'));
+            $serializer = $this->container->get('jms_serializer');
+            //$objetsTableau = $serializer->serialize($listeActuelle, "json");
+            $objetsTableau = $serializer->serialize($listeActuelle, 'json', SerializationContext::create()->enableMaxDepthChecks() );
 
+            $response = new JsonResponse();
+            return $response->setData(array('objets' => $objetsTableau));
 
+        /*
             //$service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
             $service = $this->em->getRepository(ObjetApidae::class)->getObjetsService($categorieId);
             if(!$service->getResult()) {
@@ -336,7 +343,7 @@ class DefaultController extends Controller
                 'services' => $services,
                 'modesPaiement' => $modesPaiement,
                 'labels' => $labelsQualite,
-                'typesHabitation' => $typesHabitation));
+                'typesHabitation' => $typesHabitation));*/
        /* } else {
             $response = new JsonResponse();
             return $response->setData(array('objets' => "test"));
