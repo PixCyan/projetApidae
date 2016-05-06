@@ -17,6 +17,7 @@ class RecuperationDonneesApidaeCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         //TODO récupération URL
+        // http://export.sitra-tourisme.com/exports/1464_20160506-0958_NPQ1jG.zip
         $logs = fopen('logRecuperationDonneesApidae.txt', 'w');
         if ($tab = $_POST) {
             foreach($tab as $key => $value) {

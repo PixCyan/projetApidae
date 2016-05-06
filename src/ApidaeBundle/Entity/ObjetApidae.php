@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping\DiscriminatorMap;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\InheritanceType;
 use JMS\Serializer\Annotation\MaxDepth;
+use JMS\Serializer\Annotation\SerializedName;
+use JMS\Serializer\Serializer;
+use JMS\Serializer\Annotation\VirtualProperty;
 
 
 //SINGLE_TABLE or JOINED pour @InheritanceType
@@ -20,8 +23,7 @@ use JMS\Serializer\Annotation\MaxDepth;
  *      "activite" = "Activite", "evenement" = "Evenement", "sejourPackage" = "SejourPackage"})
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\ObjetApidaeRepository")
  */
-abstract class ObjetApidae
-{
+abstract class ObjetApidae {
     /**
      * @var int
      *
@@ -835,6 +837,32 @@ abstract class ObjetApidae
             }
         }
         return null;
+    }
+
+
+    //Test function de sérialization
+
+    /**
+     * @VirtualProperty
+     * @SerializedName("objetApidae")
+     *
+     * @return array
+     */
+    public function getObjetApidae() {
+        return array(
+        'id' => $this->getId(),
+        'idObjet' => $this->getIdObjet(),
+        'nom' => $this->getNom(),
+        'objEtoile' => $this->getObjEtoile(),
+        'objtTypeApidae' => $this->getObjTypeApidae(),
+        'objGeolocalisation' => $this->getObjGeolocalisation(),
+        'objSuggestion' => $this->getObjSuggestion(),
+        'objDateSuggestion' => $this->getObjDateSuggestion(),
+        'adresse' => $this->getAdresse(),
+        'codePostal' => $this->getCodePostal(),
+        'dateEnClair' => $this->getDateEnClair(),
+        'tarifEnClair' => $this->getTarifEnClair()
+        );
     }
 }
 
