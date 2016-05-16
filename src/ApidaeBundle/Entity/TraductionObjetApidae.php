@@ -3,9 +3,11 @@
 namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * TraductionObjetApidae
+ * @JMS\ExclusionPolicy("all")
  *
  * @ORM\Table(name="traduction_objet_apidae")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\TraductionObjetApidaeRepository")
@@ -18,6 +20,9 @@ class TraductionObjetApidae
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JMS\Expose
+     * @JMS\Type("integer")
      */
     private $id;
 
@@ -25,6 +30,9 @@ class TraductionObjetApidae
      * @var string
      *
      * @ORM\Column(name="tra_DescriptionCourte", type="text", nullable=true)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $traDescriptionCourte;
 
@@ -65,6 +73,9 @@ class TraductionObjetApidae
     /**
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\Langue", inversedBy="traductions")
      * @ORM\JoinColumn(nullable = false)
+     *
+     * @JMS\Expose
+     * @JMS\Type("ApidaeBundle\Entity\Langue")
      */
     private $langue;
 

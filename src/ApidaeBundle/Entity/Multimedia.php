@@ -3,9 +3,11 @@
 namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Multimedia
+ * @JMS\ExclusionPolicy("all")
  *
  * @ORM\Table(name="multimedia")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\MultimediaRepository")
@@ -26,6 +28,10 @@ class Multimedia
      * @var int
      *
      * @ORM\Column(name="idMultimedia", type="integer", nullable=true)
+     *
+     *
+     * @JMS\Expose
+     * @JMS\Type("integer")
      */
     private $idMultimedia;
 
@@ -47,6 +53,9 @@ class Multimedia
      * @var string
      *
      * @ORM\Column(name="mulUrl", type="string", length=255, nullable=true)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $mulUrl;
 

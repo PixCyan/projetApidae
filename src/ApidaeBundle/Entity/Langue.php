@@ -4,9 +4,12 @@ namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Langue
+ *
+ * @JMS\ExclusionPolicy("all")
  *
  * @ORM\Table(name="langue")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\LangueRepository")
@@ -26,6 +29,9 @@ class Langue
      * @var int
      *
      * @ORM\Column(name="codeLangue", type="integer", unique=true)
+     *
+     * @JMS\Expose
+     * @JMS\Type("integer")
      */
     private $codeLangue;
 
@@ -33,6 +39,9 @@ class Langue
      * @var string
      *
      * @ORM\Column(name="lan_Libelle", type="string", length=255)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $lanLibelle;
 

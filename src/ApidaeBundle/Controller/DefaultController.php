@@ -2,18 +2,13 @@
 
 namespace ApidaeBundle\Controller;
 
-use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Evenement;
-use ApidaeBundle\Entity\LabelQualite;
 use ApidaeBundle\Entity\Langue;
 use ApidaeBundle\Entity\SelectionApidae;
-use ApidaeBundle\Entity\Service;
 use ApidaeBundle\Entity\TraductionObjetApidae;
 use ApidaeBundle\Form\RechercheObjetForm;
 use ApidaeBundle\Fonctions\Fonctions;
 use Doctrine\Common\Collections\ArrayCollection;
-use JMS\Serializer\SerializationContext;
-use JMS\Serializer\SerializerBuilder;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 class DefaultController extends Controller
 {
     private $em;
+
     //0 = FR, 1 = EN
     private $lan = 0;
 
@@ -33,7 +29,8 @@ class DefaultController extends Controller
     public function indexAction() {
         $user = $this->getUser();
         $this->em = $this->getDoctrine()->getManager();
-        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+
+        $langue = $this->em->getRepository('ApidaeBundle:Langue')->findOneBy(['codeLangue' => $this->lan]);
         $suggestions = $this->em->getRepository(ObjetApidae::class)->findByObjSuggestion(1);
         return $this->render('ApidaeBundle:Default:index.html.twig', array('suggestions' => $suggestions,
             'langue' => $langue, 'user' => $user));
@@ -54,7 +51,7 @@ class DefaultController extends Controller
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
         $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($id);
         $trad = $this->em->getRepository(TraductionObjetApidae::class)->findOneBy(
-            array("objet"=> $objetApidae, "langue" => $langue));
+            array('objet'=> $objetApidae, 'langue' => $langue));
 
         if(!$objetApidae) {
             throw $this->createNotFoundException('Cette offre n\'existe pas.');
@@ -105,7 +102,6 @@ class DefaultController extends Controller
                 }
                 $i++;
             }
-
         }
         //------------
 
@@ -181,11 +177,10 @@ class DefaultController extends Controller
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
 
         //TODO listeEvenement
-        if($periode == 1) {
-            $evenements = $this->em->getRepository(Evenement::class)->getAujourdhui2();
-        } else {
-            $evenements = $this->em->getRepository(Evenement::class)->getInterval($periode);
-        }
+        $eventRepository =  $this->em->getRepository(Evenement::class);
+
+        $evenements = $periode == 1 ? $eventRepository->getAujourdhui2() : $eventRepository->getInterval($periode);
+
 
         $typeObjet = "Evénements";
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
@@ -276,15 +271,22 @@ class DefaultController extends Controller
        $objetsTableau =  $serializer->serialize($c->getResult(), 'json');
        }*/
 
-        //if($request->isXmlHttpRequest()) {
-            $listeActuelle = $this->getObjetsFromIdsObjets($session->get('listeObjets'));
-            //$serializer = $this->container->get('jms_serializer');
-            $serializer = SerializerBuilder::create()->build();
-            //$objetsTableau = $serializer->serialize($listeActuelle[0], "json");
-            $objetsTableau = $serializer->serialize($listeActuelle[0], 'json', SerializationContext::create()->enableMaxDepthChecks() );
+        $em = $this->getDoctrine()->getManager();
 
-            $response = new JsonResponse();
-            return $response->setData(array('objets' => "test"));
+        if($request->isXmlHttpRequest()) {
+            $objetsIds = $session->get('listeObjets');
+
+            if (is_array($objetsIds) && count($objetsIds) > 0) {
+                $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
+            } else {
+                $listeActuelle = [];
+            }
+
+            $serializer = $this->container->get('jms_serializer');
+            $objetsTableau = $serializer->serialize($listeActuelle, 'json');
+
+            return (new JSONResponse())->setContent($objetsTableau);
+        }
 
         /*
             //$service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
@@ -467,20 +469,6 @@ class DefaultController extends Controller
             $idsObjets[] = $value->getIdObjet();
         }
         return $idsObjets;
-    }
-
-    /**
-     * Retourne un tableau d'objets Apidae d'après un tableau d'IDs
-     * @param $idsObjets
-     * @return array
-     */
-    private function getObjetsFromIdsObjets($idsObjets) {
-        $objets = [];
-        foreach($idsObjets as $value) {
-            $o = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($value);
-            $objets[] = $o;
-        }
-        return $objets;
     }
 
     /**

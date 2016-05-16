@@ -4,8 +4,14 @@ namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
+use JMS\Serializer\Annotation as JMS;
 
-/** @Entity */
+/**
+ * @Entity
+ *
+ * @JMS\ExclusionPolicy("all")
+ * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\HebergementRepository")
+ */
 class Hebergement extends ObjetApidae
 {
 

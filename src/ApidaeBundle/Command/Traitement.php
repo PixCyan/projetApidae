@@ -61,9 +61,9 @@ class Traitement extends ContainerAwareCommand {
 
         //Récupération fichiers :
         try {
-            $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
-            $this->communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
-            $this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json"));
+            $export = file_get_contents("/var/www/html/projetApidae/tools/tmp/exportInitial/selections.json");
+            $this->communes = json_decode(file_get_contents("/var/www/html/projetApidae/tools/tmp/exportInitial/communes.json"));
+            $this->fichierRef = json_decode(file_get_contents("/var/www/html/projetApidae/tools/tmp/exportInitial/elements_reference.json"));
             $selections_data = json_decode($export);
             foreach ($selections_data as $value) {
                 $selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($value->id);
@@ -81,24 +81,27 @@ class Traitement extends ContainerAwareCommand {
                 foreach ($value->objetsTouristiques as $val) {
                     print($val->id . "\n");
                     //=> $data = aller chercher le bon fichier dans objetsModifies
-                    $data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
-                    //Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
-                    $type = $data->type;
-                    $chaineExplode = explode("_", $type);
-                    $tab = null;
-                    foreach ($chaineExplode as $value) {
-                        $str = strtolower($value);
-                        $str[0] = strtoupper($str[0]);
-                        $tab[] = $str;
+                    $data = json_decode(file_get_contents("/var/www/html/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
+                    if($data) {
+                        //Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
+                        $type = $data->type;
+                        $chaineExplode = explode("_", $type);
+                        $tab = null;
+                        foreach ($chaineExplode as $value) {
+                            $str = strtolower($value);
+                            $str[0] = strtoupper($str[0]);
+                            $tab[] = $str;
+                        }
+                        $typeObj = implode($tab);
+                        $chaineInformations = "informations" . $typeObj;
+                        $tab[0] = strtolower($tab[0]);
+                        $chaineType = implode($tab) . "Type";
+                        if ($data->type == "FETE_ET_MANIFESTATION") {
+                            $chaineType = "typesManifestation";
+                        }
+                        $this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
                     }
-                    $typeObj = implode($tab);
-                    $chaineInformations = "informations" . $typeObj;
-                    $tab[0] = strtolower($tab[0]);
-                    $chaineType = implode($tab) . "Type";
-                    if ($data->type == "FETE_ET_MANIFESTATION") {
-                        $chaineType = "typesManifestation";
-                    }
-                    $this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
+
                 }
             }
             //---

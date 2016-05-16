@@ -4,10 +4,10 @@
 $("document").ready(function() {
     $(".filtres").click(function() {
         console.log('ok');
-        console.log('http://local.dev/Symfony/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val() + "/" + $(this).name());
+        console.log('http://localhost/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val() + "/test");
         $.ajax({
             type : 'POST',
-            url  : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val()  + "/test",
+            url  : 'http://localhost/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val()  + "/test",
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
             beforeSend: function() {

@@ -31,9 +31,9 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $jsonMenu = file_get_contents("/var/www/local/Symfony/projetApidae/tools/donneesMenu.json");
+            $jsonMenu = file_get_contents("/var/www/html/projetApidae/tools/donneesMenu.json");
             $donneesMenu = json_decode($jsonMenu);
-            $fichierMenu = fopen('/var/www/local/Symfony/projetApidae/src/ApidaeBundle/Resources/views/commun/menu.html.twig', 'w');
+            $fichierMenu = fopen('/var/www/html/projetApidae/src/ApidaeBundle/Resources/views/commun/menu.html.twig', 'w');
             $this->em = $this->getApplication()->getKernel()->getContainer()->get('doctrine')->getManager();
             $this->langues = $this->em->getRepository(Langue::class)->findAll();
             $menuFinal = [];
@@ -89,10 +89,11 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
     }
 
     private function traitementSelection($categories) {
+        $objets = null;
         $s = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categories[0]->id);
-        $objets = $s->getObjets();
-        //var_dump($categories);
-        if(!$objets && count($categories) > 1) {
+        if($s) {
+            $objets = $s->getObjets();
+        } else if(!$objets && count($categories) > 1) {
             $i = 1;
             while($i < count($categories)-1  && !$objets) {
                 echo $i."\n";

@@ -4,10 +4,12 @@ namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Commune
- *
+ * @JMS\ExclusionPolicy("all")
+ * 
  * @ORM\Table(name="commune")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\CommuneRepository")
  */
@@ -26,6 +28,9 @@ class Commune
      * @var int
      *
      * @ORM\Column(name="comId", type="integer", unique=true)
+     *
+     * @JMS\Expose
+     * @JMS\Type("integer")
      */
     private $comId;
 
@@ -40,6 +45,9 @@ class Commune
      * @var string
      *
      * @ORM\Column(name="comNom", type="string", length=255)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $comNom;
 

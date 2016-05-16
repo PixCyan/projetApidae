@@ -4,9 +4,11 @@ namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Service
+ * @JMS\ExclusionPolicy("all")
  *
  * @ORM\Table(name="service")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\ServiceRepository")
@@ -25,6 +27,9 @@ class Service
     /**
      * @var int
      * @ORM\Column(name="serId", type="integer", unique=true)
+     *
+     * @JMS\Expose
+     * @JMS\Type("integer")
      */
     private $serId;
 
@@ -32,6 +37,9 @@ class Service
      * @var string
      *
      * @ORM\Column(name="serLibelle", type="string", length=255)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $serLibelle;
 

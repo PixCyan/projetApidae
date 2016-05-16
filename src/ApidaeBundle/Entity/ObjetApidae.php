@@ -4,22 +4,16 @@ namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping\DiscriminatorColumn;
-use Doctrine\ORM\Mapping\DiscriminatorMap;
-use Doctrine\ORM\Mapping\Entity;
-use Doctrine\ORM\Mapping\InheritanceType;
-use JMS\Serializer\Annotation\MaxDepth;
-use JMS\Serializer\Annotation\SerializedName;
-use JMS\Serializer\Serializer;
-use JMS\Serializer\Annotation\VirtualProperty;
+use JMS\Serializer\Annotation as JMS;
 
 
 //SINGLE_TABLE or JOINED pour @InheritanceType
 /**
- * @Entity
- * @InheritanceType("SINGLE_TABLE")
- * @DiscriminatorColumn(name="discr", type="string")
- * @DiscriminatorMap({"objetApidae" = "ObjetApidae", "restaurant" = "Restaurant", "hebergement" = "Hebergement",
+ * @JMS\ExclusionPolicy("all")
+ *
+ * @ORM\InheritanceType("SINGLE_TABLE")
+ * @ORM\DiscriminatorColumn(name="discr", type="string")
+ * @ORM\DiscriminatorMap({"objetApidae" = "ObjetApidae", "restaurant" = "Restaurant", "hebergement" = "Hebergement",
  *      "activite" = "Activite", "evenement" = "Evenement", "sejourPackage" = "SejourPackage"})
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\ObjetApidaeRepository")
  */
@@ -30,6 +24,7 @@ abstract class ObjetApidae {
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
      */
     protected $id;
 
@@ -37,6 +32,9 @@ abstract class ObjetApidae {
      * @var int
      *
      * @ORM\Column(name="id_obj", type="integer", unique=true)
+     *
+     * @JMS\Expose
+     * @JMS\Type("integer")
      */
     protected $idObj;
 
@@ -83,26 +81,29 @@ abstract class ObjetApidae {
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHascategories")
-     * @MaxDepth(2)
+     *
+     * @JMS\Expose
+     * @JMS\Type("ArrayCollection<ApidaeBundle\Entity\Categorie>")
      */
     protected $categories;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Panier", mappedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasPanier")
-     * @MaxDepth(2)
      */
     protected $paniers;
 
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\SelectionApidae", mappedBy="objets", cascade={"merge"})
      * @ORM\JoinTable(name="objetHasSelection")
-     * @MaxDepth(2)
      */
     protected $selectionsApidae;
 
     /**
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\Commune", inversedBy="objetsApidae", cascade={"persist"})
+     *
+     * @JMS\Expose
+     * @JMS\Type("ApidaeBundle\Entity\Commune")
      */
     protected $commune;
 
@@ -123,7 +124,6 @@ abstract class ObjetApidae {
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\LabelQualite", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasLabelQualite")
-     * @MaxDepth(2)
      */
     protected $labelsQualite;
 
@@ -132,6 +132,9 @@ abstract class ObjetApidae {
      * @var string
      *
      * @ORM\Column(name="obj_Nom", type="text", nullable=true)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     protected $nom;
 
@@ -146,6 +149,9 @@ abstract class ObjetApidae {
      * @var string
      *
      * @ORM\Column(name="obj_TarifEnClair", type="text",nullable=true)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     protected $tarifEnClair;
 
@@ -158,6 +164,9 @@ abstract class ObjetApidae {
     /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Service", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasServices")
+     *
+     * @JMS\Expose
+     * @JMS\Type("ArrayCollection<ApidaeBundle\Entity\Service>")
      */
     protected $services;
 
@@ -168,6 +177,9 @@ abstract class ObjetApidae {
 
     /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Multimedia", mappedBy="objetApidae", cascade={"persist"})
+     *
+     * @JMS\Expose
+     * @JMS\Type("ArrayCollection<ApidaeBundle\Entity\Multimedia>")
      */
     protected $multimedias;
 
@@ -188,6 +200,9 @@ abstract class ObjetApidae {
 
     /**
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="objet", cascade={"persist"})
+     *
+     * @JMS\Expose
+     * @JMS\Type("ArrayCollection<ApidaeBundle\Entity\TraductionObjetApidae>")
      */
     protected $traductions;
 
@@ -568,35 +583,35 @@ abstract class ObjetApidae {
     }
 
     /**
-     *@return un tableau contenant les traductions associés à l'objetApidae
+     *@return array contenant les traductions associés à l'objetApidae
      */
     public function getTraductions() {
         return $this->traductions;
     }
 
     /**
-     *@return un tableau contenant les objetsLies associés à l'objetApidae
+     *@return array tableau contenant les objetsLies associés à l'objetApidae
      */
     public function getObjetsLies() {
         return $this->objetsLies;
     }
 
     /**
-     *@return un tableau contenant les labels associés à l'objetApidae
+     *@return array tableau contenant les labels associés à l'objetApidae
      */
     public function getLabelsQualite() {
         return $this->labelsQualite;
     }
 
     /**
-     *@return un tableau contenant les categories associés à l'objetApidae
+     *@return array tableau contenant les categories associés à l'objetApidae
      */
     public function getCategories() {
         return $this->categories;
     }
 
     /**
-     *@return un tableau contenant les paniers associés à l'objetApidae
+     *@return array tableau contenant les paniers associés à l'objetApidae
      */
     public function getPaniers() {
         return $this->paniers;
@@ -839,30 +854,4 @@ abstract class ObjetApidae {
         return null;
     }
 
-
-    //Test function de sérialization
-
-    /**
-     * @VirtualProperty
-     * @SerializedName("objetApidae")
-     *
-     * @return array
-     */
-    public function getObjetApidae() {
-        return array(
-        'id' => $this->getId(),
-        'idObjet' => $this->getIdObjet(),
-        'nom' => $this->getNom(),
-        'objEtoile' => $this->getObjEtoile(),
-        'objtTypeApidae' => $this->getObjTypeApidae(),
-        'objGeolocalisation' => $this->getObjGeolocalisation(),
-        'objSuggestion' => $this->getObjSuggestion(),
-        'objDateSuggestion' => $this->getObjDateSuggestion(),
-        'adresse' => $this->getAdresse(),
-        'codePostal' => $this->getCodePostal(),
-        'dateEnClair' => $this->getDateEnClair(),
-        'tarifEnClair' => $this->getTarifEnClair()
-        );
-    }
 }
-
