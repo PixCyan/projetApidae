@@ -10,16 +10,16 @@
 
         <div class="infosListe">
             {% if objet.commune is not empty %}
-                {{ objet.commune.comNom }}
+                <p>{{ objet.commune.comNom }}</p>
             {%  endif %}
             {% if objet.categories is not empty%}
-                <div> Categories :
+             <!--   <div> <p>Categories :</p>
                     {% for cat in objet.categories %}
                         <div class="listeCategories">
-                            {{ cat.catLibelle|langueLib(langue.lanShortCut) }}
+                            <p>{{ cat.catLibelle|langueLib(langue.lanShortCut) }}</p>
                         </div>
                     {% endfor %}
-                </div>
+                </div> -->
             {% endif %}
             {% if objet.tarifEnClair is not empty %}
                 <p> {{ objet.tarifEnClair|langueLib(langue.lanShortCut) }}</p>

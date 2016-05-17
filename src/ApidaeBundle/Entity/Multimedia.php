@@ -54,8 +54,6 @@ class Multimedia
      *
      * @ORM\Column(name="mulUrl", type="string", length=255, nullable=true)
      *
-     * @JMS\Expose
-     * @JMS\Type("string")
      */
     private $mulUrl;
 
@@ -63,6 +61,9 @@ class Multimedia
      * @var string
      *
      * @ORM\Column(name="mulUrlListe", type="string", length=255, nullable=true)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $mulUrlListe;
 

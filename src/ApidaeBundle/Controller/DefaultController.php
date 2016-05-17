@@ -2,9 +2,12 @@
 
 namespace ApidaeBundle\Controller;
 
+use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Evenement;
+use ApidaeBundle\Entity\LabelQualite;
 use ApidaeBundle\Entity\Langue;
 use ApidaeBundle\Entity\SelectionApidae;
+use ApidaeBundle\Entity\Service;
 use ApidaeBundle\Entity\TraductionObjetApidae;
 use ApidaeBundle\Form\RechercheObjetForm;
 use ApidaeBundle\Fonctions\Fonctions;
@@ -273,7 +276,7 @@ class DefaultController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        if($request->isXmlHttpRequest()) {
+        //if($request->isXmlHttpRequest()) {
             $objetsIds = $session->get('listeObjets');
 
             if (is_array($objetsIds) && count($objetsIds) > 0) {
@@ -283,89 +286,45 @@ class DefaultController extends Controller
             }
 
             $serializer = $this->container->get('jms_serializer');
-            $objetsTableau = $serializer->serialize($listeActuelle, 'json');
 
-            return (new JSONResponse())->setContent($objetsTableau);
-        }
+            //Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
+            //peuvent être soit categorie/service/labelQualite
 
-        /*
-            //$service = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
-            $service = $this->em->getRepository(ObjetApidae::class)->getObjetsService($categorieId);
-            if(!$service->getResult()) {
-                print ("test");
-                $c = $this->em->getRepository(ObjetApidae::class)->getObjetsCategorie($categorieId);
-                //$c = $query->getArrayResult();
-                //$c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-                if(!$c) {
-                    $labelsQualite = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
-                    if(!$labelsQualite) {
-                        $objetsRes = null;
+            $c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            if($c && $typeObjet == "categories") {
+                $nouvelleListe = $this->traitementObjetsCategories($c, $listeActuelle);
+            } else {
+                $s = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
+                if($s && $typeObjet == "services") {
+                    $nouvelleListe = $this->traitementObjetsCategories($s, $listeActuelle);
+                } else {
+                    $l = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
+                    if($l && $typeObjet == "classements") {
+                        $nouvelleListe = $this->traitementObjetsCategories($l, $listeActuelle);
                     } else {
-                        $objetsRes = $labelsQualite->getObjetsApidae();
+                        $nouvelleListe = [];
                     }
-                } else {
-                    //var_dump($c);
-                    $objetsTableau = $c->getArrayResult();
-                    $objetsRes = $this->traitementRequeteForJson($c->getResult(), $listeActuelle);
-
-                    //$objetsTableau = $c->toArray();
-                    //$objetsRes = $c->getObjets();
                 }
-            } else {
-                $objetsTableau = $service->getArrayResult();
-                $objetsRes = $service->getResult();
-                //$objetsRes = $service->getObjetsApidae();
-                //$objetsTableau = $service->getObjetsApidae()->toArray();
             }
-
+            $objetsTableau = $serializer->serialize($nouvelleListe, 'json');
             $session->remove('listeObjets');
-            if($objetsRes) {
-                $session->set('listeObjets', $this->getIdsObjetsFromObjets($objetsRes));
-                $services = $this->getServicesFromObjets($objetsRes);
-                $modesPaiement = $this->getModesPaimentFromObjets($objetsRes);
-                $labelsQualite = $this->getClassementsFromObjets($objetsRes);
-                if($typeObjet == "Hebergements") {
-                    $typesHabitation = $this->getTypeHabitationFromObjets($objetsRes);
-                } else {
-                    $typesHabitation = [];
-                }
-            } else {
-                $services = [];
-                $modesPaiement = [];
-                $labelsQualite = [];
-                $typesHabitation = [];
-            }
+            $session->set('listeObjets', $nouvelleListe);
+            return (new JSONResponse())->setContent($objetsTableau);
+        //}
 
-            $response = new JsonResponse();
-            return $response->setData(array('objets' => $objetsTableau,
-                'typeObjet' =>$typeObjet,
-                'services' => $services,
-                'modesPaiement' => $modesPaiement,
-                'labels' => $labelsQualite,
-                'typesHabitation' => $typesHabitation));*/
-       /* } else {
-            $response = new JsonResponse();
-            return $response->setData(array('objets' => "test"));
-        }*/
-        /*return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-            array('objets' => $objetsRes, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user,
-                'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite,
-                'typesHabitation' => $typesHabitation));*/
     }
 
     /**
      * Retourne un ArrayCollection des objets auxquelles sont liées les categories données en param
-     * @param $categories
+     * @param $categorie
+     * @param $objs
      * @return ArrayCollection
      */
-    private function traitementObjetsCategories($categories) {
+    private function traitementObjetsCategories($categorie, $objs) {
         $objets = new ArrayCollection();
-        foreach($categories as $category) {
-            $c= $category->getObjets();
-            foreach($c as $obj) {
-                if(!$objets->contains($obj)) {
-                    $objets->add($obj);
-                }
+        foreach($objs as $o) {
+            if($o->getCategories()->contains($categorie) && !$objets->contains($o)) {
+                    $objets->add($o);
             }
         }
         return $objets;

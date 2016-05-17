@@ -1,7 +1,7 @@
 <di>
     <h4> Services </h4>
     {% for s in services %}
-        <input class="filtres" type="checkbox" id="{{ s.serId }}" value="{{ s.serId }}" name="services[]">
+        <input class="filtres" type="checkbox" id="{{ s.serId }}" value="{{ s.serId }}" name="services">
         <label for="{{ s.serId }}"> {{ s.serLibelle|langueLib(langue.lanShortCut) }}</label><br/>
     {% endfor %}
 </di>

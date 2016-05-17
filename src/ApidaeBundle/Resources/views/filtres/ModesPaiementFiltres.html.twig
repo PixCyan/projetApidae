@@ -1,7 +1,7 @@
 <div>
     <h4> Modes de Paiement </h4>
     {% for p in modesPaiement %}
-        <input class="filtres" type="checkbox" id="{{ p.serId }}" value="{{ p.serId }}" name="services[]">
+        <input class="filtres" type="checkbox" id="{{ p.serId }}" value="{{ p.serId }}" name="services">
         <label for="{{ p.serId }}"> {{ p.serLibelle|langueLib(langue.lanShortCut) }}</label><br/>
     {% endfor %}
 </div>
