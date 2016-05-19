@@ -17,36 +17,40 @@ $("document").ready(function() {
                 success: function(data) {
                     //TODO function de réponse ajax
                     console.log('Ca marche');
+                    var services = data.services;
+                    var paiements = data.modesPaiement;
+                    var classments = data.classements;
+                    var objets = data.objets;
 
                     //récupération de la section contenant la liste des objets
                     var sectionListe = $("#listeDobjets");
                     sectionListe.empty();
                     //parcours de chaque objets
-                    $.each(data, function(index) {
+                    $.each(objets, function(index) {
                         var newArticle = '<article id="article'+ index +'"></article>';
-                        $(newArticle).addClass("objetListe").append($('<h2>'+ data[index].nom +'</h2>')).appendTo($(sectionListe));
+                        $(newArticle).addClass("objetListe").append($('<h2>'+ objets[index].nom +'</h2>')).appendTo($(sectionListe));
 
-                        if(data[index].multimedias.length > 0) {
+                        if(objets[index].multimedias.length > 0) {
                             console.log("img");
                             var newFirstImg = '<div id="divImg'+ index +'"></div>';
                             $(newFirstImg).addClass("imgListe"+ index).appendTo($('#article'+index));
-                            $('#divImg'+ index).append('<a href="'+ data[index].multimedias[0].mul_url_liste +'"><img src="'+ data[index].multimedias[0].mul_url_liste +'"> </a>');
+                            $('#divImg'+ index).append('<a href="'+ objets[index].multimedias[0].mul_url_liste +'"><img src="'+ objets[index].multimedias[0].mul_url_liste +'"> </a>');
                         }
                         //$('#test'+index).append("<toto></toto>");
 
                         var newDiv = '<div id="divInfos'+ index +'"></div>';
                         $(newDiv).addClass("infosListe").appendTo($('#article'+index));
-                        if(data[index].commune) {
-                            $('#divInfos'+ index).append($('<p>'+ data[index].commune.com_nom +'</p>'));
+                        if(objets[index].commune) {
+                            $('#divInfos'+ index).append($('<p>'+ objets[index].commune.com_nom +'</p>'));
                         }
 
-                        if(data[index].tarif_en_clair) {
-                            $('#divInfos'+ index).append('<p>'+ data[index].tarif_en_clair +'</p>');
+                        if(objets[index].tarif_en_clair) {
+                            $('#divInfos'+ index).append('<p>'+ objets[index].tarif_en_clair +'</p>');
                         }
 
                         var newDivDescr = '<div> </div>';
                         $(newDivDescr).addClass("description").append('<h4> Description : </h4>')
-                            .append('<p>'+ data[index].traductions[0].tra_description_courte  +'</p>')
+                            .append('<p>'+ objets[index].traductions[0].tra_description_courte  +'</p>')
                             .appendTo($('#divInfos'+ index));
                     });
 

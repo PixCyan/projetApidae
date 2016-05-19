@@ -35,8 +35,10 @@ class DefaultController extends Controller
 
         $langue = $this->em->getRepository('ApidaeBundle:Langue')->findOneBy(['codeLangue' => $this->lan]);
         $suggestions = $this->em->getRepository(ObjetApidae::class)->findByObjSuggestion(1);
-        return $this->render('ApidaeBundle:Default:index.html.twig', array('suggestions' => $suggestions,
-            'langue' => $langue, 'user' => $user));
+        return $this->render('ApidaeBundle:Default:index.html.twig', array(
+            'suggestions' => $suggestions,
+            'langue' => $langue,
+            'user' => $user));
     }
 
     /**
@@ -60,7 +62,9 @@ class DefaultController extends Controller
             throw $this->createNotFoundException('Cette offre n\'existe pas.');
         } 
         return $this->render('ApidaeBundle:Default:vueFiche.html.twig',
-            array('objet' => $objetApidae, 'trad' => $trad, 'langue' => $langue,
+            array('objet' => $objetApidae,
+                'trad' => $trad,
+                'langue' => $langue,
                 'user' => $user));
     }
 
@@ -120,9 +124,11 @@ class DefaultController extends Controller
         }
 
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-            array('objets' => $objets, 'langue' => $langue,
+            array('objets' => $objets,
+                'langue' => $langue,
                 'typeObjet' => 'Recherche : '.end($keywords),
-                'user' => $user, 'services' => $services));
+                'user' => $user,
+                'services' => $services));
     }
 
     /**
@@ -136,13 +142,13 @@ class DefaultController extends Controller
     {
         $session = $request->getSession();
         $user = $this->getUser();
-        $this->em = $this->getDoctrine()->getManager();
-        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
-        $selection = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categorieId);
+        $em = $this->getDoctrine()->getManager();
+        $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+        $selection = $em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categorieId);
         if($selection) {
             $objets = $selection->getObjets();
         } else {
-            $objets = $this->getObjetsFromIdsObjets($session->get('listeObjets'));
+            $objets = $em->getRepository(ObjetApidae::class)->getObjetsByids($session->get('listeObjets'));
         }
 
         //unset($_SESSION['listeObjets']);
@@ -158,13 +164,20 @@ class DefaultController extends Controller
         } else {
             $typesHabitation =[];
         }
-
+  
         //var_dump($typesHabitation);
 
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-            array('objets' => $objets, 'langue' => $langue, 'typeObjet' => $typeObjet, 'categorie' => $selection,
-                'user' => $user, 'services' => $services, 'modesPaiement' => $modesPaiement, 'labels' => $labelsQualite,
-                'tourismeAdapte' => $tourismeAdapte, 'typesHabitation' => $typesHabitation));
+            array('objets' => $objets,
+                'langue' => $langue,
+                'typeObjet' => $typeObjet,
+                'categorie' => $selection,
+                'user' => $user,
+                'services' => $services,
+                'modesPaiement' => $modesPaiement,
+                'labels' => $labelsQualite,
+                'tourismeAdapte' => $tourismeAdapte,
+                'typesHabitation' => $typesHabitation));
     }
 
 
@@ -187,7 +200,10 @@ class DefaultController extends Controller
 
         $typeObjet = "Evénements";
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
-            array('objets' => $evenements, 'langue' => $langue, 'typeObjet' => $typeObjet, 'user' => $user));
+            array('objets' => $evenements,
+                'langue' => $langue,
+                'typeObjet' => $typeObjet,
+                'user' => $user));
     }
 
 
@@ -200,7 +216,6 @@ class DefaultController extends Controller
     public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId) {
         $session = $request->getSession();
         $this->em = $this->getDoctrine()->getManager();
-
 
         $em = $this->getDoctrine()->getManager();
 
@@ -215,9 +230,8 @@ class DefaultController extends Controller
 
             $serializer = $this->container->get('jms_serializer');
 
-            //Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
-            //peuvent être soit categorie/service/labelQualite
-
+            /* Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
+            peuvent être soit categorie/service/labelQualite */
             $c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
             if($c && $typeObjet == "categories") {
                 $nouvelleListe = $this->traitementObjetsCategories($c, $listeActuelle, $typeObjet);
@@ -238,12 +252,29 @@ class DefaultController extends Controller
                     }
                 }
             }
+            //Récupératino des données pour le traitement des filtres
+            $services = $this->getServicesFromObjets($nouvelleListe);
+            $modesPaiement = $this->getModesPaimentFromObjets($nouvelleListe);
+            $classements = $this->getClassementsFromObjets($nouvelleListe);
+
+            $langue = $request->getLocale();
             //$session->remove('listeObjets');
-            $session->set('listeObjets', $nouvelleListe);
+            //$session->set('listeObjets', $nouvelleListe);
+
             //var_dump($session->get('listeObjets'));
             $objetsTableau = $serializer->serialize($nouvelleListe, 'json');
+            $services = $serializer->serialize($services, 'json');
+            $modesPaiement = $serializer->serialize($modesPaiement, 'json');
+            $classements = $serializer->serialize($classements, 'json');
 
-            return (new JSONResponse())->setContent($objetsTableau);
+            $test = $objetsTableau + $services;
+            //$langueJson = '"langue":"'+$langue+'"';
+
+            return (new JSONResponse())->setData([
+                'objets' => json_decode($objetsTableau),
+                'services' => json_decode($services),
+                'modesPaiements' => json_decode($modesPaiement),
+                'classements' => json_decode($classements)]);
         //}
 
         /*

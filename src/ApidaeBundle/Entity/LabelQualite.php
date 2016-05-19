@@ -4,9 +4,12 @@ namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * LabelQualite
+ *
+ * @JMS\ExclusionPolicy("all")
  *
  * @ORM\Table(name="label_qualite")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\LabelQualiteRepository")
@@ -27,6 +30,9 @@ class LabelQualite
      * @var int
      *
      * @ORM\Column(name="labId", type="integer")
+     *
+     * @JMS\Expose
+     * @JMS\Type("integer")
      */
     private $labId;
 
@@ -34,6 +40,10 @@ class LabelQualite
      * @var string
      *
      * @ORM\Column(name="labLibelle", type="string", length=255)
+     *
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $labLibelle;
 
@@ -41,6 +51,9 @@ class LabelQualite
      * @var string
      *
      * @ORM\Column(name="labClassement", type="string", length=255)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $labClassement;
 
