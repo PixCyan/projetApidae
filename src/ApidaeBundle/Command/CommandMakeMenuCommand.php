@@ -31,9 +31,9 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $jsonMenu = file_get_contents("/var/www/html/projetApidae/tools/donneesMenu.json");
+            $jsonMenu = file_get_contents("/var/www/html/sites/projetApidae/tools/donneesMenu.json");
             $donneesMenu = json_decode($jsonMenu);
-            $fichierMenu = fopen('/var/www/html/projetApidae/src/ApidaeBundle/Resources/views/commun/menu.html.twig', 'w');
+            $fichierMenu = fopen('/var/www/html/sites/projetApidae/src/ApidaeBundle/Resources/views/commun/menu.html.twig', 'w');
             $this->em = $this->getApplication()->getKernel()->getContainer()->get('doctrine')->getManager();
             $this->langues = $this->em->getRepository(Langue::class)->findAll();
             $menuFinal = [];

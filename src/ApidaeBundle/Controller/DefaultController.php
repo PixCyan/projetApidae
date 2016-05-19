@@ -200,7 +200,53 @@ class DefaultController extends Controller
     public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId) {
         $session = $request->getSession();
         $this->em = $this->getDoctrine()->getManager();
-/*
+
+
+        $em = $this->getDoctrine()->getManager();
+
+        //if($request->isXmlHttpRequest()) {
+            $objetsIds = $session->get('listeObjets');
+
+            if (is_array($objetsIds) && count($objetsIds) > 0) {
+                $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
+            } else {
+                $listeActuelle = [];
+            }
+
+            $serializer = $this->container->get('jms_serializer');
+
+            //Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
+            //peuvent être soit categorie/service/labelQualite
+
+            $c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            if($c && $typeObjet == "categories") {
+                $nouvelleListe = $this->traitementObjetsCategories($c, $listeActuelle, $typeObjet);
+                //print("categories");
+            } else {
+                $s = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
+                if($s && $typeObjet == "services") {
+                    $nouvelleListe = $this->traitementObjetsCategories($s, $listeActuelle, $typeObjet);
+                    //print("services");
+                } else {
+                    $l = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
+                    if($l && $typeObjet == "classements") {
+                        $nouvelleListe = $this->traitementObjetsCategories($l, $listeActuelle, $typeObjet);
+                        //print("labels");
+                    } else {
+                        //print("else");
+                        $nouvelleListe = [];
+                    }
+                }
+            }
+            //$session->remove('listeObjets');
+            $session->set('listeObjets', $nouvelleListe);
+            //var_dump($session->get('listeObjets'));
+            $objetsTableau = $serializer->serialize($nouvelleListe, 'json');
+
+            return (new JSONResponse())->setContent($objetsTableau);
+        //}
+
+        /*
         $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
 
         if($request->get('services')) {
@@ -273,45 +319,6 @@ class DefaultController extends Controller
        });
        $objetsTableau =  $serializer->serialize($c->getResult(), 'json');
        }*/
-
-        $em = $this->getDoctrine()->getManager();
-
-        //if($request->isXmlHttpRequest()) {
-            $objetsIds = $session->get('listeObjets');
-
-            if (is_array($objetsIds) && count($objetsIds) > 0) {
-                $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
-            } else {
-                $listeActuelle = [];
-            }
-
-            $serializer = $this->container->get('jms_serializer');
-
-            //Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
-            //peuvent être soit categorie/service/labelQualite
-
-            $c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            if($c && $typeObjet == "categories") {
-                $nouvelleListe = $this->traitementObjetsCategories($c, $listeActuelle);
-            } else {
-                $s = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
-                if($s && $typeObjet == "services") {
-                    $nouvelleListe = $this->traitementObjetsCategories($s, $listeActuelle);
-                } else {
-                    $l = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
-                    if($l && $typeObjet == "classements") {
-                        $nouvelleListe = $this->traitementObjetsCategories($l, $listeActuelle);
-                    } else {
-                        $nouvelleListe = [];
-                    }
-                }
-            }
-            $objetsTableau = $serializer->serialize($nouvelleListe, 'json');
-            $session->remove('listeObjets');
-            $session->set('listeObjets', $nouvelleListe);
-            return (new JSONResponse())->setContent($objetsTableau);
-        //}
-
     }
 
     /**
@@ -320,13 +327,28 @@ class DefaultController extends Controller
      * @param $objs
      * @return ArrayCollection
      */
-    private function traitementObjetsCategories($categorie, $objs) {
+    private function traitementObjetsCategories($categorie, $objs, $type) {
         $objets = new ArrayCollection();
-        foreach($objs as $o) {
-            if($o->getCategories()->contains($categorie) && !$objets->contains($o)) {
+        if($type == "categories") {
+            foreach($objs as $o) {
+                if($o->getCategories()->contains($categorie) && !$objets->contains($o)) {
                     $objets->add($o);
+                }
+            }
+        } else if($type == "services") {
+            foreach($objs as $o) {
+                if($o->getServices()->contains($categorie) && !$objets->contains($o)) {
+                    $objets->add($o);
+                }
+            }
+        } else if($type == "classements") {
+            foreach($objs as $o) {
+                if($o->getLabelsQualite()->contains($categorie) && !$objets->contains($o)) {
+                    $objets->add($o);
+                }
             }
         }
+
         return $objets;
     }
 
