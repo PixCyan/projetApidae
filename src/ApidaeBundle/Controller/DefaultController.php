@@ -159,6 +159,7 @@ class DefaultController extends Controller
         $modesPaiement = $this->getModesPaimentFromObjets($objets);
         $labelsQualite = $this->getClassementsFromObjets($objets);
         $tourismeAdapte = $this->getTourismeAdapteFromObjets($objets);
+
         if($typeObjet == "hebergements") {
             $typesHabitation = $this->getTypeHabitationFromObjets($objets);
         } else {
@@ -196,8 +197,7 @@ class DefaultController extends Controller
         $eventRepository =  $this->em->getRepository(Evenement::class);
 
         $evenements = $periode == 1 ? $eventRepository->getAujourdhui2() : $eventRepository->getInterval($periode);
-
-
+        
         $typeObjet = "Evénements";
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $evenements,
@@ -219,8 +219,13 @@ class DefaultController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
+        $session->remove('nouvelleListe');
+
         //if($request->isXmlHttpRequest()) {
             $objetsIds = $session->get('listeObjets');
+            if($session->get('nouvelleListe')) {
+                print("NOUVELLE_LISTE");
+            }
 
             if (is_array($objetsIds) && count($objetsIds) > 0) {
                 $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
@@ -229,7 +234,6 @@ class DefaultController extends Controller
             }
 
             $serializer = $this->container->get('jms_serializer');
-
             /* Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
             peuvent être soit categorie/service/labelQualite */
             $c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
@@ -252,29 +256,35 @@ class DefaultController extends Controller
                     }
                 }
             }
+
+            //$session->remove('listeObjets');
+            $session->set('nouvelleListe', $nouvelleListe);
+
             //Récupératino des données pour le traitement des filtres
             $services = $this->getServicesFromObjets($nouvelleListe);
             $modesPaiement = $this->getModesPaimentFromObjets($nouvelleListe);
             $classements = $this->getClassementsFromObjets($nouvelleListe);
-
-            $langue = $request->getLocale();
-            //$session->remove('listeObjets');
-            //$session->set('listeObjets', $nouvelleListe);
+            $categories = $this->getTypeHabitationFromObjets($nouvelleListe);
+            $tourisme = $this->getTourismeAdapteFromObjets($nouvelleListe);
 
             //var_dump($session->get('listeObjets'));
             $objetsTableau = $serializer->serialize($nouvelleListe, 'json');
             $services = $serializer->serialize($services, 'json');
             $modesPaiement = $serializer->serialize($modesPaiement, 'json');
             $classements = $serializer->serialize($classements, 'json');
+            $categories = $serializer->serialize($categories, 'json');
+            $tourisme = $serializer->serialize($tourisme, 'json');
 
-            $test = $objetsTableau + $services;
+            //$langue = $request->getLocale();
             //$langueJson = '"langue":"'+$langue+'"';
 
             return (new JSONResponse())->setData([
                 'objets' => json_decode($objetsTableau),
                 'services' => json_decode($services),
                 'modesPaiements' => json_decode($modesPaiement),
-                'classements' => json_decode($classements)]);
+                'classements' => json_decode($classements),
+                'categories' => json_decode($categories),
+                'tourismesAdaptes' => json_decode($tourisme)]);
         //}
 
         /*
@@ -504,5 +514,6 @@ class DefaultController extends Controller
         }
         return $res;
     }
+
 }
 
