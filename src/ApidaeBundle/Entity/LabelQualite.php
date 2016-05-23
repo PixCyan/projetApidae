@@ -4,6 +4,7 @@ namespace ApidaeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\Mapping\Index;
 use JMS\Serializer\Annotation as JMS;
 
 /**
@@ -11,7 +12,7 @@ use JMS\Serializer\Annotation as JMS;
  *
  * @JMS\ExclusionPolicy("all")
  *
- * @ORM\Table(name="label_qualite")
+ * @ORM\Table(name="label_qualite", indexes={@Index(name="search_labId", columns={"labId"})})
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\LabelQualiteRepository")
  */
 class LabelQualite

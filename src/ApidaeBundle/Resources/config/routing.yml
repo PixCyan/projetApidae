@@ -6,10 +6,6 @@ traitement:
     path: /traitement
     defaults: { _controller: ApidaeBundle:Traitement:traitement }
 
-liste:
-    path: /{typeObjet}/{categorieId}-{libelleCategorie}
-    defaults: { _controller: ApidaeBundle:Default:liste }
-
 offre:
     path: offre/{id}
     defaults: { _controller: ApidaeBundle:Default:offre }
@@ -17,6 +13,10 @@ offre:
 listeEvenement:
     path: /listeEvenements/{periode}-jours
     defaults: { _controller: ApidaeBundle:Default:listeEvenements }
+
+liste:
+    path: /{typeObjet}/{categorieId}-{libelleCategorie}
+    defaults: { _controller: ApidaeBundle:Default:liste }
 
 panier:
     path: /panier

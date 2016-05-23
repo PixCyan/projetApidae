@@ -145,11 +145,11 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
         $selection = $em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categorieId);
-        if($selection) {
-            $objets = $selection->getObjets();
-        } else {
-            $objets = $em->getRepository(ObjetApidae::class)->getObjetsByids($session->get('listeObjets'));
+        if(!$selection) {
+            throw $this->createNotFoundException('Cette catégorie est vide.');
         }
+        //$objets = $em->getRepository(ObjetApidae::class)->getObjetsByids($session->get('listeObjets'));
+        $objets = $selection->getObjets();
 
         //unset($_SESSION['listeObjets']);
         $session->remove('listeObjets');

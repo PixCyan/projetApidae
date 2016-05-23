@@ -125,16 +125,16 @@ class Traitement extends ContainerAwareCommand {
                 $objetApidae = new Restaurant();
             }
         } else if($typeObjet == "HOTELLERIE"
-                || $typeObjet == "HEBERGEMENT_LOCATIF"
-                || $typeObjet == "HEBERGEMENT_COLLECTIF"
-                || $typeObjet == "HOTELLERIE_PLEIN_AIR" ) {
+            || $typeObjet == "HEBERGEMENT_LOCATIF"
+            || $typeObjet == "HEBERGEMENT_COLLECTIF"
+            || $typeObjet == "HOTELLERIE_PLEIN_AIR" ) {
             $objetApidae = $this->em->getRepository(Hebergement::class)->findOneByIdObj($data->id);
             if($objetApidae == null) {
                 $update = false;
                 $objetApidae = new Hebergement();
             }
         } else if($typeObjet == "ACTIVITE"
-                || $typeObjet == "PATRIMOINE_CULTUREL") {
+            || $typeObjet == "PATRIMOINE_CULTUREL") {
             $objetApidae = $this->em->getRepository(Activite::class)->findOneByIdObj($data->id);
             if($objetApidae == null) {
                 $update = false;
@@ -252,6 +252,14 @@ class Traitement extends ContainerAwareCommand {
         if(isset($data->$chaineInformations->themes)) {
             $this->traitementTypeCategories($data->$chaineInformations->themes, $objetApidae, $languesSite);
         }
+        /*
+                if(isset($data->$chaineInformations->activitesSportives)) {
+                    $this->traitementTypeCategories($data->$chaineInformations->activitesSportives, $objetApidae, $languesSite);
+                }
+                //TEST prestationActivite
+                if(isset($data->prestations->activites)) {
+                    $this->traitementTypeCategories($data->prestations->activites, $objetApidae, $languesSite);
+                }*/
 
         //--------------------Langue ----------------------
         $i = 0;
