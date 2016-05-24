@@ -63,7 +63,31 @@ class Traitement extends ContainerAwareCommand {
         try {
             $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
             $this->communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
-            $this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json"));
+            $fichierRefApidae = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json", true));
+            $file = '/var/www/local/Symfony/projetApidae/tools/tmp/references.json';
+
+            //----- Traitement du fichier d'élements références
+            if(!file_exists($file)){
+                $references = fopen($file, 'w');
+                file_put_contents($file, "{ \n", FILE_APPEND);
+                $last = end($fichierRefApidae);
+                foreach($fichierRefApidae as $v) {
+                    $key = "\"".$v->id.$v->elementReferenceType."\" : ";
+                    file_put_contents($file, $key." \n".json_encode($v)."\n", FILE_APPEND);
+                    //append contenu
+                    //file_put_contents($file, "}, \n", FILE_APPEND);
+                    if($v != $last) {
+                        file_put_contents($file, ", \n", FILE_APPEND);
+                    } else {
+                        file_put_contents($file, "} \n", FILE_APPEND);
+                    }
+                }
+                file_put_contents($file, "} \n", FILE_APPEND);
+                fclose($references);
+            }
+            //------ Fin du traitement
+            $this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/references.json"));
+
             $selections_data = json_decode($export);
             foreach ($selections_data as $value) {
                 $selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($value->id);
@@ -105,7 +129,7 @@ class Traitement extends ContainerAwareCommand {
                 }
             }
             //---
-            $output->writeln("Total objet = ".$this->total." \n Sans categorie = ".$this->sansCategorie." \n Sans type = ".$this->sansType);
+            //$output->writeln("Total objet = ".$this->total);
             $output->writeln("Fin de traitement.");
         } catch(Exception $e) {
             $output->writeln("Problème : ".$e->getMessage());
@@ -252,14 +276,6 @@ class Traitement extends ContainerAwareCommand {
         if(isset($data->$chaineInformations->themes)) {
             $this->traitementTypeCategories($data->$chaineInformations->themes, $objetApidae, $languesSite);
         }
-        /*
-                if(isset($data->$chaineInformations->activitesSportives)) {
-                    $this->traitementTypeCategories($data->$chaineInformations->activitesSportives, $objetApidae, $languesSite);
-                }
-                //TEST prestationActivite
-                if(isset($data->prestations->activites)) {
-                    $this->traitementTypeCategories($data->prestations->activites, $objetApidae, $languesSite);
-                }*/
 
         //--------------------Langue ----------------------
         $i = 0;

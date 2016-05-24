@@ -63,7 +63,39 @@ class Traitement extends ContainerAwareCommand {
         try {
             $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
             $this->communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
-            $this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json"));
+            $fichierRefApidae = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json", true));
+            $file = '/var/www/local/Symfony/projetApidae/tools/tmp/references.json';
+
+            //----- Traitement du fichier d'élements références
+            if(!file_exists($file)){
+                $references = fopen($file, 'w');
+                file_put_contents($file, "{ \n", FILE_APPEND);
+                $last = end($fichierRefApidae);
+                foreach($fichierRefApidae as $v) {
+                    $key = "\"".$v->id.$v->elementReferenceType."\" : ";
+                    file_put_contents($file, $key." \n".json_encode($v)."\n", FILE_APPEND);
+                    if($v != $last) {
+                        file_put_contents($file, ", \n", FILE_APPEND);
+                    } else {
+                        file_put_contents($file, "} \n", FILE_APPEND);
+                    }
+                }
+                fclose($references);
+            }
+            //------ Fin du traitement
+            $this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/references.json"));
+
+            //---- Test lecture récupération de tous les fichiers objets
+            $tableauObjets = [];
+            $dir = opendir("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/");
+            while($fichier = readdir($dir)) {
+                if($fichier != '.' && $fichier != '..' && $fichier != 'index.php') {
+                    $explode = explode('-', $fichier);
+                    $explode2 = explode('.', $explode[1]);
+                    $tableauObjets[$explode2[0]] = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/".$fichier);
+                }
+            }
+
             $selections_data = json_decode($export);
             foreach ($selections_data as $value) {
                 $selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($value->id);
@@ -81,7 +113,7 @@ class Traitement extends ContainerAwareCommand {
                 foreach ($value->objetsTouristiques as $val) {
                     print($val->id . "\n");
                     //=> $data = aller chercher le bon fichier dans objetsModifies
-                    $data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
+                    $data = json_decode($tableauObjets[$val->id]);
                     if($data) {
                         //Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
                         $type = $data->type;
@@ -100,12 +132,13 @@ class Traitement extends ContainerAwareCommand {
                             $chaineType = "typesManifestation";
                         }
                         $this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
+                        unset($data); unset($typeObj); unset($chaineInformations); unset($tab); unset($chaineType); unset($chaineExplode);
                     }
 
                 }
             }
             //---
-            $output->writeln("Total objet = ".$this->total." \n Sans categorie = ".$this->sansCategorie." \n Sans type = ".$this->sansType);
+            //$output->writeln("Total objet = ".$this->total);
             $output->writeln("Fin de traitement.");
         } catch(Exception $e) {
             $output->writeln("Problème : ".$e->getMessage());
@@ -125,16 +158,16 @@ class Traitement extends ContainerAwareCommand {
                 $objetApidae = new Restaurant();
             }
         } else if($typeObjet == "HOTELLERIE"
-                || $typeObjet == "HEBERGEMENT_LOCATIF"
-                || $typeObjet == "HEBERGEMENT_COLLECTIF"
-                || $typeObjet == "HOTELLERIE_PLEIN_AIR" ) {
+            || $typeObjet == "HEBERGEMENT_LOCATIF"
+            || $typeObjet == "HEBERGEMENT_COLLECTIF"
+            || $typeObjet == "HOTELLERIE_PLEIN_AIR" ) {
             $objetApidae = $this->em->getRepository(Hebergement::class)->findOneByIdObj($data->id);
             if($objetApidae == null) {
                 $update = false;
                 $objetApidae = new Hebergement();
             }
         } else if($typeObjet == "ACTIVITE"
-                || $typeObjet == "PATRIMOINE_CULTUREL") {
+            || $typeObjet == "PATRIMOINE_CULTUREL") {
             $objetApidae = $this->em->getRepository(Activite::class)->findOneByIdObj($data->id);
             if($objetApidae == null) {
                 $update = false;
@@ -380,11 +413,9 @@ class Traitement extends ContainerAwareCommand {
                 }
                 if(isset($tab->equipements[$i]->id)) {
                     $v = $this->traitementReference($tab->equipements[$i]->elementReferenceType, $tab->equipements[$i]->id);
-                    if($v != false) {
-                        $lib = $this->traitementLibelleLangues($languesSite, $v);
-                        $equipement->setEquLibelle($lib);
-                        $equipement->setEquType("Equipement");
-                    }
+                    $lib = $this->traitementLibelleLangues($languesSite, $v);
+                    $equipement->setEquLibelle($lib);
+                    $equipement->setEquType("Equipement");
                 }
                 if(isset($tab->equipements[$i]->description)) {
                     $equipement->setEquInfosSup($tab->equipements[$i]->description);
@@ -479,21 +510,19 @@ class Traitement extends ContainerAwareCommand {
                     }
                 } else {
                     $label = new LabelQualite();
-                    $classementLabel = $this->traitementReference($v->elementReferenceType, $v->id, $this->fichierRef);
-                    if($classementLabel != false) {
-                        $typeLabel = $this->traitementReference($classementLabel->typeLabel->elementReferenceType, $classementLabel->typeLabel->id);
-                        $labClassement = $this->traitementLibelleLangues($languesSite, $classementLabel);
-                        $labLibelle = $this->traitementLibelleLangues($languesSite, $typeLabel);
-                        $label->setLabId($classementLabel->id);
-                        $label->setLabLibelle($labLibelle);
-                        $label->setLabClassement($labClassement);
+                    $classementLabel = $this->traitementReference($v->elementReferenceType, $v->id);
+                    $typeLabel = $this->traitementReference($classementLabel->typeLabel->elementReferenceType, $classementLabel->typeLabel->id);
+                    $labClassement = $this->traitementLibelleLangues($languesSite, $classementLabel);
+                    $labLibelle = $this->traitementLibelleLangues($languesSite, $typeLabel);
+                    $label->setLabId($classementLabel->id);
+                    $label->setLabLibelle($labLibelle);
+                    $label->setLabClassement($labClassement);
 
-                        $objetApidae->addLabelQualite($label);
-                        $label->addObjetApidae($objetApidae);
-                        $this->em->persist($objetApidae);
-                        $this->em->persist($label);
-                        $this->em->flush();
-                    }
+                    $objetApidae->addLabelQualite($label);
+                    $label->addObjetApidae($objetApidae);
+                    $this->em->persist($objetApidae);
+                    $this->em->persist($label);
+                    $this->em->flush();
                 }
             }
         }
@@ -501,10 +530,8 @@ class Traitement extends ContainerAwareCommand {
         if(isset($data->$chaineInformations->classement)) {
             if(isset($data->$chaineInformations->classement)) {
                 $v = $this->traitementReference($data->$chaineInformations->classement->elementReferenceType, $data->$chaineInformations->classement->id);
-                if($v != false) {
-                    $lib = $this->traitementLibelleLangues($languesSite, $v);
-                    $objetApidae->setObjEtoile($lib);
-                }
+                $lib = $this->traitementLibelleLangues($languesSite, $v);
+                $objetApidae->setObjEtoile($lib);
             }
         }
 
@@ -529,11 +556,9 @@ class Traitement extends ContainerAwareCommand {
                         $update = false;
                         $tarifType = new TarifType();
                         $v = $this->traitementReference($tarifs->tarifs[$i]->type->elementReferenceType, $tarifs->tarifs[$i]->type->id);
-                        if($v != false) {
-                            $tarifType->setIdTarif($v->id);
-                            $tarifType->setTarLibelle($this->traitementLibelleLangues($languesSite, $v));
-                            $tarifType->setOrdre($v->ordre);
-                        }
+                        $tarifType->setIdTarif($v->id);
+                        $tarifType->setTarLibelle($this->traitementLibelleLangues($languesSite, $v));
+                        $tarifType->setOrdre($v->ordre);
                     }
                     $this->traitementInfosTarif($tarifType,$tarifs->tarifs[$i], $tab, $objetApidae, $update);
                 }
@@ -608,29 +633,27 @@ class Traitement extends ContainerAwareCommand {
             $objetApidae->setCapacite($tab);
             for($i = 0; $i < count($data->$chaineInformations->durees); $i++) {
                 $v = $this->traitementReference($data->$chaineInformations->durees[$i]->elementReferenceType,
-                    $data->$chaineInformations->durees[$i]->id);
-                if($v != null) {
-                    $duree = $this->em->getRepository(Duree::class)->findOneByIdDuree($v->id);
-                    $update = true;
-                    if($duree == null) {
-                        $update = false;
-                        $duree = new Duree();
-                    }
-                    $duree->setIdDuree($v->id);
-                    $duree->setLibelle($this->traitementLibelleLangues($languesSite, $v));
-                    $duree->setOrdre($v->ordre);
-                    if(!$duree->getActivites()->contains($objetApidae)) {
-                        $duree->addActivite($objetApidae);
-                    }
-                    if(!$objetApidae->getDurees()->contains($duree)) {
-                        $objetApidae->addDuree($duree);
-                    }
-                    if($update) {
-                        $this->em->merge($objetApidae);
-                        $this->em->merge($duree);
-                    } else {
-                        $this->em->persist($duree);
-                    }
+                $data->$chaineInformations->durees[$i]->id);
+                $duree = $this->em->getRepository(Duree::class)->findOneByIdDuree($v->id);
+                $update = true;
+                if($duree == null) {
+                    $update = false;
+                    $duree = new Duree();
+                }
+                $duree->setIdDuree($v->id);
+                $duree->setLibelle($this->traitementLibelleLangues($languesSite, $v));
+                $duree->setOrdre($v->ordre);
+                if(!$duree->getActivites()->contains($objetApidae)) {
+                    $duree->addActivite($objetApidae);
+                }
+                if(!$objetApidae->getDurees()->contains($duree)) {
+                    $objetApidae->addDuree($duree);
+                }
+                if($update) {
+                    $this->em->merge($objetApidae);
+                    $this->em->merge($duree);
+                } else {
+                    $this->em->persist($duree);
                 }
             }
         }
@@ -645,30 +668,26 @@ class Traitement extends ContainerAwareCommand {
         }*/
 
 
-        //TODO voir pour créer une classe de prestationActivite
-//ActivitePrestation ...
-        if($objetApidae->getObjTypeApidae() == "ACTIVITE" || $objetApidae->getObjTypeApidae() == "EQUIPEMENT") {
+        //ActivitePrestation ...
+        /*if($objetApidae->getObjTypeApidae() == "ACTIVITE" || $objetApidae->getObjTypeApidae() == "EQUIPEMENT") {
             if(isset($data->$chaineInformations->activitesSportives)) {
                 foreach ($data->$chaineInformations->activitesSportives as $v) {
                     $this->traitementActiviteTypes($v, $languesSite, $objetApidae);
                 }
             }
-            //TEST prestationActivite
             if(isset($data->prestations->activites)) {
                 foreach($data->prestations->activites as $v) {
                     $this->traitementActiviteTypes($v, $languesSite, $objetApidae);
                 }
             }
-        }
+        }*/
 
         //-------------------- Portee ----------------------
         if(isset($data->$chaineInformations->portee)) {
             $tab = array();
             $v = $this->traitementReference($data->$chaineInformations->portee->elementReferenceType, $data->$chaineInformations->portee->id);
-            if($v != null) {
-                $tab['libelle'] = $this->traitementLibelleLangues($languesSite, $v);
-                $tab['ordre'] = $v->ordre;
-            }
+            $tab['libelle'] = $this->traitementLibelleLangues($languesSite, $v);
+            $tab['ordre'] = $v->ordre;
             if(isset($data->ouverture->periodesOuvertures)) {
                 $tab['dateFin'] = $data->ouverture->periodesOuvertures[0]->dateFin;
                 //echo date('Y-m-d', strtotime($tab['dateFin']));
@@ -697,50 +716,36 @@ class Traitement extends ContainerAwareCommand {
     }
 
     private function traitementReference($type, $id) {
-        foreach($this->fichierRef as $v) {
-            if ($v->elementReferenceType == $type
-                && $v->id == $id) {
-                return $v;
-            }
-        }
-        return false;
+        $key = $id.$type;
+        return $this->fichierRef->$key;
     }
 
     private function traitementFamilleCritere($id, $languesSite) {
         $v = $this->traitementReference("FamilleCritere", $id);
-        if($v != false) {
-            return $this->traitementLibelleLangues($languesSite, $v);
-        }
-        return "";
+        return $this->traitementLibelleLangues($languesSite, $v);
     }
 
     private function traitementServices($tab, $i, $service, $languesSite) {
         if(isset($tab->services[$i]->id)) {
             $v = $this->traitementReference("PrestationService", $tab->services[$i]->id);
-            if($v != false) {
-                $lib = $this->traitementLibelleLangues($languesSite, $v);
-                $service->setSerLibelle($lib);
-                $this->traitementServiceDetails($service, $v, $languesSite);
-            }
+            $lib = $this->traitementLibelleLangues($languesSite, $v);
+            $service->setSerLibelle($lib);
+            $this->traitementServiceDetails($service, $v, $languesSite);
         }
 
         if(isset($tab->modesPaiement[$i]->id)) {
             $v = $this->traitementReference("ModePaiement", $tab->modesPaiement[$i]->id);
-            if($v != false) {
-                $lib = $this->traitementLibelleLangues($languesSite, $v);
-                $service->setSerLibelle($lib);
-                $this->traitementServiceDetails($service, $v, $languesSite);
-            }
+            $lib = $this->traitementLibelleLangues($languesSite, $v);
+            $service->setSerLibelle($lib);
+            $this->traitementServiceDetails($service, $v, $languesSite);
         }
 
         if(isset($tab->tourismesAdaptes[$i]->id)) {
             $v = $this->traitementReference("TourismeAdapte", $tab->tourismesAdaptes[$i]->id);
-            if($v != false) {
-                $lib = $this->traitementLibelleLangues($languesSite, $v);
-                $service->setSerLibelle($lib);
-                //$this->traitementServiceLibelle($v, $service, $chaineLangue);
-                $this->traitementServiceDetails($service, $v, $languesSite);
-            }
+            $lib = $this->traitementLibelleLangues($languesSite, $v);
+            $service->setSerLibelle($lib);
+            //$this->traitementServiceLibelle($v, $service, $chaineLangue);
+            $this->traitementServiceDetails($service, $v, $languesSite);
         }
     }
 
@@ -954,15 +959,13 @@ class Traitement extends ContainerAwareCommand {
         $typeClient->setTypId($tab->typesClientele[$i]->id);
         if(isset($tab->typesClientele[$i])) {
             $v = $this->traitementReference($tab->typesClientele[$i]->elementReferenceType, $tab->typesClientele[$i]->id);
-            if($v != false) {
-                $typeClient->setTypLibelle($this->traitementLibelleLangues($languesSite, $v));
-                if(isset($v->familleCritere)) {
-                    $v = $this->traitementReference($v->familleCritere->elementReferenceType, $v->familleCritere->id);
-                    if($v != null) {
-                        $typeClient->setFamilleCritere(($this->traitementLibelleLangues($languesSite, $v)));
-                    } else {
-                        $typeClient->setFamilleCritere(null);
-                    }
+            $typeClient->setTypLibelle($this->traitementLibelleLangues($languesSite, $v));
+            if(isset($v->familleCritere)) {
+                $v = $this->traitementReference($v->familleCritere->elementReferenceType, $v->familleCritere->id);
+                if($v != null) {
+                    $typeClient->setFamilleCritere(($this->traitementLibelleLangues($languesSite, $v)));
+                } else {
+                    $typeClient->setFamilleCritere(null);
                 }
             }
         }
@@ -1042,9 +1045,7 @@ class Traitement extends ContainerAwareCommand {
             $act = new ActiviteType();
         }
         $v = $this->traitementReference($tab->elementReferenceType, $tab->id);
-        if($v != null) {
-            $act->setLibelle($this->traitementLibelleLangues($languesSite, $v));
-        }
+        $act->setLibelle($this->traitementLibelleLangues($languesSite, $v));
         $act->setLibelle($this->traitementLibelleLangues($languesSite, $v));
         $act->setIdActivite($v->id);
         $act->setOrdre($v->ordre);

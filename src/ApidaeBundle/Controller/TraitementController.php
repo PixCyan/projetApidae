@@ -44,11 +44,44 @@ class TraitementController extends Controller
 		$this->sansType = 0;
 
 		//Récupération fichiers :
-		try {
 			$export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
 			$this->communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
-			$this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json"));
-			$selections_data = json_decode($export);
+			$fichierRefApidae = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json", true));
+			$file = '/var/www/local/Symfony/projetApidae/tools/tmp/references.json';
+
+			//----- Traitement du fichier d'élements références
+			if(!file_exists($file)){
+				$references = fopen($file, 'w');
+				file_put_contents($file, "{ \n", FILE_APPEND);
+				$last = end($fichierRefApidae);
+				foreach($fichierRefApidae as $v) {
+					$key = "\"".$v->id.$v->elementReferenceType."\" : ";
+					file_put_contents($file, $key." \n".json_encode($v)."\n", FILE_APPEND);
+					//append contenu
+					//file_put_contents($file, "}, \n", FILE_APPEND);
+					if($v != $last) {
+						file_put_contents($file, ", \n", FILE_APPEND);
+					} else {
+						file_put_contents($file, "} \n", FILE_APPEND);
+					}
+				}
+				fclose($references);
+			}
+			//------ Fin du traitement
+			$this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/references.json"));
+
+			//---- Test lecture récupération de tous les fichiers objets
+			$tableauObjets = [];
+			$dir = opendir("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/");
+			while($fichier = readdir($dir)) {
+				if($fichier != '.' && $fichier != '..' && $fichier != 'index.php') {
+					$explode = explode('-', $fichier);
+					$explode2 = explode('.', $explode[1]);
+					$tableauObjets[$explode2[0]] = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/".$fichier);
+				}
+			}
+
+			/*$selections_data = json_decode($export);
 			foreach ($selections_data as $value) {
 				$selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($value->id);
 				if ($selectionApidae == null) {
@@ -65,62 +98,80 @@ class TraitementController extends Controller
 				foreach ($value->objetsTouristiques as $val) {
 					print($val->id . "\n");
 					//=> $data = aller chercher le bon fichier dans objetsModifies
-					$data = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/objets_modifies-" . $val->id . ".json"));
-					//Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
-					$type = $data->type;
-					$chaineExplode = explode("_", $type);
-					$tab = null;
-					foreach ($chaineExplode as $value) {
-						$str = strtolower($value);
-						$str[0] = strtoupper($str[0]);
-						$tab[] = $str;
+					$data = $tableauObjets[$val->id];
+					print("test");
+					if($data) {
+						//Traitement de la chaine "type" (pour récupération d'info : notation différente selon le typeApidae)
+						$type = $data->type;
+						$chaineExplode = explode("_", $type);
+						$tab = null;
+						foreach ($chaineExplode as $value) {
+							$str = strtolower($value);
+							$str[0] = strtoupper($str[0]);
+							$tab[] = $str;
+						}
+						$typeObj = implode($tab);
+						$chaineInformations = "informations" . $typeObj;
+						$tab[0] = strtolower($tab[0]);
+						$chaineType = implode($tab) . "Type";
+						if ($data->type == "FETE_ET_MANIFESTATION") {
+							$chaineType = "typesManifestation";
+						}
+						$this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
+						unset($data); unset($typeObj); unset($chaineInformations); unset($tab); unset($chaineType); unset($chaineExplode);
 					}
-					$typeObj = implode($tab);
-					$chaineInformations = "informations" . $typeObj;
-					$tab[0] = strtolower($tab[0]);
-					$chaineType = implode($tab) . "Type";
-					if ($data->type == "FETE_ET_MANIFESTATION") {
-						$chaineType = "typesManifestation";
-					}
-					$this->traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite);
+
 				}
-			}
+			}*/
 			//---
+			//$output->writeln("Total objet = ".$this->total);
+			//$output->writeln("Total objet = ".$this->total);
 			print("Fin de traitement.");
-		} catch(Exception $e) {
-			print("Problème : ".$e->getMessage());
-		}
+
 	}
 
 	private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite) {
-		$selType= $selectionApidae->getSelLibelle();
+		$this->total++;
+		$typeObjet = $data->type;
+		//print($typeObjet);
 		//-------------------- ObjetApidae ----------------------
 		$update = true;
-		if($selectionApidae->getSelLibelle() == "Restaurants") {
+		if($typeObjet == "RESTAURATION") {
 			$objetApidae = $this->em->getRepository(Restaurant::class)->findOneByIdObj($data->id);
 			if($objetApidae == null) {
 				$update = false;
 				$objetApidae = new Restaurant();
 			}
-		} else if($selectionApidae->getSelLibelle() == "Hébergements") {
+		} else if($typeObjet == "HOTELLERIE"
+			|| $typeObjet == "HEBERGEMENT_LOCATIF"
+			|| $typeObjet == "HEBERGEMENT_COLLECTIF"
+			|| $typeObjet == "HOTELLERIE_PLEIN_AIR" ) {
 			$objetApidae = $this->em->getRepository(Hebergement::class)->findOneByIdObj($data->id);
 			if($objetApidae == null) {
 				$update = false;
 				$objetApidae = new Hebergement();
 			}
-		} else if($selectionApidae->getSelLibelle() == "Activités") {
+		} else if($typeObjet == "ACTIVITE"
+			|| $typeObjet == "PATRIMOINE_CULTUREL") {
 			$objetApidae = $this->em->getRepository(Activite::class)->findOneByIdObj($data->id);
 			if($objetApidae == null) {
 				$update = false;
 				$objetApidae = new Activite();
 			}
-		} else if($selectionApidae->getSelLibelle() == "Evénements") {
+		} else if($typeObjet  == "FETE_ET_MANIFESTATION") {
 			$objetApidae = $this->em->getRepository(Evenement::class)->findOneByIdObj($data->id);
 			if($objetApidae == null) {
 				$update = false;
 				$objetApidae = new Evenement();
 			}
+		} else if($typeObjet  == "SEJOUR_PACKAGE") {
+			$objetApidae = $this->em->getRepository(SejourPackage::class)->findOneByIdObj($data->id);
+			if($objetApidae == null) {
+				$update = false;
+				$objetApidae = new SejourPackage();
+			}
 		}
+
 		if(!$update) {
 			$this->updateObjetApidae($objetApidae, $data, $selectionApidae, $languesSite, false);
 		} else {
@@ -219,14 +270,6 @@ class TraitementController extends Controller
 		if(isset($data->$chaineInformations->themes)) {
 			$this->traitementTypeCategories($data->$chaineInformations->themes, $objetApidae, $languesSite);
 		}
-		/*
-                if(isset($data->$chaineInformations->activitesSportives)) {
-                    $this->traitementTypeCategories($data->$chaineInformations->activitesSportives, $objetApidae, $languesSite);
-                }
-                //TEST prestationActivite
-                if(isset($data->prestations->activites)) {
-                    $this->traitementTypeCategories($data->prestations->activites, $objetApidae, $languesSite);
-                }*/
 
 		//--------------------Langue ----------------------
 		$i = 0;
@@ -454,7 +497,7 @@ class TraitementController extends Controller
 					}
 				} else {
 					$label = new LabelQualite();
-					$classementLabel = $this->traitementReference($v->elementReferenceType, $v->id, $this->fichierRef);
+					$classementLabel = $this->traitementReference($v->elementReferenceType, $v->id);
 					if($classementLabel != false) {
 						$typeLabel = $this->traitementReference($classementLabel->typeLabel->elementReferenceType, $classementLabel->typeLabel->id);
 						$labClassement = $this->traitementLibelleLangues($languesSite, $classementLabel);
@@ -571,7 +614,6 @@ class TraitementController extends Controller
 		}
 
 		//-------------------- Duree ----------------------
-		//TODO duree
 		if(isset($data->$chaineInformations->durees)) {
 			$tab = array();
 			if(isset($data->$chaineInformations->dureeSeance)) {
@@ -673,13 +715,9 @@ class TraitementController extends Controller
 	}
 
 	private function traitementReference($type, $id) {
-		foreach($this->fichierRef as $v) {
-			if ($v->elementReferenceType == $type
-				&& $v->id == $id) {
-				return $v;
-			}
-		}
-		return false;
+		$key = $id.$type;
+		print($this->fichierRef->$key);
+		return $this->fichierRef->$key;
 	}
 
 	private function traitementFamilleCritere($id, $languesSite) {
