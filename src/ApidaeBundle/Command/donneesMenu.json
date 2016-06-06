@@ -1,0 +1,225 @@
+[
+	{
+		"libelle" : "@Fr:Hôtels@En:Hotels@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Hôtels",
+				"id" : 40518
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Locations meublées@En:Locations@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Meublés et Gîtes",
+				"id" : 40520
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Gîtes@En:Gîtes@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Gîtes",
+				"id" : 40526
+			}
+		]
+	},{
+		"libelle" : "@Fr:Chambres d'hôtes@En:Bed and breakfast@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Chambres d'hôtes",
+				"id" : 40521
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Centres de vacances@En:Holiday centers@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Centres de vacances",
+				"id" : 40525
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Auberges de jeunesse@En:Youth hostels@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Auberge de jeunesse",
+				"id" : 40524
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Campings et Aires de camping-cars@En:Campsites and campers reception area@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Campings et Aires de camping-car",
+				"id" : 40519
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Insolites@En:Unusual accommodations@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Hébergements insolites",
+				"id" : 40523
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Autres@En:Others@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			 {
+				"libelle" : "Autres hébergements",
+				"id" : 40555
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Séjours tout compris@En:Packages tours@",
+		"typeObjet" : "@Fr:Hébergements@En:Accomodations@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Ventes de séjours packagés",
+				"id" : 40527
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Traditionnels@En:Traditional@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Traditionnels@",
+				"id" : 40530
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Gastronomique@En:Gastronomic@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Restaurant gastronomique",
+				"id" : 40529
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Pizzerias@En:Pizzerias@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Pizzerias",
+				"id" : 40531
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Crêperie@En:Crêperie@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Crêperie",
+				"id" : 40532
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Restauration rapide@En:Fast food@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Restauration rapide",
+				"id" : 40534
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Pubs, Bars, Salons de thé @En:Pubs and bars, Tea room@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Brasserie",
+				"id" : 40536
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Spécialités étrangères@En:Foreign specialities@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Spécialités étrangères",
+				"id" : 40533
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Auberges@En:Auberges@",
+		"typeObjet" : "@Fr:Restaurants@En:Restaurants@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Auberges",
+				"id" : 40528
+			}
+		]
+	},
+	{
+		"libelle" : "@Fr:Patrimoine; Musées, Galeries@En:Historic patrimony, Museums, Galleries@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Patrimoine Musées Galeries",
+				"id" : 40537
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Randonnées@En:Pedestrian sports@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Randonnées",
+				"id" : 40538
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Itinéraires, parcours@En:Itineraries, Routes/Courses@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Itinéraire Parcours",
+				"id" : 40558
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Activités aériennes@En:Lessons, Courses@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Sports aériens",
+				"id" : 40539
+			}
+		]
+	}, {
+		"libelle" : "@Fr:Plage, Espace de baignade@En:Beach, Bathing Area@",
+		"typeObjet" : "@Fr:Activites@En:Activites@",
+		"selectionApidae" : [
+			{
+				"libelle" : "Plage, Espace de baignade",
+				"id" : 40559
+			}
+		]
+	},
+	{
+		"libelle" : "@Fr:Aujourd'hui@En:Today@",
+		"typeObjet" : "@Fr:Evénements@En:Events@",
+		"periode" : 1
+	}, {
+		"libelle" : "@Fr:Dans la semaine@En:This week@",
+		"typeObjet" : "@Fr:Evénements@En:Events@",
+		"periode" : 7
+	}, {
+		"libelle" : "@Fr:Les 30 prochains jours@En:30 next days@",
+		"typeObjet" : "@Fr:Evénements@En:Events@",
+		"periode" : 30
+	}
+]
+	

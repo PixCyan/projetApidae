@@ -17,6 +17,7 @@ use ApidaeBundle\Entity\ObjetApidae;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Cookie;
 
 class DefaultController extends Controller
 {
@@ -29,16 +30,25 @@ class DefaultController extends Controller
      * Renvoi la page d'accueil avec les suggestions
      * @return Response
      */
-    public function indexAction() {
+    public function indexAction(Request $request) {
+        if(!$request->cookies->has('langueLocale')) {
+            $cookie = new Cookie('langueLocale', 0, time() + 3600, '/', false, false);
+            print('not cookie');
+        } else {
+            $cookie = $request->cookies->get('langueLocale');
+            print('cookie');
+        }
         $user = $this->getUser();
         $this->em = $this->getDoctrine()->getManager();
-
-        $langue = $this->em->getRepository('ApidaeBundle:Langue')->findOneBy(['codeLangue' => $this->lan]);
+        $langue = $this->em->getRepository('ApidaeBundle:Langue')->findOneBy(['codeLangue' => $cookie->getValue()]);
         $suggestions = $this->em->getRepository(ObjetApidae::class)->findByObjSuggestion(1);
-        return $this->render('ApidaeBundle:Default:index.html.twig', array(
+        $response = $this->render('ApidaeBundle:Default:index.html.twig', array(
             'suggestions' => $suggestions,
             'langue' => $langue,
             'user' => $user));
+        $response->headers->setCookie($cookie);
+        return $response;
+
     }
 
     /**
@@ -395,7 +405,7 @@ class DefaultController extends Controller
 
     /**
      * Get tous les services liés aux objets de la liste actuelle
-     * @param $rechercheActuelle
+     * @param rechercheActuelle
      * @return array
      */
     private function getServicesFromObjets($rechercheActuelle) {

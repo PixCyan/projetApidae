@@ -4,7 +4,7 @@ user:
     prefix:   /accueil
 
 apidae:
-    path : /
+    path : /{langueLocale}/
     defaults :  { _controller: ApidaeBundle:Default:index }
     prefix : /
 
