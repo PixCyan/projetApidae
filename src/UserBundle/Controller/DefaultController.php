@@ -7,7 +7,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Langue;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use UserBundle\Entity\UserApidae;
 use UserBundle\Form\UserApidaeType;
 
@@ -22,17 +21,18 @@ class DefaultController extends Controller
         return $this->render('UserBundle:Default:index.html.twig');
     }
 
-    public function voirProfilAction() {
+    public function voirProfilAction($langueLocale) {
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
         $categoriesMenu = $this->getCategoriesMenu();
         return $this->forward('FOSUserBundle:Profile:show', array(
             'categoriesMenu' => $categoriesMenu, 'langue' => $langue));
     }
 
-    public function voirPanierAction() {
+    public function voirPanierAction($langueLocale) {
+        $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
         $categoriesMenu = $this->getCategoriesMenu();
         $user = $this->getUser();
         if($user != null) {
@@ -41,12 +41,15 @@ class DefaultController extends Controller
             $panier = null;
         }
         return $this->render('UserBundle:panier:listeSelections.html.twig', array(
-            'categoriesMenu' => $categoriesMenu, 'langue' => $langue, 'panier' => $panier));
+            'categoriesMenu' => $categoriesMenu,
+            'langue' => $langue,
+            'panier' => $panier,
+            'user' => $user));
     }
 
-    public function listeUtilisateursAction() {
+    public function listeUtilisateursAction($langueLocale) {
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
         $categoriesMenu = $this->getCategoriesMenu();
         $users = $em->getRepository(UserApidae::class)->findAll();
         $user = $this->getUser();

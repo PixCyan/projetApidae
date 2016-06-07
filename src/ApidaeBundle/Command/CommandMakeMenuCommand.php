@@ -13,6 +13,11 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Exception;
 
+/**
+ * Commande chargée de générer le menu d'après le fichier 'donneesMenu.json'
+ * Class CommandMakeMenuCommand
+ * @package ApidaeBundle\Command
+ */
 class CommandMakeMenuCommand extends ContainerAwareCommand
 {
     private $em;
@@ -109,20 +114,19 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
     }
 
     /**
-     * Renvoie une chaine qui génère les b  lise li du menu
-     * @param $v
-     * @param $langue
+     * Renvoie une chaine qui génère les '<li>' contenant les liens '<a>' du menu
+     * @param $v  l'objet que l'ont traite
+     * @param $langue  la langue que l'ont traite
      * @return string
-     *
      */
     private function traitementChaine($v, $langue) {
         if(isset($v->selectionApidae)) {
-            $liDebut = "\t \t \t<li><a href=\"{{ path('liste', {'typeObjet': '".
+            $liDebut = "\t \t \t<li><a href=\"{{ path('liste', {'langueLocale': '". $langue->getLanShortCut() ."', 'typeObjet': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->typeObjet, $langue->getLanShortCut() ))
                 ."', 'categorieId': '".$v->selectionApidae[0]->id."', 'libelleCategorie': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->libelle, $langue->getLanShortCut()))."'}) }}\">";
         } else {
-            $liDebut = "\t \t \t<li><a href=\"{{ path('listeEvenement', {'typeObjet': '".
+            $liDebut = "\t \t \t<li><a href=\"{{ path('listeEvenement', {'langueLocale': '". $langue->getLanShortCut() ."', 'typeObjet': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->typeObjet, $langue->getLanShortCut()))
                 ."', 'periode': '".$v->periode."', 'libelleCategorie': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->libelle, $langue->getLanShortCut()))."'}) }}\">";
@@ -147,6 +151,12 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
         return strtolower($str);
     }
 
+    /**
+     * Renvoie la chaine correspondant à la langue donnée
+     * @param $str
+     * @param string $locale
+     * @return string
+     */
     function getLangueLib($str, $locale='') {
         if (empty ($locale)) {
             $locale = $this->SITE_LANGUE;

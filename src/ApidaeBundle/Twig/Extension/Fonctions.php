@@ -33,13 +33,24 @@ namespace ApidaeBundle\Twig\Extension;
          if (empty ($locale)) {
              $locale = $this->SIT_LANGUE;
          }
+         if($str === '@' || $str === null) {
+             $res = '';
+         }
+
          $debut = strpos($str, '@' . $locale . ':');
          if ($debut === false) {
-             return $str;
+             $locale = $this->SIT_LANGUE;
+             $debut = strpos($str, '@' . $locale . ':');
+             if($debut === false) {
+                 return '';
+             }
+             //return $str;
          }
          $debut += strlen('@' . $locale . ':');
          $fin = strpos($str, '@', $debut);
-         return substr($str, $debut, $fin - $debut);
+         $res = substr($str, $debut, $fin - $debut);
+
+         return $res;
      }
 
      function getTypeApidae($str) {

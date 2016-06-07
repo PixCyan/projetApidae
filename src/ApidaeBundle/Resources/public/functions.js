@@ -3,12 +3,12 @@
  */
 $("document").ready(function() {
     $(".filtres").click(function() {
-        console.log('http://local.dev/Symfony/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val() + "/" + $(this).attr('name'));
+        console.log('http://localhost/sites/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val() + "/" + $(this).attr('name'));
         if($(this).attr('checked')) {
             console.log("checked");
             $.ajax({
                 type : 'POST',
-                url  : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
+                url  : 'http://localhost/sites/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
                 beforeSend: function() {
@@ -23,14 +23,16 @@ $("document").ready(function() {
                     var objets = data.objets;
                     var categories = data.categories;
                     var tourismes = data.tourismesAdaptes;
+                    var langue = $('#langue').text();
 
                     //récupération de la section contenant la liste des objets
                     var sectionListe = $("#listeDobjets");
+                    console.log('LANGUE : ' + langue);
                     sectionListe.empty();
                     //parcours de chaque objets
                     $.each(objets, function(index) {
                         var newArticle = '<article id="article'+ index +'"></article>';
-                        $(newArticle).addClass("objetListe").append($('<h2>'+ objets[index].nom +'</h2>')).appendTo($(sectionListe));
+                        $(newArticle).addClass("objetListe").append($('<h2>'+ getLangueLib(objets[index].nom, langue) +'</h2>')).appendTo($(sectionListe));
 
                         if(objets[index].multimedias && objets[index].multimedias.length > 0) {
                             var newFirstImg = '<div id="divImg'+ index +'"></div>';
@@ -44,16 +46,22 @@ $("document").ready(function() {
                         var newDiv = '<div id="divInfos'+ index +'"></div>';
                         $(newDiv).addClass("infosListe").appendTo($('#article'+index));
                         if(objets[index].commune) {
-                            $('#divInfos'+ index).append($('<p>'+ objets[index].commune.com_nom +'</p>'));
+                            $('#divInfos'+ index).append($('<p>'+ getLangueLib(objets[index].commune.com_nom, langue) +'</p>'));
                         }
 
                         if(objets[index].tarif_en_clair) {
-                            $('#divInfos'+ index).append('<p>'+ objets[index].tarif_en_clair +'</p>');
+                            $('#divInfos'+ index).append('<p>'+ getLangueLib(objets[index].tarif_en_clair, langue) +'</p>');
                         }
 
                         var newDivDescr = '<div></div>';
+                        var trad = '';
+                        if(langue == 'Fr') {
+                            trad = objets[index].traductions[0].tra_description_courte;
+                        } else if(langue == 'En') {
+                            trad = objets[index].traductions[1].tra_description_courte;
+                        }
                         $(newDivDescr).addClass("description").append('<h4> Description : </h4>')
-                            .append('<p>'+ objets[index].traductions[0].tra_description_courte  +'</p>')
+                            .append('<p>'+ trad  +'</p>')
                             .appendTo($('#divInfos'+ index));
 
                         var newDivLiens = '<div></div>';
@@ -128,23 +136,176 @@ $("document").ready(function() {
     })
 });
 
+function getLangueLib(str, locale) {
+    if (locale == undefined || locale == '') {
+        locale = 'Fr';
+    }
+    var debut = strpos(str, '@' + locale + ':');
+    if (debut === false) {
+        return str;
+    }
+    debut += strlen('@' + locale + ':');
+    var fin = strpos(str, '@', debut);
+    return substr(str, debut, fin - debut);
+}
+
+
+function strpos(haystack, needle, offset) {
+    var i = (haystack + '').indexOf(needle, (offset || 0))
+    return i === -1 ? false : i
+}
+
+function strlen (string) {
+    var str = string + '';
+    var iniVal = (typeof require !== 'undefined' ? require('../info/ini_get')('unicode.semantics') : undefined) || 'off'
+    if (iniVal === 'off') {
+        return str.length
+    }
+
+    var i = 0;
+    var lgth = 0;
+
+    var getWholeChar = function (str, i) {
+        var code = str.charCodeAt(i);
+        var next = '';
+        var prev = '';
+        if (code >= 0xD800 && code <= 0xDBFF) {
+            // High surrogate (could change last hex to 0xDB7F to
+            // treat high private surrogates as single characters)
+            if (str.length <= (i + 1)) {
+                throw new Error('High surrogate without following low surrogate')
+            }
+            next = str.charCodeAt(i + 1);
+            if (next < 0xDC00 || next > 0xDFFF) {
+                throw new Error('High surrogate without following low surrogate')
+            }
+            return str.charAt(i) + str.charAt(i + 1)
+        } else if (code >= 0xDC00 && code <= 0xDFFF) {
+            // Low surrogate
+            if (i === 0) {
+                throw new Error('Low surrogate without preceding high surrogate')
+            }
+            prev = str.charCodeAt(i - 1);
+            if (prev < 0xD800 || prev > 0xDBFF) {
+                // (could change last hex to 0xDB7F to treat high private surrogates
+                // as single characters)
+                throw new Error('Low surrogate without preceding high surrogate')
+            }
+            // We can pass over low surrogates now as the second
+            // component in a pair which we have already processed
+            return false
+        }
+        return str.charAt(i)
+    };
+
+    for (i = 0, lgth = 0; i < str.length; i++) {
+        if ((getWholeChar(str, i)) === false) {
+            continue
+        }
+        // Adapt this line at the top of any loop, passing in the whole string and
+        // the current iteration and returning a variable to represent the individual character;
+        // purpose is to treat the first part of a surrogate pair as the whole character and then
+        // ignore the second part
+        lgth++
+    }
+
+    return lgth
+}
+
+function substr (str, start, len) {
+
+    str += ''
+    var end = str.length
+
+    var iniVal = (typeof require !== 'undefined' ? require('../info/ini_get')('unicode.emantics') : undefined) || 'off'
+
+    if (iniVal === 'off') {
+        // assumes there are no non-BMP characters;
+        // if there may be such characters, then it is best to turn it on (critical in true XHTML/XML)
+        if (start < 0) {
+            start += end
+        }
+        if (typeof len !== 'undefined') {
+            if (len < 0) {
+                end = len + end
+            } else {
+                end = len + start
+            }
+        }
+
+        // PHP returns false if start does not fall within the string.
+        // PHP returns false if the calculated end comes before the calculated start.
+        // PHP returns an empty string if start and end are the same.
+        // Otherwise, PHP returns the portion of the string from start to end.
+        if (start >= str.length || start < 0 || start > end) {
+            return false
+        }
+
+        return str.slice(start, end)
+    }
+
+    // Full-blown Unicode including non-Basic-Multilingual-Plane characters
+    var i = 0
+    var allBMP = true
+    var es = 0
+    var el = 0
+    var se = 0
+    var ret = ''
+
+    for (i = 0; i < str.length; i++) {
+        if (/[\uD800-\uDBFF]/.test(str.charAt(i)) && /[\uDC00-\uDFFF]/.test(str.charAt(i + 1))) {
+            allBMP = false
+            break
+        }
+    }
+
+    if (!allBMP) {
+        if (start < 0) {
+            for (i = end - 1, es = (start += end); i >= es; i--) {
+                if (/[\uDC00-\uDFFF]/.test(str.charAt(i)) && /[\uD800-\uDBFF]/.test(str.charAt(i - 1))) {
+                    start--
+                    es--
+                }
+            }
+        } else {
+            var surrogatePairs = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g
+            while ((surrogatePairs.exec(str)) !== null) {
+                var li = surrogatePairs.lastIndex
+                if (li - 2 < start) {
+                    start++
+                } else {
+                    break
+                }
+            }
+        }
+
+        if (start >= end || start < 0) {
+            return false
+        }
+        if (len < 0) {
+            for (i = end - 1, el = (end += len); i >= el; i--) {
+                if (/[\uDC00-\uDFFF]/.test(str.charAt(i)) && /[\uD800-\uDBFF]/.test(str.charAt(i - 1))) {
+                    end--
+                    el--
+                }
+            }
+            if (start > end) {
+                return false
+            }
+            return str.slice(start, end)
+        } else {
+            se = start + len
+            for (i = start; i < se; i++) {
+                ret += str.charAt(i)
+                if (/[\uD800-\uDBFF]/.test(str.charAt(i)) && /[\uDC00-\uDFFF]/.test(str.charAt(i + 1))) {
+                    // Go one further, since one of the "characters" is part of a surrogate pair
+                    se++
+                }
+            }
+            return ret
+        }
+    }
+}
 
 //TODO ajouter le lien pour détails
 //TODO mettre la bonne langue
-
-/*
-Exemple
- $('.imgProjet').click(function() {
-     var idProjet = $(this).attr('id').split('-')[1];
-     $.ajax({
-     url: '{{path('ajax_get_projet')}}',
-     type: 'POST',
-     data: {'id': idProjet},
-     dataType: 'json',
-     success: function(data) {
-         afficherImages(data.photos);
-         afficherProjet(data.projet, data.etapes);
-     }
- });
- });
- */

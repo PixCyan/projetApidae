@@ -1,5 +1,5 @@
 index:
-    path : /accueil
+    path : /{langueLocale}/accueil
     defaults: { _controller: ApidaeBundle:Default:index }
 
 traitement:
@@ -7,28 +7,28 @@ traitement:
     defaults: { _controller: ApidaeBundle:Traitement:traitement }
 
 offre:
-    path: offre/{id}
+    path: /{langueLocale}/offre/{id}
     defaults: { _controller: ApidaeBundle:Default:offre }
 
 listeEvenement:
-    path: /listeEvenements/{periode}-jours
+    path: /{langueLocale}/listeEvenements/{periode}-jours
     defaults: { _controller: ApidaeBundle:Default:listeEvenements }
 
 liste:
-    path: /{typeObjet}/{categorieId}-{libelleCategorie}
+    path: /{langueLocale}/{typeObjet}/{categorieId}-{libelleCategorie}
     defaults: { _controller: ApidaeBundle:Default:liste }
 
 panier:
-    path: /panier
+    path: /{langueLocale}/panier
     defaults: { _controller: UserBundle:Default:voirPanier }
 
 gestionOffres:
-    path: /admin/gestion/offres/
+    path: /{langueLocale}/admin/gestion/offres/
     defaults: { _controller: ApidaeBundle:GestionOffre:gestionOffres }
     methods: [POST, GET]
 
 modifierOffre:
-    path: /admin/modifier/offre/{offreId}
+    path: /{langueLocale}/admin/modifier/offre/{offreId}
     defaults: { _controller: ApidaeBundle:GestionOffre:modifierOffre }
 
 rechercheAffinnee:
@@ -37,5 +37,5 @@ rechercheAffinnee:
     methods: [POST, GET]
 
 rechercheSimple:
-    path: /recherche
+    path: /{langueLocale}/recherche
     defaults: { _controller: ApidaeBundle:Default:rechercheSimple }

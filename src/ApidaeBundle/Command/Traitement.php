@@ -54,7 +54,6 @@ class Traitement extends ContainerAwareCommand {
         $languesSite[0] = "Français";
         $languesSite[1] = "English";
 
-
         $this->total = 0;
         $this->sansCategorie = 0;
         $this->sansType = 0;

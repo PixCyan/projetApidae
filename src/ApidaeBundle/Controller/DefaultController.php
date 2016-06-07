@@ -30,25 +30,18 @@ class DefaultController extends Controller
      * Renvoi la page d'accueil avec les suggestions
      * @return Response
      */
-    public function indexAction(Request $request) {
-        if(!$request->cookies->has('langueLocale')) {
-            $cookie = new Cookie('langueLocale', 0, time() + 3600, '/', false, false);
-            print('not cookie');
-        } else {
-            $cookie = $request->cookies->get('langueLocale');
-            print('cookie');
-        }
+    public function indexAction($langueLocale, Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => $langueLocale]);
         $user = $this->getUser();
-        $this->em = $this->getDoctrine()->getManager();
-        $langue = $this->em->getRepository('ApidaeBundle:Langue')->findOneBy(['codeLangue' => $cookie->getValue()]);
-        $suggestions = $this->em->getRepository(ObjetApidae::class)->findByObjSuggestion(1);
+
+        $suggestions = $em->getRepository(ObjetApidae::class)->findByObjSuggestion(1);
         $response = $this->render('ApidaeBundle:Default:index.html.twig', array(
             'suggestions' => $suggestions,
             'langue' => $langue,
             'user' => $user));
-        $response->headers->setCookie($cookie);
-        return $response;
 
+        return $response;
     }
 
     /**
@@ -56,16 +49,16 @@ class DefaultController extends Controller
      * @param $id
      * @return Response
      */
-    public function offreAction($id) {
+    public function offreAction($langueLocale, $id) {
         $user = $this->getUser();
         //phpinfo();
         if($id == 0) {
             $id = 48925;
         }
-        $this->em = $this->getDoctrine()->getManager();
-        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
-        $objetApidae = $this->em->getRepository(ObjetApidae::class)->findOneByIdObj($id);
-        $trad = $this->em->getRepository(TraductionObjetApidae::class)->findOneBy(
+        $em = $this->getDoctrine()->getManager();
+        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
+        $objetApidae = $em->getRepository(ObjetApidae::class)->findOneByIdObj($id);
+        $trad = $em->getRepository(TraductionObjetApidae::class)->findOneBy(
             array('objet'=> $objetApidae, 'langue' => $langue));
 
         if(!$objetApidae) {
@@ -83,12 +76,12 @@ class DefaultController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function rechercheSimpleAction(Request $request) {
+    public function rechercheSimpleAction($langueLocale, Request $request) {
         $session = $request->getSession();
         $user = $this->getUser();
         $this->em = $this->getDoctrine()->getManager();
         $em = $this->getDoctrine()->getManager();
-        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
 
         //---- Add ----
         $recherche = str_replace(array ('<', '>', '.', ','), array ('&lt;', '&gt;', ' ', ' '),
@@ -148,12 +141,12 @@ class DefaultController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function listeAction($typeObjet, $categorieId, Request $request)
+    public function listeAction($langueLocale, $typeObjet, $categorieId, Request $request)
     {
         $session = $request->getSession();
         $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
         $selection = $em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categorieId);
         if(!$selection) {
             throw $this->createNotFoundException('Cette catégorie est vide.');
@@ -197,14 +190,14 @@ class DefaultController extends Controller
      * @param $periode
      * @return Response
      */
-    public function listeEvenementsAction($periode) {
+    public function listeEvenementsAction($langueLocale, $periode) {
         $user = $this->getUser();
         //$categoriesMenu = $this->getCategoriesMenu();
-        $this->em = $this->getDoctrine()->getManager();
-        $langue = $this->em->getRepository(Langue::class)->findOneByCodeLangue($this->lan);
+        $em = $this->getDoctrine()->getManager();
+        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
 
         //TODO listeEvenement
-        $eventRepository =  $this->em->getRepository(Evenement::class);
+        $eventRepository =  $em->getRepository(Evenement::class);
 
         $evenements = $periode == 1 ? $eventRepository->getAujourdhui2() : $eventRepository->getInterval($periode);
         
@@ -224,18 +217,12 @@ class DefaultController extends Controller
      * @return Response
      */
     public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId) {
+        //TODO gérer la langue au traitement ajax
         $session = $request->getSession();
-        $this->em = $this->getDoctrine()->getManager();
-
         $em = $this->getDoctrine()->getManager();
-
-        $session->remove('nouvelleListe');
 
         //if($request->isXmlHttpRequest()) {
             $objetsIds = $session->get('listeObjets');
-            if($session->get('nouvelleListe')) {
-                print("NOUVELLE_LISTE");
-            }
 
             if (is_array($objetsIds) && count($objetsIds) > 0) {
                 $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
@@ -246,17 +233,17 @@ class DefaultController extends Controller
             $serializer = $this->container->get('jms_serializer');
             /* Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
             peuvent être soit categorie/service/labelQualite */
-            $c = $this->em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+            $c = $em->getRepository(Categorie::class)->findOneByCatId($categorieId);
             if($c && $typeObjet == "categories") {
                 $nouvelleListe = $this->traitementObjetsCategories($c, $listeActuelle, $typeObjet);
                 //print("categories");
             } else {
-                $s = $this->em->getRepository(Service::class)->findOneBySerId($categorieId);
+                $s = $em->getRepository(Service::class)->findOneBySerId($categorieId);
                 if($s && $typeObjet == "services") {
                     $nouvelleListe = $this->traitementObjetsCategories($s, $listeActuelle, $typeObjet);
                     //print("services");
                 } else {
-                    $l = $this->em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
+                    $l = $em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
                     if($l && $typeObjet == "classements") {
                         $nouvelleListe = $this->traitementObjetsCategories($l, $listeActuelle, $typeObjet);
                         //print("labels");
@@ -268,7 +255,7 @@ class DefaultController extends Controller
             }
 
             //$session->remove('listeObjets');
-            $session->set('nouvelleListe', $nouvelleListe);
+            $session->set('nouvelleListe', $this->getIdsObjetsFromObjets($nouvelleListe));
 
             //Récupératino des données pour le traitement des filtres
             $services = $this->getServicesFromObjets($nouvelleListe);
