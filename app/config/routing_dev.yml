@@ -16,3 +16,8 @@ _main:
 _console:
     resource: "@CoreSphereConsoleBundle/Resources/config/routing.yml"
     prefix: /_console
+
+
+test_traduction:
+    path:     /{langue}/traduction/{name}
+    defaults: { _controller: ApidaeBundle:Default:tradTest }

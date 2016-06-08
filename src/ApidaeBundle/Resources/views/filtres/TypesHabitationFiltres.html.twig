@@ -1,5 +1,5 @@
 <di>
-    <h4> Types d'habitation </h4>
+    <h4> {{ "Types d'habitation"|trans }}Types d'habitation </h4>
     {% for t in typesHabitation %}
         <input class="filtres" type="checkbox" id="{{ t.catId }}" value="{{ t.catId }}" name="categories">
         <label for="{{ t.catId }}"> {{ t.catLibelle|langueLib(langue.lanShortCut) }}</label><br/>

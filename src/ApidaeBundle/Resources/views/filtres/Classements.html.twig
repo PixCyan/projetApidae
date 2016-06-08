@@ -1,5 +1,5 @@
 <di>
-    <h4> Classements </h4>
+    <h4> {{ 'Classements'|trans }} </h4>
     {% for l in labels %}
         <input class="filtres" type="checkbox" id="{{ l.labId }}" value="{{ l.labId }}" name="classements">
         <label for="{{ l.labId }}"> {{ l.labLibelle|langueLib(langue.lanShortCut) }} :

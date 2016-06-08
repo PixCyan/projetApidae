@@ -27,18 +27,17 @@
 
             {% if tradLangue(objet, langue) is not null %}
                 <div >
-                    <h4> Description : </h4>
+                    <h4> {{ 'Description'|trans }}: </h4>
                     <p> {{ tradLangue(objet, langue).traDescriptionCourte }} </p>
                 </div>
             {% endif %}
         </div>
         <div class="lienDetailsListe">
-            <a href="{{ path('offre', {'langueLocale' : langue.lanShortCut, 'id': objet.idObjet }) }}"> Voir le détail </a>
+            <a href="{{ path('offre', {'langueLocale' : langue.lanShortCut, 'id': objet.idObjet }) }}"> {{ 'Voir le détail'|trans }} </a>
         </div>
         {% if is_granted('ROLE_SUPER_ADMIN') %}
             <div class="optionsAdmin">
-                <a href="{{ path('modifierOffre', {'offreId': objet.idObjet }) }}"> Modifier </a>
-                <a href="#"> Supprimer </a>
+                <a href="{{ path('modifierOffre', {'offreId': objet.idObjet }) }}"> {{ 'Modifier'|trans }}</a>
             </div>
         {%  endif %}
     </article>

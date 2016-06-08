@@ -2,7 +2,7 @@
 {%  block content %}
     <h1> {{ typeObjet }} {% if categorie is defined and categorie is not empty %} : {{ categorie.selLibelle|langueLib(langue.lanShortCut) }} {% endif %}</h1>
     <article class="filtresListe">
-        <h2> Filtres </h2>
+        <h2> {{ 'Filtres'|trans }}</h2>
         {% if services is defined and services is not empty and objets|length != 1
             or modesPaiement is defined and modesPaiement is not empty and objets|length != 1
             or labels is defined and labels is not empty and objets|length != 1
@@ -24,7 +24,6 @@
             {% if tourismeAdapte is defined and tourismeAdapte is not empty %}
                 {% include "ApidaeBundle:filtres:TourismeAdapte.html.twig" %}
             {% endif %}
-            <input type="submit" value="Rechercher avec critères" />
         </form>
         {% endif %}
     </article>

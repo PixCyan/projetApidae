@@ -2,41 +2,40 @@
     <nav>
     {% block nav %}
        <ul>
-           <li class="LiMenu"><a href="{{ path('index', {'langueLocale': langue.lanShortCut}) }}"> Accueil </a></li>
+           <li class="LiMenu"><a href="{{ path('index', {'langueLocale': langue.lanShortCut}) }}"> {{ 'Accueil'|trans }}</a></li>
            {% include 'ApidaeBundle:commun:menu.html.twig' %}
 
-            <li class="LiMenu"> Panier
+            <li class="LiMenu"> {{ 'Panier'|trans }}
                 <ul>
                     {% if user is not defined or user is empty %}
                         <!-- Si non connecté -->
-                        <li><a href="{{ path('panier', {'langueLocale': langue.lanShortCut}) }}"> Ma sélection </a></li>
+                        <li><a href="{{ path('panier', {'langueLocale': langue.lanShortCut}) }}"> {{ 'Ma sélection'|trans }}</a></li>
                     {% else %}
                         <!-- Si connecté-->
-                        <li><a href="{{ path('panier', {'langueLocale': langue.lanShortCut}) }}"> Gestion des sélections </a></li>
+                        <li><a href="{{ path('panier', {'langueLocale': langue.lanShortCut}) }}"> {{ 'Gestion des sélections'|trans }} </a></li>
                     {% endif %}
                 </ul>
             </li>
 
-            <li class="LiMenu"> Compte
+            <li class="LiMenu"> {{ 'Mon compte'|trans }}
                 <ul>
                     {% if user is not defined or user is empty %}
                         <!-- Si non connecté -->
-                        <li><a href="{{ path('fos_user_registration_register') }}"> S'enregistrer </a></li>
-                        <li><a href="{{ path('fos_user_security_login') }}"> Se connecter </a></li>
+                        <li><a href="{{ path('fos_user_registration_register') }}"> {{ "S'enregistrer"|trans }}</a></li>
+                        <li><a href="{{ path('fos_user_security_login') }}"> {{ 'Se connecter'|trans }}</a></li>
                     {% else %}
                         <!-- Si connecté-->
-                        <li><a href="{{ path('fos_user_profile_show') }}"> Mon profil </a></li>
-                        <li><a href="{{ path('panier') }}"> Gestion des sélections </a></li>
-                        <li><a href="{{ path('fos_user_security_logout') }}"> Se déconnecter </a></li>
+                        <li><a href="{{ path('fos_user_profile_show') }}"> {{ 'Mon profil'|trans }} </a></li>
+                        <li><a href="{{ path('fos_user_security_logout') }}">{{ 'Se déconnecter'|trans }} Se déconnecter </a></li>
                     {% endif %}
                 </ul>
             </li>
 
            {% if user is defined and user is not empty and is_granted('ROLE_SUPER_ADMIN')%}
-           <li class="LiMenu"> Administration
+           <li class="LiMenu"> {{ 'Administration'|trans }}
                <ul>
-                   <li><a href="{{ path('listeUsers') }}"> Gérer les utilisateurs </a></li>
-                   <li><a href="{{ path('gestionOffres') }}"> Gestion des offres </a></li>
+                   <li><a href="{{ path('listeUsers') }}"> {{ 'Gestion des utilisateurs'|trans }} </a></li>
+                   <li><a href="{{ path('gestionOffres') }}"> {{ 'Gestion des offres'|trans }}</a></li>
                </ul>
            </li>
            {% endif %}
@@ -44,8 +43,8 @@
         </ul>
     {% endblock %}
         <form id="form_recherche" action="{{ path('rechercheSimple', {'langueLocale': langue.lanShortCut}) }}" method="get">
-            <label for="rechercheSimple">Rechercher </label><input type="text" name="champsRecherche" id="rechercheSimple" placeholder="ex : Lac" />
-            <input type="submit" value="Rechercher" />
+            <label for="rechercheSimple">{{ 'Rechercher'|trans }}</label><input type="text" name="champsRecherche" id="rechercheSimple" placeholder="ex : Lac" />
+            <input type="submit" value="{{ 'Rechercher'|trans }}" />
         </form>
     </nav>
 {% endblock %}

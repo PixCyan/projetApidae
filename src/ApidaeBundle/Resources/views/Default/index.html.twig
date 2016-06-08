@@ -1,9 +1,9 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
 {% block content %}
     <article>
-        <h2> Nos suggestions </h2>
+        <h2> {{ 'Nos suggestions'|trans }} </h2>
         {% if suggestions is empty %}
-        <p> Aucune suggestions disponibles !</p>
+        <p>{{ 'Aucune suggestion disponibles.'|trans }}</p>
         {% else %}
             {%  for suggestion in suggestions %}
                 <a href="{{ path('offre', {'langueLocale': langue.lanShortCut,'id': suggestion.idObjet }) }}" ><img src="{{ suggestion.multimedias.first.mulUrl}}"></a>

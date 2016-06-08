@@ -41,6 +41,9 @@ class DefaultController extends Controller
             'langue' => $langue,
             'user' => $user));
 
+        $request->getSession()->set('_locale', strtolower($langue->getLanShortCut()));
+        $request->setLocale('fr');
+
         return $response;
     }
 
@@ -510,6 +513,13 @@ class DefaultController extends Controller
             $res = $listeResActuelle;
         }
         return $res;
+    }
+
+    public function tradTestAction($name, Request $request, $langue) {
+
+        return $this->render('@Apidae/commun/test.html.twig', array(
+            'name' => $name
+        ));
     }
 
 }

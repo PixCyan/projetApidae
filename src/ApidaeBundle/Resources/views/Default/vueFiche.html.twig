@@ -4,7 +4,7 @@
     <article>
         {% if objet.multimedias is not empty %}
         <div>
-            <h4> Multimédias : </h4>
+            <h4> {{ 'Multimédias'|trans }} : </h4>
             {% for m in objet.multimedias %}
                 {% if m.mulUrlFiche is not empty %}
                     <a href="{{ m.mulUrl}}" ><img src="{{ m.mulUrlFiche}}"></a>
@@ -15,7 +15,7 @@
 
         {% if objet.categories is not empty %}
         <div>
-            <h4> Categories : </h4>
+            <h4> {{ 'Categories'|trans }} : </h4>
             <ul>
                 {% for cat in objet.categories %}
                     <li>{{ cat.catLibelle|langueLib(langue.lanShortCut) }}</li>
