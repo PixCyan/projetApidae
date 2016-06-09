@@ -2,10 +2,10 @@
 
     {% if objet.objEtoile is not empty and objet.labelsQualite is not empty %}
         <article>
-            <h4> Classement(s) </h4>
+            <h4> {{ 'Classements'|trans }} </h4>
             <ul>
                 {% if objet.objEtoile is not empty %}
-                    <li>Classement étoile : {{ objet.objEtoile|langueLib(langue.lanShortCut) }}</li>
+                    <li>{{ 'Classement étoile'|trans }} : {{ objet.objEtoile|langueLib(langue.lanShortCut) }}</li>
                 {% endif %}
                 {% if objet.labelsQualite is not empty %}
                     {% for label in objet.labelsQualite %}
@@ -18,7 +18,7 @@
 
     {% if objet.services is not empty %}
     <article>
-        <h4> Services : </h4>
+        <h4> {{ 'Services'|trans }} </h4>
         <ul>
             {% for service in objet.services %}
             <li>{{ service.serLibelle|langueLib(langue.lanShortCut) }}
@@ -35,7 +35,7 @@
 
     {% if objet.equipements is not empty %}
     <article>
-        <h4> Equipements : </h4>
+        <h4> {{ 'Equipements'|trans }} </h4>
         <ul>
             {% for equipement in objet.equipements %}
             <li>{{ equipement.equLibelle|langueLib(langue.lanShortCut) }}

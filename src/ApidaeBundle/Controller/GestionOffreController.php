@@ -19,9 +19,10 @@ class GestionOffreController extends Controller
     //0 = FR, 1 = EN
     private $lan = 0;
 
-    public function modifierOffreAction($langueLocale, $offreId, Request $request) {
+    public function modifierOffreAction($offreId, Request $request) {
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
+        $langue = $request->getLocale();
+        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
         //TODO getOffre
         
         $objet = $em->getRepository(ObjetApidae::class)->findOneByIdObj($offreId);
@@ -51,9 +52,10 @@ class GestionOffreController extends Controller
            'langue' => $langue, 'objet' => $objet, 'form' => $formTrad->createView()));
     }
 
-    public function gestionOffresAction($langueLocale, Request $request) {
+    public function gestionOffresAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
+        $langue = $request->getLocale();
+        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
         $userCourant = $this->getUser();
 
         $form = $this->createForm(new RechercheObjetForm());

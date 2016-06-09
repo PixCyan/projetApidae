@@ -21,18 +21,20 @@ class DefaultController extends Controller
         return $this->render('UserBundle:Default:index.html.twig');
     }
 
-    public function voirProfilAction($langueLocale) {
+    public function voirProfilAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
+        $langue = $request->getLocale();
+        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
         $categoriesMenu = $this->getCategoriesMenu();
         return $this->forward('FOSUserBundle:Profile:show', array(
             'categoriesMenu' => $categoriesMenu, 'langue' => $langue));
     }
 
-    public function voirPanierAction($langueLocale) {
+    public function voirPanierAction(Request $request) {
         $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
+        $langue = $request->getLocale();
+        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
         $categoriesMenu = $this->getCategoriesMenu();
         $user = $this->getUser();
         if($user != null) {
@@ -47,9 +49,10 @@ class DefaultController extends Controller
             'user' => $user));
     }
 
-    public function listeUtilisateursAction($langueLocale) {
+    public function listeUtilisateursAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
+        $langue = $request->getLocale();
+        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
         $categoriesMenu = $this->getCategoriesMenu();
         $users = $em->getRepository(UserApidae::class)->findAll();
         $user = $this->getUser();

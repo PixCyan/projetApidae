@@ -17,7 +17,6 @@ use ApidaeBundle\Entity\ObjetApidae;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Cookie;
 
 class DefaultController extends Controller
 {
@@ -30,9 +29,12 @@ class DefaultController extends Controller
      * Renvoi la page d'accueil avec les suggestions
      * @return Response
      */
-    public function indexAction($langueLocale, Request $request) {
+    public function indexAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => $langueLocale]);
+
+        $langue = $request->getLocale();
+
+        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
         $user = $this->getUser();
 
         $suggestions = $em->getRepository(ObjetApidae::class)->findByObjSuggestion(1);
@@ -41,8 +43,7 @@ class DefaultController extends Controller
             'langue' => $langue,
             'user' => $user));
 
-        $request->getSession()->set('_locale', strtolower($langue->getLanShortCut()));
-        $request->setLocale('fr');
+        //$request->setLocale('en_En');
 
         return $response;
     }
@@ -52,14 +53,15 @@ class DefaultController extends Controller
      * @param $id
      * @return Response
      */
-    public function offreAction($langueLocale, $id) {
+    public function offreAction($id, Request $request) {
         $user = $this->getUser();
         //phpinfo();
         if($id == 0) {
             $id = 48925;
         }
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
+        $langue = $request->getLocale();
+        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => ucwords($langue)]);
         $objetApidae = $em->getRepository(ObjetApidae::class)->findOneByIdObj($id);
         $trad = $em->getRepository(TraductionObjetApidae::class)->findOneBy(
             array('objet'=> $objetApidae, 'langue' => $langue));
@@ -79,12 +81,13 @@ class DefaultController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function rechercheSimpleAction($langueLocale, Request $request) {
+    public function rechercheSimpleAction(Request $request) {
         $session = $request->getSession();
         $user = $this->getUser();
         $this->em = $this->getDoctrine()->getManager();
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
+        $langue = $request->getLocale();
+        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
 
         //---- Add ----
         $recherche = str_replace(array ('<', '>', '.', ','), array ('&lt;', '&gt;', ' ', ' '),
@@ -144,12 +147,13 @@ class DefaultController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function listeAction($langueLocale, $typeObjet, $categorieId, Request $request)
+    public function listeAction(Request $request, $typeObjet, $categorieId, Request $request)
     {
         $session = $request->getSession();
         $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
+        $langue = $request->getLocale();
+        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
         $selection = $em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categorieId);
         if(!$selection) {
             throw $this->createNotFoundException('Cette catégorie est vide.');
@@ -193,11 +197,12 @@ class DefaultController extends Controller
      * @param $periode
      * @return Response
      */
-    public function listeEvenementsAction($langueLocale, $periode) {
+    public function listeEvenementsAction(Request $request, $periode) {
         $user = $this->getUser();
         //$categoriesMenu = $this->getCategoriesMenu();
         $em = $this->getDoctrine()->getManager();
-        $langue = $em->getRepository(Langue::class)->findOneBy(['lanShortCut' => $langueLocale]);
+        $langue = $request->getLocale();
+        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
 
         //TODO listeEvenement
         $eventRepository =  $em->getRepository(Evenement::class);

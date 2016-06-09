@@ -33,7 +33,7 @@
             {% endif %}
         </div>
         <div class="lienDetailsListe">
-            <a href="{{ path('offre', {'langueLocale' : langue.lanShortCut, 'id': objet.idObjet }) }}"> {{ 'Voir le détail'|trans }} </a>
+            <a href="{{ path('offre', {'id': objet.idObjet }) }}"> {{ 'Voir le détail'|trans }} </a>
         </div>
         {% if is_granted('ROLE_SUPER_ADMIN') %}
             <div class="optionsAdmin">

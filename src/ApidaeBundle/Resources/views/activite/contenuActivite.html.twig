@@ -1,14 +1,14 @@
 {% block contentActivite %}
 
     <article>
-        <h4> Informations principales : </h4>
+        <h4> {{ 'Informations principales'|trans }} </h4>
     {% if objet.nbJours is not empty %}
-        <p> Nombre de jours : {{ objet.nbJours }}</p>
+        <p> {{ 'Nombre de jours'|trans }} : {{ objet.nbJours }}</p>
     {%  endif %}
-        <p> Type d'activité : {{ objet.activiteType.libelle|langueLib(langue.lanShortCut) }}</p>
+        <p> {{ "Type d'activité"|trans }} : {{ objet.activiteType.libelle|langueLib(langue.lanShortCut) }}</p>
     {% if objet.durees is not empty %}
         <div>
-            <h4> Durée(s) : </h4>
+            <h4> {{ 'Durée(s)'|trans }} : </h4>
             <ul>
             {% for d in objet.durees %}
                 <li> {{ d.libelle|langueLib(langue.lanShortCut) }}</li>

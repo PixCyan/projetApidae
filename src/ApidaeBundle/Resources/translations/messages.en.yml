@@ -16,7 +16,7 @@
 "Rechercher": Search
 "Filtres": Filters
 
-"Types d'habitation": Housing type
+"Types d'habitation": Housing types
 "Modes de paiement": Payment methods
 "Services": Services
 "Classements": Ranking
@@ -25,6 +25,46 @@
 "Modifier": Edit
 "Description": Description
 
-"Multimédias": Multimedia
+"Multimédias": Multimedias
 "Categories": Categories
+"Moyens de communication": Contacts
+"Tarifs et Ouvertures": Prices and Opening time
+"Types de public": Public types
+"Capacité": Capacity
+"Equipements": Amenities
+"Adresse": Adress
+"Informations supplémentaires": Additional informations
+"Bons plans": Tips
+
+"Nombre maximum de couverts": Maximum number of seats
+"Nombre de couverts en terrasse": Number of seats outside
+"Nombre de salles": Numbers of rooms
+
+"Surface": Size
+"Numéro d'étage": Floor numbder
+"Nombre de pièces": Number of rooms
+"Nombre de chambres classées": Number of classified rooms
+"Capacité de l'hébergement": Capacity of the accomodation
+"Capacité maximum possible": Maximum possible capacity
+"Nombre de chambres déclarées hotelier": Number of rooms hotelier reported
+"Nombre total de personnes": Total people
+"Nombre de chambres simples": Number of single rooms
+"Nombre de chambres doubles": Number of double rooms
+"Nombre de suites": Number of suites
+"Nombre de chambres à mobilité réduite": Number of rooms with reduced mobility
+"Naturisme autorisé": Naturism authorized
+"Capacité totale": Total capacity
+"Capacité totale jeunesse sport": Youth sports total capacity
+"Nombre hébergement une personne": Number of accommodation for one person
+"Nombre de lits doubles": Number of double bed
+"Nombre de lits simples": Number of single bed
+
+"Informations principales": Main informations
+"Nombre de jours": Number of days
+"Type d'activité": Activity types
+"Durée(s)": Duration(s)
+
+"Portée de l'évènement": Scope of the event
+"Classement étoile": Star ranking
+
 

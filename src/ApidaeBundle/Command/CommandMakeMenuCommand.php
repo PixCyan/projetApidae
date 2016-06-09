@@ -36,9 +36,9 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $jsonMenu = file_get_contents("/var/www/html/sites/projetApidae/tools/donneesMenu.json");
+            $jsonMenu = file_get_contents("/var/www/local/Symfony/projetApidae/tools/donneesMenu.json");
             $donneesMenu = json_decode($jsonMenu);
-            $fichierMenu = fopen('/var/www/html/sites/projetApidae/src/ApidaeBundle/Resources/views/commun/menu.html.twig', 'w');
+            $fichierMenu = fopen('/var/www/local/Symfony/projetApidae/src/ApidaeBundle/Resources/views/commun/menu.html.twig', 'w');
             $this->em = $this->getApplication()->getKernel()->getContainer()->get('doctrine')->getManager();
             $this->langues = $this->em->getRepository(Langue::class)->findAll();
             $menuFinal = [];
@@ -59,7 +59,7 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
             }
 
             foreach($this->langues as $langue) {
-                $condition = "{% if langue.lanShortCut == '".$langue->getLanShortCut()."' %}";
+                $condition = "{% if app.request.locale == '".strtolower($langue->getLanShortCut())."' %}";
                 fputs($fichierMenu, $condition."\n");
                 //fputs($fichierMenu, "<nav> \n \t <ul> \n");
                 $ul = null;
@@ -121,12 +121,12 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
      */
     private function traitementChaine($v, $langue) {
         if(isset($v->selectionApidae)) {
-            $liDebut = "\t \t \t<li><a href=\"{{ path('liste', {'langueLocale': '". $langue->getLanShortCut() ."', 'typeObjet': '".
+            $liDebut = "\t \t \t<li><a href=\"{{ path('liste', {'typeObjet': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->typeObjet, $langue->getLanShortCut() ))
                 ."', 'categorieId': '".$v->selectionApidae[0]->id."', 'libelleCategorie': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->libelle, $langue->getLanShortCut()))."'}) }}\">";
         } else {
-            $liDebut = "\t \t \t<li><a href=\"{{ path('listeEvenement', {'langueLocale': '". $langue->getLanShortCut() ."', 'typeObjet': '".
+            $liDebut = "\t \t \t<li><a href=\"{{ path('listeEvenement', {'typeObjet': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->typeObjet, $langue->getLanShortCut()))
                 ."', 'periode': '".$v->periode."', 'libelleCategorie': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->libelle, $langue->getLanShortCut()))."'}) }}\">";

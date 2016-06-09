@@ -2,17 +2,19 @@
     <nav>
     {% block nav %}
        <ul>
-           <li class="LiMenu"><a href="{{ path('index', {'langueLocale': langue.lanShortCut}) }}"> {{ 'Accueil'|trans }}</a></li>
+           <li> <a href="http://local.dev/Symfony/projetApidae/web/app_dev.php/fr/accueil"> Fr</a></li>
+           <li><a href="http://local.dev/Symfony/projetApidae/web/app_dev.php/en/accueil"> En</a></li>
+           <li class="LiMenu"><a href="{{ path('index') }}"> {{ 'Accueil'|trans }}</a></li>
            {% include 'ApidaeBundle:commun:menu.html.twig' %}
 
             <li class="LiMenu"> {{ 'Panier'|trans }}
                 <ul>
                     {% if user is not defined or user is empty %}
                         <!-- Si non connecté -->
-                        <li><a href="{{ path('panier', {'langueLocale': langue.lanShortCut}) }}"> {{ 'Ma sélection'|trans }}</a></li>
+                        <li><a href="{{ path('panier') }}"> {{ 'Ma sélection'|trans }}</a></li>
                     {% else %}
                         <!-- Si connecté-->
-                        <li><a href="{{ path('panier', {'langueLocale': langue.lanShortCut}) }}"> {{ 'Gestion des sélections'|trans }} </a></li>
+                        <li><a href="{{ path('panier') }}"> {{ 'Gestion des sélections'|trans }} </a></li>
                     {% endif %}
                 </ul>
             </li>
@@ -26,7 +28,7 @@
                     {% else %}
                         <!-- Si connecté-->
                         <li><a href="{{ path('fos_user_profile_show') }}"> {{ 'Mon profil'|trans }} </a></li>
-                        <li><a href="{{ path('fos_user_security_logout') }}">{{ 'Se déconnecter'|trans }} Se déconnecter </a></li>
+                        <li><a href="{{ path('fos_user_security_logout') }}">{{ 'Se déconnecter'|trans }}</a></li>
                     {% endif %}
                 </ul>
             </li>
@@ -42,7 +44,7 @@
 
         </ul>
     {% endblock %}
-        <form id="form_recherche" action="{{ path('rechercheSimple', {'langueLocale': langue.lanShortCut}) }}" method="get">
+        <form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
             <label for="rechercheSimple">{{ 'Rechercher'|trans }}</label><input type="text" name="champsRecherche" id="rechercheSimple" placeholder="ex : Lac" />
             <input type="submit" value="{{ 'Rechercher'|trans }}" />
         </form>

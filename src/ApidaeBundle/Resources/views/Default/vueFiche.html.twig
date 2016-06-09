@@ -26,7 +26,7 @@
 
         {% if objet.adresse is not empty %}
             <article>
-                <h4> Adresse : </h4>
+                <h4> {{ 'Adresse'|trans }} </h4>
                 <p> {{ objet.adresse|langueLib(langue.lanShortCut) }}</p>
                 {% if objet.commune is not empty %}
                     <p>{{ objet.commune.comCode }} {{ objet.commune.comNom }}</p>
@@ -37,7 +37,7 @@
 
         {% if objet.moyensCommunications is not empty %}
             <article>
-                <h4> Moyens de communication : </h4>
+                <h4> {{ 'Moyens de communication'|trans }} </h4>
                 <ul>
                     {% for moy in objet.moyensCommunications %}
                         <li>{{ moy.moyComLibelle|langueLib(langue.lanShortCut) }} : {{ moy.moyComCoordonnees }}</li>
@@ -48,14 +48,14 @@
 
         {% if trad.traDescriptionLongue is not empty %}
         <div>
-            <h4> Description : </h4>
+            <h4> {{ 'Description'|trans }} </h4>
             <p> {{ trad.traDescriptionLongue }} </p>
         </div>
         {% endif %}
 
         {% if objet.tarifEnClair is not empty or objet.dateEnClair is not empty%}
             <div>
-                <h4> Tarifs et Ouvertures </h4>
+                <h4> {{ 'Tarifs et Ouvertures'|trans }} </h4>
                 {% if objet.tarifEnClair is not empty %}
                     <p> {{ objet.tarifEnClair|langueLib(langue.lanShortCut) }}</p>
                 {% endif %}
@@ -65,7 +65,7 @@
                 {% if objet.ouvertures is not empty %}
                 {% for ouv in objet.ouvertures %}
                     {% if ouv.ouvInfosSup is not empty %}
-                        <p> Informations supplémentaires : {{ ouv.ouvInfosSup|langueLib(langue.lanShortCut) }}</p>
+                        <p> {{ 'Informations supplémentaires'|trans }} : {{ ouv.ouvInfosSup|langueLib(langue.lanShortCut) }}</p>
                     {% endif %}
                 {% endfor %}
                 {% endif %}
@@ -75,10 +75,10 @@
         {% if trad.traInfosSup is not empty or trad.traInfosSup is not empty %}
         <div>
             {% if trad.traInfosSup is not empty %}
-                <p>Informations supplémentaires : {{ trad.traInfosSup }} </p>
+                <p>{{ 'Informations supplémentaires'|trans }} : {{ trad.traInfosSup }} </p>
             {% endif %}
             {% if trad.traInfosSup is not empty %}
-                <p>Bons plans : {{ trad.traBonsPlans }} </p>
+                <p>{{ 'Bons plans'|trans }} : {{ trad.traBonsPlans }} </p>
             {% endif %}
         </div>
         {% endif %}
@@ -86,7 +86,7 @@
 
     {% if objet.typesPublic is not empty %}
     <article>
-        <h4> Types de public : </h4>
+        <h4> {{ 'Types de public'|trans }} </h4>
         <ul>
             {% for type in objet.typesPublic %}
             <li>{{ type.typLibelle|langueLib(langue.lanShortCut) }}

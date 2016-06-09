@@ -4,13 +4,13 @@
        <h4> Capacité </h4>
             <ul>
             {% if objet.nbMaxCouverts is not empty %}
-                <li> Nombre max de couverts : {{  objet.nbMaxCouverts }} </li>
+                <li> {{ 'Nombre maximum de couverts'|trans }} : {{  objet.nbMaxCouverts }} </li>
             {% endif %}
             {% if objet.nbCouvertsTerrasse is not empty %}
-                <li> Nombre de couverts en terrasse : {{  objet.nbCouvertsTerrasse }} </li>
+                <li> {{ 'Nombre de couverts en terrasse'|trans }} : {{  objet.nbCouvertsTerrasse }} </li>
             {% endif %}
             {% if objet.nbSalles is not empty %}
-                <li> Nombre de salles : {{  objet.nbSalles }} </li>
+                <li> {{ 'Nombre de salles'|trans }} : {{  objet.nbSalles }} </li>
             {% endif %}
             </ul>
     </article>

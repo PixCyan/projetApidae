@@ -2,7 +2,7 @@
 
     {% if  objet.portee is not empty %}
     <article>
-        <h4> Portée de l'évènement : </h4>
+        <h4> {{ "Portée de l'évènement"|trans }} : </h4>
         <p> {{ objet.portee|langueLib(langue.lanShortCut) }} </p>
     </article>
     {% endif %}

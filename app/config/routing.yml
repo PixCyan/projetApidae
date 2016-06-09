@@ -1,16 +1,14 @@
 user:
     resource: "@UserBundle/Controller/"
     type:     annotation
-    prefix:   /accueil
-
-apidae:
-    path : /{langueLocale}/
-    defaults :  { _controller: ApidaeBundle:Default:index }
-    prefix : /
+    prefix:   /
 
 userBundle:
     resource: "@UserBundle/Resources/config/routing.yml"
+    prefix : /
 
 ApidaeBundle:
     resource: "@ApidaeBundle/Resources/config/routing.yml"
-
+    prefix : /{_locale}/
+    requirements:
+        _locale: en|fr

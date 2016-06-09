@@ -18,11 +18,11 @@ fos_user_change_password:
     prefix: /profile
 
 profile:
-    path: /{langueLocale}/consulterProfile
+    path: /consulterProfile
     defaults: { _controller: UserBundle:Default:voirProfil }
 
 listeUsers:
-    path: /{langueLocale}/admin/liste/utilisateurs
+    path: /admin/liste/utilisateurs
     defaults: { _controller: UserBundle:Default:listeUtilisateurs }
 
 editionProfile:
@@ -37,4 +37,3 @@ modifierUser:
 deleteUser:
     path: /admin/delete/utilisateur/{userId}
     defaults: { _controller: UserBundle:Default:deleteUser }
-
