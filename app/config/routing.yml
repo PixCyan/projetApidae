@@ -1,11 +1,13 @@
 user:
     resource: "@UserBundle/Controller/"
     type:     annotation
-    prefix:   /
 
 userBundle:
     resource: "@UserBundle/Resources/config/routing.yml"
-    prefix : /
+    prefix : /{_locale}/
+    requirements:
+       _locale: en|fr
+
 
 ApidaeBundle:
     resource: "@ApidaeBundle/Resources/config/routing.yml"

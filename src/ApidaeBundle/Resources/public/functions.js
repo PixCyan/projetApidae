@@ -3,12 +3,12 @@
  */
 $("document").ready(function() {
     $(".filtres").click(function() {
-        console.log('http://localhost/sites/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val() + "/" + $(this).attr('name'));
+        console.log('http://localhost/sites/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val() + "/" + $(this).attr('name'));
         if($(this).attr('checked')) {
             console.log("checked");
             $.ajax({
                 type : 'POST',
-                url  : 'http://localhost/sites/projetApidae/web/app_dev.php/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
+                url  : 'http://localhost/sites/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
                 beforeSend: function() {
