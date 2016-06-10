@@ -1,5 +1,94 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
 {%  block content %}
+    <!-- start end Page title -->
+    <div class="page-title" style="background-image:url({{ asset('bundles/apidae/images/hero-header/breadcrumb.jpg') }});">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+                    <h1 class="hero-title">{{ typeObjet }} {% if categorie is defined and categorie is not empty %} : {{ categorie.selLibelle|langueLib(langue.lanShortCut) }} {% endif %}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end Page title -->
+    <div class="content-wrapper">
+        <div class="container">
+            <div class="row">
+                <!-- Filtres -->
+                <div class="col-sm-4 col-md-3">
+
+                    <aside class="sidebar with-filter">
+
+                        <div class="sidebar-search-wrapper bg-light-2">
+
+                            <div class="sidebar-search-header">
+                                <h4>{{ 'Rechercher'|trans }}</h4>
+                            </div>
+
+                            <div class="sidebar-search-content">
+                                <div class="sidebar-module">
+                                    <div class="sidebar-module-inner">
+                                        <div class="sidebar-mini-search">
+                                            <div class="input-group">
+                                                <form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
+                                                    <input type="text" class="form-control" placeholder="ex : Lac">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-primary" type="button"><i class="fa fa-search"></i></button>
+                                                    </span>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--<form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
+                                    <label for="rechercheSimple">{{ 'Rechercher'|trans }}</label><input type="text" name="champsRecherche" id="rechercheSimple" placeholder="ex : Lac" />
+                                    <input type="submit" value="{{ 'Rechercher'|trans }}" />
+                                </form>-->
+                            </div>
+                        </div>
+                        <div class="sidebar-header clearfix">
+                            <h4>{{ 'Filtres'|trans }}</h4>
+                            <a href="#" class="sidebar-reset-filter"><i class="fa fa-times"></i> reset filter</a>
+                        </div>
+
+
+                        <form id="form_recherche" action="" method="POST">
+                            {% if typesHabitation is defined and typesHabitation is not empty %}
+                                {% include "ApidaeBundle:filtres:TypesHabitationFiltres.html.twig" %}
+                                <div class="clear"></div>
+                            {% endif %}
+                            {% if modesPaiement is defined and modesPaiement is not empty %}
+                                {% include "ApidaeBundle:filtres:ModesPaiementFiltres.html.twig" %}
+                                <div class="clear"></div>
+                            {% endif %}
+                            {% if services is defined and services is not empty %}
+                                {% include "ApidaeBundle:filtres:ServicesFiltres.html.twig" %}
+                                <div class="clear"></div>
+                            {% endif %}
+                            {% if labels is defined and labels is not empty %}
+                                {% include "ApidaeBundle:filtres:Classements.html.twig" %}
+                                <div class="clear"></div>
+                            {% endif %}
+                            {% if tourismeAdapte is defined and tourismeAdapte is not empty %}
+                                {% include "ApidaeBundle:filtres:TourismeAdapte.html.twig" %}
+                            {% endif %}
+                        </form>
+
+                    </aside>
+
+
+                </div>
+                <!-- Liste objets -->
+                <div class="col-sm-8 col-md-9">
+                    {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
     <h1> {{ typeObjet }} {% if categorie is defined and categorie is not empty %} : {{ categorie.selLibelle|langueLib(langue.lanShortCut) }} {% endif %}</h1>
     <article class="filtresListe">
         <h2> {{ 'Filtres'|trans }}</h2>
@@ -11,15 +100,19 @@
         <form id="form_recherche" action="" method="POST">
             {% if typesHabitation is defined and typesHabitation is not empty %}
                 {% include "ApidaeBundle:filtres:TypesHabitationFiltres.html.twig" %}
+                <div class="clear"></div>
             {% endif %}
             {% if modesPaiement is defined and modesPaiement is not empty %}
                 {% include "ApidaeBundle:filtres:ModesPaiementFiltres.html.twig" %}
+                <div class="clear"></div>
             {% endif %}
             {% if services is defined and services is not empty %}
                 {% include "ApidaeBundle:filtres:ServicesFiltres.html.twig" %}
+                <div class="clear"></div>
             {% endif %}
             {% if labels is defined and labels is not empty %}
                 {% include "ApidaeBundle:filtres:Classements.html.twig" %}
+                <div class="clear"></div>
             {% endif %}
             {% if tourismeAdapte is defined and tourismeAdapte is not empty %}
                 {% include "ApidaeBundle:filtres:TourismeAdapte.html.twig" %}
@@ -32,6 +125,5 @@
             {{ flash_message }}
         </div>
     {% endfor %}
-    {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
 
 {% endblock %}

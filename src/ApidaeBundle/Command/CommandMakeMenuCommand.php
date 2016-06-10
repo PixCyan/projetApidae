@@ -36,9 +36,9 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $jsonMenu = file_get_contents("/var/www/local/Symfony/projetApidae/tools/donneesMenu.json");
+            $jsonMenu = file_get_contents("/var/www/html/sites/projetApidae/tools/donneesMenu.json");
             $donneesMenu = json_decode($jsonMenu);
-            $fichierMenu = fopen('/var/www/local/Symfony/projetApidae/src/ApidaeBundle/Resources/views/commun/menu.html.twig', 'w');
+            $fichierMenu = fopen('/var/www/html/sites/projetApidae/src/ApidaeBundle/Resources/views/commun/menu.html.twig', 'w');
             $this->em = $this->getApplication()->getKernel()->getContainer()->get('doctrine')->getManager();
             $this->langues = $this->em->getRepository(Langue::class)->findAll();
             $menuFinal = [];
@@ -66,11 +66,11 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
                 foreach($menuFinal as $v) {
                     if($v == $menuFinal[0]) {
                         $ul = $this->getLangueLib($v->typeObjet, $langue->getLanShortCut());
-                        $liTitre = "\t <li class=\"LiMenu\">".$ul."\n";
+                        $liTitre = "\t <li><a>".$ul."</a>\n";
                         fputs($fichierMenu, $liTitre."\t \t <ul> \n");
                     } else if($ul != $this->getLangueLib($v->typeObjet, $langue->getLanShortCut())) {
                         $ul = $this->getLangueLib($v->typeObjet, $langue->getLanShortCut());
-                        $liTitre = "\t <li class=\"LiMenu\">".$ul."\n";
+                        $liTitre = "\t <li><a>".$ul."</a>\n";
                         fputs($fichierMenu, "\t \t </ul> \n \t </li> \n".$liTitre);
                         fputs($fichierMenu, "\t \t <ul> \n");
                     }

@@ -1,7 +1,15 @@
-<di>
-    <h4> {{ "Types d'habitation"|trans }}Types d'habitation </h4>
+<div class="sidebar-module">
+    <h6 class="sidebar-title"> {{ "Types d'habitation"|trans }}Types d'habitation </h6>
     {% for t in typesHabitation %}
+        <div class="sidebar-module-inner">
+            <div class="checkbox-block">
+                <input id="{{ t.catId }}" name="services" value="{{ t.catId }}" type="checkbox" class="checkbox"/>
+                <label class="" for="{{ t.catId }}">{{ t.catLibelle|langueLib(langue.lanShortCut) }}</label>
+            </div>
+        </div>
+
+        <!--
         <input class="filtres" type="checkbox" id="{{ t.catId }}" value="{{ t.catId }}" name="categories">
-        <label for="{{ t.catId }}"> {{ t.catLibelle|langueLib(langue.lanShortCut) }}</label><br/>
+        <label for="{{ t.catId }}"> {{ t.catLibelle|langueLib(langue.lanShortCut) }}</label><br/> -->
     {% endfor %}
-</di>
+</div>

@@ -1,49 +1,45 @@
-<section id="listeDobjets">
+<div class="package-list-item-wrapper on-page-result-page">
 {% for objet in objets %}
-    <article class="objetListe">
-        <h2> {{ objet.nom|langueLib(langue.lanShortCut) }}</h2>
-        {% if objet.multimedias is not empty %}
-            <div class="imgListe">
-                <a href="{{ objet.multimedias.first.mulUrl}}" ><img src="{{ objet.multimedias.first.mulUrlListe}}"></a>
-            </div>
-        {% endif %}
-
-        <div class="infosListe">
-            {% if objet.commune is not empty %}
-                <p>{{ objet.commune.comNom }}</p>
-            {%  endif %}
-            {% if objet.categories is not empty%}
-             <!--   <div> <p>Categories :</p>
-                    {% for cat in objet.categories %}
-                        <div class="listeCategories">
-                            <p>{{ cat.catLibelle|langueLib(langue.lanShortCut) }}</p>
-                        </div>
-                    {% endfor %}
-                </div> -->
+    <div class="package-list-item clearfix">
+        <div class="image">
+            {% if objet.multimedias is not empty %}
+                <img src="{{ objet.multimedias.first.mulUrlListe}}" alt="" />
+            {% else %}
+                <img src="images/tour-package/01.jpg" alt="" />
             {% endif %}
-            {% if objet.tarifEnClair is not empty %}
-                <p> {{ objet.tarifEnClair|langueLib(langue.lanShortCut) }}</p>
-            {% endif %}
+        </div>
 
-            {% if tradLangue(objet, langue) is not null %}
-                <div >
-                    <h4> {{ 'Description'|trans }}: </h4>
-                    <p> {{ tradLangue(objet, langue).traDescriptionCourte }} </p>
+        <div class="content">
+            <h5>{{ objet.nom|langueLib(langue.lanShortCut) }} <button class="btn"><i class="fa fa-heart-o"></i></button></h5>
+            <div class="row gap-10">
+                <div class="col-sm-12 col-md-9">
+                    {% if objet.commune is not empty %}
+                        <ul class="list-info">
+                            <li><span class="icon"><i class="fa fa-map-marker"></i></span> <span class="font600">{{ objet.commune.comNom }}</span></li>
+                        </ul>
+                    {%  endif %}
+                    {% if objet.tarifEnClair is not empty %}
+                        <p class="line18">{{ objet.tarifEnClair|langueLib(langue.lanShortCut) }}</p>
+                    {% endif %}
+                    {% if tradLangue(objet, langue) is not null %}
+                        <p class="line18">{{ tradLangue(objet, langue).traDescriptionCourte }} </p>
+                    {% endif %}
                 </div>
-            {% endif %}
-        </div>
-        <div class="lienDetailsListe">
-            <a href="{{ path('offre', {'id': objet.idObjet }) }}"> {{ 'Voir le détail'|trans }} </a>
-        </div>
-        {% if is_granted('ROLE_SUPER_ADMIN') %}
-            <div class="optionsAdmin">
-                <a href="{{ path('modifierOffre', {'offreId': objet.idObjet }) }}"> {{ 'Modifier'|trans }}</a>
+                <div class="col-sm-12 col-md-3 text-right text-left-sm">
+                    <a href="{{ path('offre', {'id': objet.idObjet }) }}" class="btn btn-primary btn-sm"> {{ 'Voir le détail'|trans }} </a>
+                    {% if is_granted('ROLE_SUPER_ADMIN') %}
+                        <div class="optionsAdmin">
+                            <a href="{{ path('modifierOffre', {'offreId': objet.idObjet }) }}"> {{ 'Modifier'|trans }}</a>
+                        </div>
+                    {%  endif %}
+                </div>
             </div>
-        {%  endif %}
-    </article>
+        </div>
+    </div>
 {% endfor %}
-</section>
+</div>
 <div hidden>
     <p id="langue" >{{ langue.lanShortCut }}</p>
 </div>
+
 
