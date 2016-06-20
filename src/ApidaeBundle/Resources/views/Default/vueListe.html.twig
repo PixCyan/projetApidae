@@ -88,42 +88,4 @@
 
 
 
-
-    <h1> {{ typeObjet }} {% if categorie is defined and categorie is not empty %} : {{ categorie.selLibelle|langueLib(langue.lanShortCut) }} {% endif %}</h1>
-    <article class="filtresListe">
-        <h2> {{ 'Filtres'|trans }}</h2>
-        {% if services is defined and services is not empty and objets|length != 1
-            or modesPaiement is defined and modesPaiement is not empty and objets|length != 1
-            or labels is defined and labels is not empty and objets|length != 1
-            or tourismeAdapte is defined  and tourismeAdapte is not empty and objets|length != 1
-            or typesHabitation is defined  and typesHabitation is not empty and objets|length != 1 %}
-        <form id="form_recherche" action="" method="POST">
-            {% if typesHabitation is defined and typesHabitation is not empty %}
-                {% include "ApidaeBundle:filtres:TypesHabitationFiltres.html.twig" %}
-                <div class="clear"></div>
-            {% endif %}
-            {% if modesPaiement is defined and modesPaiement is not empty %}
-                {% include "ApidaeBundle:filtres:ModesPaiementFiltres.html.twig" %}
-                <div class="clear"></div>
-            {% endif %}
-            {% if services is defined and services is not empty %}
-                {% include "ApidaeBundle:filtres:ServicesFiltres.html.twig" %}
-                <div class="clear"></div>
-            {% endif %}
-            {% if labels is defined and labels is not empty %}
-                {% include "ApidaeBundle:filtres:Classements.html.twig" %}
-                <div class="clear"></div>
-            {% endif %}
-            {% if tourismeAdapte is defined and tourismeAdapte is not empty %}
-                {% include "ApidaeBundle:filtres:TourismeAdapte.html.twig" %}
-            {% endif %}
-        </form>
-        {% endif %}
-    </article>
-    {% for flash_message in app.session.flashbag.get('notice') %}
-        <div class="flash-notice">
-            {{ flash_message }}
-        </div>
-    {% endfor %}
-
 {% endblock %}

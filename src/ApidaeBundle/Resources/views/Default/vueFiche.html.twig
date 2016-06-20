@@ -1,118 +1,177 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
 {% block content %}
-    <h1> {{ objet.nom|langueLib(langue.lanShortCut) }} </h1>
-    <article>
-        {% if objet.multimedias is not empty %}
-        <div>
-            <h4> {{ 'Multimédias'|trans }} : </h4>
-            {% for m in objet.multimedias %}
-                {% if m.mulUrlFiche is not empty %}
-                    <a href="{{ m.mulUrl}}" ><img src="{{ m.mulUrlFiche}}"></a>
-                {% endif %}
-            {%  endfor %}
-        </div>
-        {% endif %}
-
-        {% if objet.categories is not empty %}
-        <div>
-            <h4> {{ 'Categories'|trans }} : </h4>
-            <ul>
-                {% for cat in objet.categories %}
-                    <li>{{ cat.catLibelle|langueLib(langue.lanShortCut) }}</li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-
-        {% if objet.adresse is not empty %}
-            <article>
-                <h4> {{ 'Adresse'|trans }} </h4>
-                <p> {{ objet.adresse|langueLib(langue.lanShortCut) }}</p>
-                {% if objet.commune is not empty %}
-                    <p>{{ objet.commune.comCode }} {{ objet.commune.comNom }}</p>
-                {%  endif %}
-
-            </article>
-        {%  endif %}
-
-        {% if objet.moyensCommunications is not empty %}
-            <article>
-                <h4> {{ 'Moyens de communication'|trans }} </h4>
-                <ul>
-                    {% for moy in objet.moyensCommunications %}
-                        <li>{{ moy.moyComLibelle|langueLib(langue.lanShortCut) }} : {{ moy.moyComCoordonnees }}</li>
-                    {% endfor %}
-                </ul>
-            </article>
-        {% endif %}
-
-        {% if trad.traDescriptionLongue is not empty %}
-        <div>
-            <h4> {{ 'Description'|trans }} </h4>
-            <p> {{ trad.traDescriptionLongue }} </p>
-        </div>
-        {% endif %}
-
-        {% if objet.tarifEnClair is not empty or objet.dateEnClair is not empty%}
-            <div>
-                <h4> {{ 'Tarifs et Ouvertures'|trans }} </h4>
-                {% if objet.tarifEnClair is not empty %}
-                    <p> {{ objet.tarifEnClair|langueLib(langue.lanShortCut) }}</p>
-                {% endif %}
-                {% if objet.dateEnClair is not empty %}
-                    <p> {{ objet.dateEnClair|langueLib(langue.lanShortCut) }}</p>
-                {% endif %}
-                {% if objet.ouvertures is not empty %}
-                {% for ouv in objet.ouvertures %}
-                    {% if ouv.ouvInfosSup is not empty %}
-                        <p> {{ 'Informations supplémentaires'|trans }} : {{ ouv.ouvInfosSup|langueLib(langue.lanShortCut) }}</p>
-                    {% endif %}
-                {% endfor %}
-                {% endif %}
+<div class="page-title" style="background-image:url({{ asset('bundles/apidae/images/hero-header/breadcrumb.jpg') }});">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+                <h1 class="hero-title">{{ objet.nom|langueLib(langue.lanShortCut) }}</h1>
             </div>
-        {% endif %}
-
-        {% if trad.traInfosSup is not empty or trad.traInfosSup is not empty %}
-        <div>
-            {% if trad.traInfosSup is not empty %}
-                <p>{{ 'Informations supplémentaires'|trans }} : {{ trad.traInfosSup }} </p>
-            {% endif %}
-            {% if trad.traInfosSup is not empty %}
-                <p>{{ 'Bons plans'|trans }} : {{ trad.traBonsPlans }} </p>
-            {% endif %}
         </div>
-        {% endif %}
-    </article>
+    </div>
+</div>
+<!-- end Page title -->
+<div class="content-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12" role="main">
+                <div class="detail-content-wrapper">
+                    <div id="section-0" class="detail-content">
+                        <div class="row">
+                            <div class="col-md-6" role="main">
+                                {% if objet.multimedias is not empty %}
+                                <div class="slick-gallery-slideshow">
+                                    <div class="slider gallery-slideshow">
+                                        {% for m in objet.multimedias %}
+                                            {% if m.mulUrlFiche is not empty %}
+                                                <img src="{{ m.mulUrlFiche}}">
+                                            {% endif %}
+                                        {%  endfor %}
+                                    </div>
+                                    {% if objet.multimedias|length > 1 %}
+                                    <div class="slider gallery-nav">
+                                        {% for m in objet.multimedias %}
+                                            {% if m.mulUrlFiche is not empty %}
+                                                <img src="{{ m.mulUrlFiche}}">
+                                            {% endif %}
+                                        {%  endfor %}
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6" role="main">
+                                <div>
+                                    <div class="section-title text-left">
+                                        <h4>{{ "Adresse"|trans }}</h4>
+                                    </div>
+                                    {% if objet.adresse is not empty %}
+                                        <p> {{ objet.adresse|langueLib(langue.lanShortCut) }}</p>
+                                        {% if objet.commune is not empty %}
+                                            <p>{{ objet.commune.comCode }} {{ objet.commune.comNom }}</p>
+                                        {%  endif %}
+                                    {%  endif %}
+                                </div>
+                                {% if objet.moyensCommunications is not empty %}
+                                    <div>
+                                        <div class="section-title text-left">
+                                            <h4>{{ "Moyens de communication"|trans }}</h4>
+                                        </div>
+                                        <ul>
+                                            {% for moy in objet.moyensCommunications %}
+                                                <li>{{ moy.moyComLibelle|langueLib(langue.lanShortCut) }} : {{ moy.moyComCoordonnees }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
 
-    {% if objet.typesPublic is not empty %}
-    <article>
-        <h4> {{ 'Types de public'|trans }} </h4>
-        <ul>
-            {% for type in objet.typesPublic %}
-            <li>{{ type.typLibelle|langueLib(langue.lanShortCut) }}
-                <ul>
-                    {% if type.familleCritere is not empty %}
-                        <li> {{ type.familleCritere|langueLib(langue.lanShortCut) }}  </li>
-                    {% endif %}
-                    {% if type.min is not empty %}
-                        <li> Min : {{ type.min }} / Max : {{ type.max }}</li>
-                    {% endif %}
-                </ul>
-            </li>
-            {% endfor %}
-        </ul>
-    </article>
-    {% endif %}
+                                {% if objet.categories is not empty %}
+                                    <div>
+                                        <div class="section-title text-left">
+                                            <h4>{{ 'Categories'|trans }}</h4>
+                                        </div>
+                                        <ul>
+                                            {% for cat in objet.categories %}
+                                                <li>{{ cat.catLibelle|langueLib(langue.lanShortCut) }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
 
-    {% if objet.objTypeApidae|typeApidae == "RESTAURATION" %}
-        {% include "ApidaeBundle:restaurant:contenuRestaurant.html.twig" %}
-    {% elseif objet.objTypeApidae|typeApidae == "HEBERGEMENT" or objet.objTypeApidae|typeApidae == "HOTELLERIE" %}
-        {% include "ApidaeBundle:hebergement:contenuHebergement.html.twig" %}
-    {% elseif objet.objTypeApidae|typeApidae == "EQUIPEMENT" or objet.objTypeApidae|typeApidae == "PATRIMOINE"
-        or objet.objTypeApidae|typeApidae == "ACTIVITE"%}
-        {% include "ApidaeBundle:activite:contenuActivite.html.twig" %}
-    {% elseif objet.objTypeApidae|typeApidae == "FETE" %}
-        {% include "ApidaeBundle:evenement:contenuEvenement.html.twig" %}
-    {%  endif %}
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if trad.traDescriptionLongue is not empty %}
+                        <div id="section-1" class="detail-content">
+                            <div class="section-title text-left">
+                                <h4>{{ "Description"|trans }}</h4>
+                            </div>
+                            <p>{{ trad.traDescriptionLongue }}</p>
+                        </div>
+                    {% endif %}
+
+                    <div id="section-4" class="detail-content">
+                        <div class="row">
+                            {% if objet.tarifEnClair is not empty or objet.dateEnClair is not empty%}
+                                <div class="col-md-6" role="main">
+                                    <div class="section-title text-left">
+                                        <h4>{{ 'Tarifs et Ouvertures'|trans }}</h4>
+                                    </div>
+                                    {% if objet.tarifEnClair is not empty %}
+                                        <p> {{ objet.tarifEnClair|langueLib(langue.lanShortCut) }}</p>
+                                    {% endif %}
+                                    {% if objet.dateEnClair is not empty %}
+                                        <p> {{ objet.dateEnClair|langueLib(langue.lanShortCut) }}</p>
+                                    {% endif %}
+                                    {% if objet.ouvertures is not empty %}
+                                        {% for ouv in objet.ouvertures %}
+                                            {% if ouv.ouvInfosSup is not empty %}
+                                                <p> {{ 'Informations supplémentaires'|trans }} : {{ ouv.ouvInfosSup|langueLib(langue.lanShortCut) }}</p>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+
+                            {% if objet.typesPublic is not empty %}
+                                <div class="col-md-6" role="main">
+                                    <div class="section-title text-left">
+                                        <h4>{{ 'Types de public'|trans }}</h4>
+                                    </div>
+                                    <ul>
+                                        {% for type in objet.typesPublic %}
+                                            <li>{{ type.typLibelle|langueLib(langue.lanShortCut) }}
+                                                <ul>
+                                                    {% if type.familleCritere is not empty %}
+                                                        <li> {{ type.familleCritere|langueLib(langue.lanShortCut) }}  </li>
+                                                    {% endif %}
+                                                    {% if type.min is not empty %}
+                                                        <li> Min : {{ type.min }} / Max : {{ type.max }}</li>
+                                                    {% endif %}
+                                                </ul>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+
+                    {% include "ApidaeBundle:commun:OptionsRestauHeberg.html.twig" %}
+
+                    {% if objet.objTypeApidae|typeApidae == "RESTAURATION" %}
+                        {% include "ApidaeBundle:restaurant:contenuRestaurant.html.twig" %}
+                    {% elseif objet.objTypeApidae|typeApidae == "HEBERGEMENT" or objet.objTypeApidae|typeApidae == "HOTELLERIE" %}
+                        {% include "ApidaeBundle:hebergement:contenuHebergement.html.twig" %}
+                    {% elseif objet.objTypeApidae|typeApidae == "EQUIPEMENT" or objet.objTypeApidae|typeApidae == "PATRIMOINE"
+                    or objet.objTypeApidae|typeApidae == "ACTIVITE"%}
+                        {% include "ApidaeBundle:activite:contenuActivite.html.twig" %}
+                    {% elseif objet.objTypeApidae|typeApidae == "FETE" %}
+                        {% include "ApidaeBundle:evenement:contenuEvenement.html.twig" %}
+                    {%  endif %}
+
+                    {% if trad.traInfosSup is not empty or trad.traInfosSup is not empty %}
+                        <div id="section-3" class="detail-content">
+                            <div class="section-title text-left">
+                                <h4>{{ 'Informations supplémentaires'|trans }} : {{ trad.traInfosSup }}</h4>
+                            </div>
+                            {% if trad.traInfosSup is not empty %}
+                                <p>{{ 'Informations supplémentaires'|trans }} : {{ trad.traInfosSup }} </p>
+                            {% endif %}
+                            {% if trad.traInfosSup is not empty %}
+                                <p>{{ 'Bons plans'|trans }} : {{ trad.traBonsPlans }} </p>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
+

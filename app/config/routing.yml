@@ -14,3 +14,7 @@ ApidaeBundle:
     prefix : /{_locale}/
     requirements:
         _locale: en|fr
+
+index:
+    path : /
+    defaults: { _controller: ApidaeBundle:Default:index }

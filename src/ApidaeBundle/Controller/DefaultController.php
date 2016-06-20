@@ -32,7 +32,11 @@ class DefaultController extends Controller
     public function indexAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
 
-        $langue = $request->getLocale();
+        if($request->getLocale()){
+            $langue = $request->getLocale();
+        } else {
+            $langue = 'Fr';
+        }
 
         $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
         $user = $this->getUser();

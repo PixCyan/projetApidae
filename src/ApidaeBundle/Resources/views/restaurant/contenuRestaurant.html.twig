@@ -1,21 +1,19 @@
 {% block contentRestaurant %}
 
-    <article>
-       <h4> Capacité </h4>
-            <ul>
-            {% if objet.nbMaxCouverts is not empty %}
-                <li> {{ 'Nombre maximum de couverts'|trans }} : {{  objet.nbMaxCouverts }} </li>
-            {% endif %}
-            {% if objet.nbCouvertsTerrasse is not empty %}
-                <li> {{ 'Nombre de couverts en terrasse'|trans }} : {{  objet.nbCouvertsTerrasse }} </li>
-            {% endif %}
-            {% if objet.nbSalles is not empty %}
-                <li> {{ 'Nombre de salles'|trans }} : {{  objet.nbSalles }} </li>
-            {% endif %}
-            </ul>
-    </article>
-    
-    {% include "ApidaeBundle:commun:OptionsRestauHeberg.html.twig" %}
-
-
+<div id="section-7" class="detail-content">
+    <div class="section-title text-left">
+        <h4>{{ 'Capacité'|trans }}</h4>
+    </div>
+    <ul>
+        {% if objet.nbMaxCouverts is not empty %}
+            <li> {{ 'Nombre maximum de couverts'|trans }} : {{  objet.nbMaxCouverts }} </li>
+        {% endif %}
+        {% if objet.nbCouvertsTerrasse is not empty %}
+            <li> {{ 'Nombre de couverts en terrasse'|trans }} : {{  objet.nbCouvertsTerrasse }} </li>
+        {% endif %}
+        {% if objet.nbSalles is not empty %}
+            <li> {{ 'Nombre de salles'|trans }} : {{  objet.nbSalles }} </li>
+        {% endif %}
+    </ul>
+</div>
 {% endblock %}

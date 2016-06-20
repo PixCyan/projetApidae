@@ -5,7 +5,7 @@
             {% if objet.multimedias is not empty %}
                 <img src="{{ objet.multimedias.first.mulUrlListe}}" alt="" />
             {% else %}
-                <img src="images/tour-package/01.jpg" alt="" />
+                <img src="{{ asset('bundles/apidae/images/tour-package/01.jpg') }}" alt="" />
             {% endif %}
         </div>
 

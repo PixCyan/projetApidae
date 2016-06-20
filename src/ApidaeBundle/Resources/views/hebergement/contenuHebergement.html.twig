@@ -1,6 +1,9 @@
 {% block contentHebergement %}
-    <article>
-       <h4> Capacité </h4>
+
+<div id="section-7" class="detail-content">
+    <div class="section-title text-left">
+        <h4>{{ 'Capacité'|trans }}</h4>
+    </div>
             <ul>
             {% if objet.surface is not empty %}
                 <li> {{ 'Surface'|trans }} : {{  objet.surface }} m²</li>
@@ -57,9 +60,6 @@
                 <li> {{ 'Nombre de lits simples'|trans }} : {{  objet.nbLitsSimples }} </li>
             {% endif %}
             </ul>
-    </article>
-
-    {% include "ApidaeBundle:commun:OptionsRestauHeberg.html.twig" %}
-
+</div>
 
 {% endblock %}
