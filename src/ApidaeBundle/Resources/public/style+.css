@@ -1,0 +1,8 @@
+ul.listesInfos {
+    width : 100%;
+}
+
+ul.listesInfos li {
+    float: left;
+    width : 33%;
+}

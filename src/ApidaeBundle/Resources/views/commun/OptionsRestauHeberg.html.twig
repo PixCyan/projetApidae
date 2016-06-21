@@ -1,77 +1,79 @@
 {% block contentRestaurant %}
-{% if objet.services is not empty or objet.equipements is not empty %}
-<div id="section-6" class="detail-content">
+
+{% if objet.services is not empty %}
+<div id="section-5" class="detail-content">
     <div class="row">
-            {% if objet.services is not empty %}
-                <div class="col-md-6" role="main">
-                    <div class="section-title text-left">
-                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"><h4>{{ 'Services'|trans }}</h4></a>
-                    </div>
-                    <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-                        <div class="panel-body">
-                            <div class="faq-thread">
-                                {% if objet.services|length > 8 %}
-                                <div class="row">
-                                    <div class="col-md-6" role="main">
-                                        {% for i in 0..8 %}
-                                            <li>{{ objet.services.i .serLibelle|langueLib(langue.lanShortCut) }}</li>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-
-
-                                {% endif %}
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            {% endif %}
-
-
-        {% if objet.equipements is not empty %}
-            <div class="col-md-6" role="main">
-                <div class="section-title text-left">
-                    <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseOne"><h4> {{ 'Equipements'|trans }} </h4></a>
-                </div>
-                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
-                    <div class="panel-body">
-                        <div class="faq-thread">
-                            <ul>
-                                {% for equipement in objet.equipements %}
-                                    <li>{{ equipement.equLibelle|langueLib(langue.lanShortCut) }}
-                                        {% if equipement.equInfosSup is not empty %}
-                                            <ul>
-                                                <li> {{ equipement.equInfosSup|langueLib(langue.lanShortCut) }} </li>
-                                            </ul>
-                                        {% endif %}
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
+        <div class="col-md-12" role="main">
+            <div class="section-title text-left">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne"><h4>{{ 'Services'|trans }}</h4></a>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <div class="faq-thread">
+                        <ul class="listesInfos">
+                        {% for service in objet.services %}
+                            <li>{{ service.serLibelle|langueLib(langue.lanShortCut) }}</li>
+                        {% endfor %}
+                        </ul>
                     </div>
                 </div>
             </div>
-        {% endif %}
+        </div>
     </div>
 </div>
+{% endif %}
+
+{% if objet.equipements is not empty %}
+<div id="section-6" class="detail-content">
+    <div class="row">
+        <div class="col-md-12" role="main">
+            <div class="section-title text-left">
+                <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo"><h4> {{ 'Equipements'|trans }} </h4></a>
+            </div>
+            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                <div class="panel-body">
+                    <div class="faq-thread">
+                        <ul class="listesInfos">
+                            {% for equipement in objet.equipements %}
+                                <li>{{ equipement.equLibelle|langueLib(langue.lanShortCut) }}
+                                    {% if equipement.equInfosSup is not empty %}
+                                        <ul>
+                                            <li> {{ equipement.equInfosSup|langueLib(langue.lanShortCut) }} </li>
+                                        </ul>
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 
 {% if objet.objEtoile is not empty and objet.labelsQualite is not empty %}
-    <div id="section-5" class="detail-content">
+    <div id="section-7" class="detail-content">
         <div class="section-title text-left">
-            <h4>{{ 'Classements'|trans }}</h4>
+            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="true" aria-controls="collapseThree"><h4>{{ 'Classements'|trans }}</h4></a>
         </div>
-        <ul>
-            {% if objet.objEtoile is not empty %}
-                <li>{{ 'Classement étoile'|trans }} : {{ objet.objEtoile|langueLib(langue.lanShortCut) }}</li>
-            {% endif %}
-            {% if objet.labelsQualite is not empty %}
-                {% for label in objet.labelsQualite %}
-                    <li>{{ label.labLibelle|langueLib(langue.lanShortCut) }} {{ label.labClassement|langueLib(langue.lanShortCut) }}</li>
-                {% endfor %}
-            {% endif %}
-        </ul>
+        <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+            <div class="panel-body">
+                <div class="faq-thread">
+                    <ul class="listesInfos">
+                    {% if objet.objEtoile is not empty %}
+                        <li>{{ 'Classement étoile'|trans }} : {{ objet.objEtoile|langueLib(langue.lanShortCut) }}</li>
+                    {% endif %}
+                    {% if objet.labelsQualite is not empty %}
+                        {% for label in objet.labelsQualite %}
+                            <li>{{ label.labLibelle|langueLib(langue.lanShortCut) }} {{ label.labClassement|langueLib(langue.lanShortCut) }}</li>
+                        {% endfor %}
+                    {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
-{% endif %}
 {% endif %}
 {% endblock %}

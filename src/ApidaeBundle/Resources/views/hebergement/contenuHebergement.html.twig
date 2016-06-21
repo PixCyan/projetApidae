@@ -1,65 +1,71 @@
 {% block contentHebergement %}
 
-<div id="section-7" class="detail-content">
+<div id="section-8" class="detail-content">
     <div class="section-title text-left">
-        <h4>{{ 'Capacité'|trans }}</h4>
+        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="true" aria-controls="collapseFive"><h4>{{ 'Capacité'|trans }}</h4></a>
     </div>
-            <ul>
-            {% if objet.surface is not empty %}
-                <li> {{ 'Surface'|trans }} : {{  objet.surface }} m²</li>
-            {% endif %}
-            {% if objet.numeroEtage is not empty %}
-                <li> {{ "Numéro d'étage"|trans }} : {{  objet.numeroEtage }} </li>
-            {% endif %}
-            {% if objet.nbPieces is not empty %}
-                <li> {{ 'Nombre de pièces'|trans }} : {{  objet.nbPieces }} </li>
-            {% endif %}
-            {% if objet.nbChambresClassees is not empty %}
-                <li> {{ 'Nombre de chambres classées'|trans }} : {{  objet.nbChambresClassees }} </li>
-            {% endif %}
-            {% if objet.capaciteHebergement is not empty %}
-                <li> {{ "Capacité de l'hébergement"|trans }} : {{  objet.capaciteHebergement }} </li>
-            {% endif %}
-            {% if objet.capaciteMaxPossible is not empty %}
-                <li> {{ 'Capacité maximum possible'|trans }} : {{  objet.capaciteMaxPossible }} </li>
-            {% endif %}
-            {% if objet.nbChambresDeclareesHotelier is not empty %}
-                <li>{{ 'Nombre de chambres déclarées hotelier'|trans }} : {{  objet.nbChambresDeclareesHotelier }} </li>
-            {% endif %}
-            {% if objet.nbTotalPersonnes is not empty %}
-                <li> {{ 'Nombre total de personnes'|trans }} : {{  objet.nbTotalPersonnes }} </li>
-            {% endif %}
-            {% if objet.nbChambresSimples is not empty %}
-                <li> {{ 'Nombre de chambres simples'|trans }} : {{  objet.nbChambresSimples }} </li>
-            {% endif %}
-            {% if objet.nbChambresDoubles is not empty %}
-                <li> {{ 'Nombre de chambres doubles'|trans }} : {{  objet.nbChambresDoubles }} </li>
-            {% endif %}
-            {% if objet.nbSuites is not empty %}
-                <li>{{ 'Nombre de suites'|trans }} : {{  objet.nbSuites }} </li>
-            {% endif %}
-            {% if objet.nbChambresMobiliteReduite is not empty %}
-                <li> {{ 'Nombre de chambres à mobilité réduite'|trans }} : {{  objet.nbChambresMobiliteReduite }} </li>
-            {% endif %}
-            {% if objet.naturisme is not empty %}
-                <li> {{ 'Naturisme autorisé'|trans }} : {{  objet.naturisme }} </li>
-            {% endif %}
-            {% if objet.capaciteTotale is not empty %}
-                <li> {{ 'Capacité totale'|trans }} : {{  objet.capaciteTotale }} </li>
-            {% endif %}
-            {% if objet.capaciteTotaleJeunesseSport is not empty %}
-                <li> {{ 'Capacité totale jeunesse sport'|trans }} : {{  objet.capaciteTotaleJeunesseSport }} </li>
-            {% endif %}
-            {% if objet.nbHebergementsUnePersonne is not empty %}
-                <li> {{ 'Nombre hébergement une personne'|trans }} : {{  objet.nbHebergementsUnePersonne }} </li>
-            {% endif %}
-            {% if objet.nbLitsDoubles is not empty %}
-                <li> {{ 'Nombre de lits doubles'|trans }} : {{  objet.nbLitsDoubles }} </li>
-            {% endif %}
-            {% if objet.nbLitsSimples is not empty %}
-                <li> {{ 'Nombre de lits simples'|trans }} : {{  objet.nbLitsSimples }} </li>
-            {% endif %}
-            </ul>
+    <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+        <div class="panel-body">
+            <div class="faq-thread">
+                <ul class="listesInfos">
+                {% if objet.surface is not empty %}
+                    <li> {{ 'Surface'|trans }} : {{  objet.surface }} m²</li>
+                {% endif %}
+                {% if objet.numeroEtage is not empty %}
+                    <li> {{ "Numéro d'étage"|trans }} : {{  objet.numeroEtage }} </li>
+                {% endif %}
+                {% if objet.nbPieces is not empty %}
+                    <li> {{ 'Nombre de pièces'|trans }} : {{  objet.nbPieces }} </li>
+                {% endif %}
+                {% if objet.nbChambresClassees is not empty %}
+                    <li> {{ 'Nombre de chambres classées'|trans }} : {{  objet.nbChambresClassees }} </li>
+                {% endif %}
+                {% if objet.capaciteHebergement is not empty %}
+                    <li> {{ "Capacité de l'hébergement"|trans }} : {{  objet.capaciteHebergement }} </li>
+                {% endif %}
+                {% if objet.capaciteMaxPossible is not empty %}
+                    <li> {{ 'Capacité maximum possible'|trans }} : {{  objet.capaciteMaxPossible }} </li>
+                {% endif %}
+                {% if objet.nbChambresDeclareesHotelier is not empty %}
+                    <li>{{ 'Nombre de chambres déclarées hotelier'|trans }} : {{  objet.nbChambresDeclareesHotelier }} </li>
+                {% endif %}
+                {% if objet.nbTotalPersonnes is not empty %}
+                    <li> {{ 'Nombre total de personnes'|trans }} : {{  objet.nbTotalPersonnes }} </li>
+                {% endif %}
+                {% if objet.nbChambresSimples is not empty %}
+                    <li> {{ 'Nombre de chambres simples'|trans }} : {{  objet.nbChambresSimples }} </li>
+                {% endif %}
+                {% if objet.nbChambresDoubles is not empty %}
+                    <li> {{ 'Nombre de chambres doubles'|trans }} : {{  objet.nbChambresDoubles }} </li>
+                {% endif %}
+                {% if objet.nbSuites is not empty %}
+                    <li>{{ 'Nombre de suites'|trans }} : {{  objet.nbSuites }} </li>
+                {% endif %}
+                {% if objet.nbChambresMobiliteReduite is not empty %}
+                    <li> {{ 'Nombre de chambres à mobilité réduite'|trans }} : {{  objet.nbChambresMobiliteReduite }} </li>
+                {% endif %}
+                {% if objet.naturisme is not empty %}
+                    <li> {{ 'Naturisme autorisé'|trans }} : {{  objet.naturisme }} </li>
+                {% endif %}
+                {% if objet.capaciteTotale is not empty %}
+                    <li> {{ 'Capacité totale'|trans }} : {{  objet.capaciteTotale }} </li>
+                {% endif %}
+                {% if objet.capaciteTotaleJeunesseSport is not empty %}
+                    <li> {{ 'Capacité totale jeunesse sport'|trans }} : {{  objet.capaciteTotaleJeunesseSport }} </li>
+                {% endif %}
+                {% if objet.nbHebergementsUnePersonne is not empty %}
+                    <li> {{ 'Nombre hébergement une personne'|trans }} : {{  objet.nbHebergementsUnePersonne }} </li>
+                {% endif %}
+                {% if objet.nbLitsDoubles is not empty %}
+                    <li> {{ 'Nombre de lits doubles'|trans }} : {{  objet.nbLitsDoubles }} </li>
+                {% endif %}
+                {% if objet.nbLitsSimples is not empty %}
+                    <li> {{ 'Nombre de lits simples'|trans }} : {{  objet.nbLitsSimples }} </li>
+                {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}

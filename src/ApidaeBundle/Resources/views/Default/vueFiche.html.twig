@@ -40,7 +40,7 @@
                                 {% endif %}
                             </div>
                             <div class="col-md-6" role="main">
-                                <div>
+                                <div class="detail-content">
                                     <div class="section-title text-left">
                                         <h4>{{ "Adresse"|trans }}</h4>
                                     </div>
@@ -52,7 +52,7 @@
                                     {%  endif %}
                                 </div>
                                 {% if objet.moyensCommunications is not empty %}
-                                    <div>
+                                    <div class="detail-content">
                                         <div class="section-title text-left">
                                             <h4>{{ "Moyens de communication"|trans }}</h4>
                                         </div>
@@ -91,6 +91,8 @@
                         </div>
                     {% endif %}
 
+                    {% if objet.tarifEnClair is not empty or objet.DateEnClair is not empty
+                    or objet.typesPublic is not empty %}
                     <div id="section-4" class="detail-content">
                         <div class="row">
                             {% if objet.tarifEnClair is not empty or objet.dateEnClair is not empty%}
@@ -138,6 +140,7 @@
 
                         </div>
                     </div>
+                    {% endif %}
 
                     {% include "ApidaeBundle:commun:OptionsRestauHeberg.html.twig" %}
 

@@ -1,25 +1,57 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
 {% block content %}
-    {% for flash_message in app.session.flashbag.get('notice') %}
-        <div class="flash-notice">
-            {{ flash_message }}
+<div class="content-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3" role="main">
+                <div class="detail-content-wrapper">
+                    <div id="section-0">
+                        <div class="section-title text-left">
+                            <h4>{{ "Rechercher"|trans }}</h4>
+                        </div>
+                        <div class="sidebar-search-content">
+                            <div class="sidebar-module">
+                                <div class="sidebar-module-inner">
+                                    <div class="sidebar-mini-search">
+                                        <div class="input-group">
+                                            <form id="form_recherche" action="{{ path('gestionOffres') }}" method="get">
+                                                <input type="text" class="form-control" placeholder="ex : Lac">
+                                                    <span class="input-group-btn">
+                                                        <button class="btn btn-primary" type="button"><i class="fa fa-search"></i></button>
+                                                    </span>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9" role="main">
+                <div class="detail-content-wrapper">
+                    <div id="section-1" class="detail-content">
+                        <div class="section-title text-left">
+                            <h4>{{ "Objets correspondant à votre recherche"|trans }}</h4>
+                        </div>
+                        {% for flash_message in app.session.flashbag.get('notice') %}
+                            <div class="flash-notice">
+                                {{ flash_message }}
+                            </div>
+                        {% endfor %}
+                        {% if objets is defined and objets is not null %}
+                            {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+
         </div>
-    {% endfor %}
-    <article>
-        <h4> Gestion des offres Apidae </h4>
-        <div class="filtresListe">
-            <h2> Recherches </h2>
-            <form id="form_recherche" action="{{ path('gestionOffres') }}" method="post">
-                {{ form_widget(form) }}
-                <input type="submit" value="Rechercher" />
-            </form>
-        </div>
-        {% if objets is defined and objets is not null %}
-        <div>
-            <h4> Objets correspondant à votre recherche </h4>
-            {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
-        </div>
-        {% endif %}
-    </article>
+    </div>
+</div>
+
 
 {% endblock %}

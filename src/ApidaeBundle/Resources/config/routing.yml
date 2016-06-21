@@ -1,4 +1,4 @@
-index:
+indexAccueil:
     path : /accueil
     defaults: { _controller: ApidaeBundle:Default:index }
 

@@ -22,11 +22,14 @@ namespace ApidaeBundle\Twig\Extension;
 
      public function getFilters() {
          return array(new \Twig_SimpleFilter('langueLib', array($this, 'getLangueLib')),
-             new \Twig_SimpleFilter('typeApidae', array($this, 'getTypeApidae')));
+             new \Twig_SimpleFilter('typeApidae', array($this, 'getTypeApidae'))
+             );
      }
 
      public function getFunctions() {
-         return array(new Twig_SimpleFunction('tradLangue', array($this, 'getTradLangue')));
+         return array(new Twig_SimpleFunction('tradLangue', array($this, 'getTradLangue')),
+             new \Twig_SimpleFunction('langueLibelle', array($this, 'getLangueLibelle'))
+             );
      }
 
      function getLangueLib($str, $locale='') {
@@ -65,5 +68,12 @@ namespace ApidaeBundle\Twig\Extension;
              }
          }
          return null;
+     }
+
+     function getLangueLibelle($langue) {
+         $em = $this->container->get('doctrine')->getManager();
+         $l = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
+         return $l->getLanLibelle();
+         //return "test";
      }
  }

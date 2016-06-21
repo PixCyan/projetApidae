@@ -29,12 +29,12 @@
 
                                     <li class="dropdown bt-dropdown-click hidden-xs">
                                         <a id="currncy-dropdown" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                                            <i class="ion-android-globe hidden-xss"></i> English
+                                            <i class="ion-android-globe hidden-xss"></i> {{ langueLibelle(app.request.getLocale()) }}
                                             <span class="caret"></span>
                                         </a>
                                         <ul class="dropdown-menu" aria-labelledby="language-dropdown">
                                             <li><a href="http://apidae.swad.fr/web/app_dev.php/en/accueil">English</a></li>
-                                            <li><a href="http://apidae.swad.fr/web/app_dev.phpfr/accueil">France</a></li>
+                                            <li><a href="http://apidae.swad.fr/web/app_dev.php/fr/accueil">Français</a></li>
                                         </ul>
                                     </li>
 
@@ -43,17 +43,13 @@
                                             <i class="fa fa-cog"></i>
                                         </a>
                                         <ul class="dropdown-menu" aria-labelledby="language-dropdown">
-                                            <li><a href="#"><i class="ion-social-usd"></i> Dollar</a></li>
-                                            <li><a href="#"><i class="ion-social-euro"></i> Europe</a></li>
-                                            <li><a href="#"><i class="ion-social-yen"></i> Yen</a></li>
-                                            <li class="divider"></li>
                                             <li><a href="http://apidae.swad.fr/web/app_dev.php/en/accueil">English</a></li>
-                                            <li><a href="http://apidae.swad.fr/web/app_dev.phpfr/accueil">France</a></li>
+                                            <li><a href="http://apidae.swad.fr/web/app_dev.php/fr/accueil">Français</a></li>
                                         </ul>
                                     </li>
 
                                     <li class="user-action">
-                                        <a data-toggle="modal" href="#" class="btn">Sign up/in</a>
+                                        <a data-toggle="modal" href="{{ path('fos_user_security_login') }}" class="btn">{{ "Se connecter"|trans }}</a>
                                     </li>
 
                                 </ul>
@@ -61,9 +57,7 @@
                         </div>
                     </div>
                 </div>
-
             </div>
-
         </div>
 
         <div class="navbar-bottom hidden-sm hidden-xs">

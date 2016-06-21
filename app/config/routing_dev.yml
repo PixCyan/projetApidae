@@ -16,7 +16,3 @@ _main:
 _console:
     resource: "@CoreSphereConsoleBundle/Resources/config/routing.yml"
     prefix: /_console
-
-indexLogin:
-    path : /
-    defaults: { _controller: ApidaeBundle:Default:index }
