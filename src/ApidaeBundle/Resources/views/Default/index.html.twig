@@ -16,7 +16,8 @@
             {% else %}
                 {%  for suggestion in suggestions %}
                    <div class="grid-item" data-colspan="20" data-rowspan="10">
-                        <a href="{{ path('offre', {'langueLocale': langue.lanShortCut,'id': suggestion.idObjet }) }}" class="top-destination-image-bg" style="background-image:url('{{ suggestion.multimedias.first.mulUrl}}');">
+                        <a href="{{ path('offre', {'langueLocale': langue.lanShortCut,'id': suggestion.idObjet }) }}"
+                           class="top-destination-image-bg" style="background-image:url('{{ suggestion.multimedias.first.mulUrl}}');">
                             <div class="relative">
                                 <h4>{{ suggestion.nom|langueLib(langue.lanShortCut) }}</h4>
                             </div>

@@ -6,3 +6,11 @@ ul.listesInfos li {
     float: left;
     width : 33%;
 }
+
+.inputForm {
+    display : block;
+}
+
+.container-wrapper, .content-wrapper, body  {
+    height: 100%;
+}

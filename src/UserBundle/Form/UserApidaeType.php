@@ -16,18 +16,25 @@ class UserApidaeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('username', TextType::class, array('required' => true))
-            ->add('email', TextType::class, array('required' => true))
+            ->add('username', TextType::class, array('attr' => array('required' => true),
+                'label_attr' => array('class' => 'inputForm')
+                ))
+            ->add('email', TextType::class, array('attr' => array('required' => true),
+                'label_attr' => array('class' => 'inputForm')))
             ->add('roles', 'choice', array('choices' =>
                 array(
                     'ROLE_USER' => 'ROLE_USER',
                     'ROLE_SUPER_ADMIN' => 'ROLE_SUPER_ADMIN',
                 ),
-                'required'  => true,
-                'multiple' => true
+                'multiple' => true,
+                'attr' => array('required' => true),
+                'label_attr' => array('class' => 'inputForm')
             ))
-            ->add('password', TextType::class, array('attr' => array('value' => null, 'required' => true)))
-            ->add('confirmerMdp', TextType::class, array('label' => 'Confirmez le mot de passe', "mapped" => false, 'required' => true));
+            ->add('password', TextType::class, array('attr' => array('value' => "", 'required' => true),
+                'label_attr' => array('class' => 'inputForm')))
+            ->add('confirmerMdp', TextType::class, array('label' => 'Confirmez le mot de passe', "mapped" => false,
+                'attr' => array('required' => true),
+                'label_attr' => array('class' => 'inputForm')));
     }
     
     /**

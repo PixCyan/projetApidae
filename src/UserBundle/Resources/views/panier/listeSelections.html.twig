@@ -1,11 +1,25 @@
 {% extends 'ApidaeBundle:commun:template.html.twig' %}
 {% block content %}
-    <article>
-        <h2> Liste de vos sélections </h2>
-        {% if panier is empty %}
-            <p> Vous n'avez aucune sélection.</p>
-         {% else %}
-            <p> To do</p>
-        {% endif %}
-    </article>
+<div class="content-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-title text-left">
+                    <h4>{{ 'Liste de vos sélections'|trans }}</h4>
+                </div>
+                <div>
+
+                </div>
+                {% if panier is empty %}
+                    <p> {{ "Vous n'avez aucune sélection."|trans }}</p>
+                {% else %}
+                    <p> To do</p>
+                {% endif %}
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

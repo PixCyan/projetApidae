@@ -116,4 +116,5 @@ class DefaultController extends Controller
 
         return $categories;
     }
+
 }

@@ -7,5 +7,7 @@ services:
 services:
     libelleLangue:
       class: ApidaeBundle\Twig\Extension\Fonctions
+      arguments:
+        entityManager: "@doctrine.orm.entity_manager"
       tags:
         - { name: twig.extension }

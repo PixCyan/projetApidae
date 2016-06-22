@@ -3,12 +3,12 @@
  */
 $("document").ready(function() {
     $(".filtres").click(function() {
-        console.log('http://localhost/sites/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val() + "/" + $(this).attr('name'));
+        console.log('http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/'  + $(this).val() + "/" + $(this).attr('name'));
         if($(this).attr('checked')) {
             console.log("checked");
             $.ajax({
                 type : 'POST',
-                url  : 'http://localhost/sites/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
+                url  : 'http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
                 beforeSend: function() {
@@ -26,11 +26,66 @@ $("document").ready(function() {
                     var langue = $('#langue').text();
 
                     //récupération de la section contenant la liste des objets
-                    var sectionListe = $("#listeDobjets");
+                    var divListe = $('#listesItems');
+                    $(divListe).empty();
                     console.log('LANGUE : ' + langue);
-                    sectionListe.empty();
+
                     //parcours de chaque objets
                     $.each(objets, function(index) {
+                        var divObjet = '<div class="package-list-item clearfix" id="divObj'+ index +'"></div>';
+                        var divImage = '<div class="image"></div>';
+                        var divContentObjet = '<div class="content" id="divContObj'+ index +'"></div>';
+                        var divRow = '<div class="row gap-10" id="divRow'+ index +'"></div>';
+                        var divColonneInfos = '<div class="col-sm-12 col-md-9" id="divColInfos'+ index +'"></div>';
+                        var divColonneActions = '<div class="col-sm-12 col-md-3 text-right text-left-sm" id="divColAct'+ index +'"></div>';
+                        $(divObjet).appendTo($(divListe));
+
+                        if(objets[index].multimedias && objets[index].multimedias.length > 0) {
+                            if(objets[index].multimedias[0].mul_url_liste) {
+                                $(divImage).append('<img src="'+ objets[index].multimedias[0].mul_url_liste +'">').appendTo($('#divObj'+ index));
+                                console.log('ici');
+                            } //TODO else ?
+                        }
+
+                        //--- Informations réduites objet :
+                        $(divContentObjet).append('<h5>' + getLangueLib(objets[index].nom, langue) + '<button class="btn"><i class="fa fa-heart-o"></i></button></h5>').appendTo($('#divObj'+ index));
+                        $(divRow).appendTo($('#divContObj'+ index));
+
+                        if(objets[index].commune) {
+                            $(divColonneInfos).append('<ul class="list-info"><li><span class="icon"><i class="fa fa-map-marker"></i></span>' +
+                                ' <span class="font600">'+ getLangueLib(objets[index].commune.com_nom, langue) +'</span></li></ul>').appendTo($('#divRow'+ index));
+                        }
+
+                        //--- Tarifs en clair
+                        if(objets[index].tarif_en_clair) {
+                            $('#divColInfos'+ index).append('<p class="line18">'+ getLangueLib(objets[index].tarif_en_clair, langue) +'</p>').appendTo($('#divRow'+ index));
+                        }
+
+                        //--- Description
+                        var trad = '';
+                        if(langue == 'Fr') {
+                            trad = objets[index].traductions[0].tra_description_courte;
+                        } else if(langue == 'En') {
+                            trad = objets[index].traductions[1].tra_description_courte;
+                        }
+                        $('#divColInfos'+ index).append('<p class="line18">'+ trad  +'</p>');
+
+                        //--- Options/Actions :
+                        var url = '{{ path("offre", {"id": "'+ objets[index].id_obj +'"}) }}';
+                        var trans = '{{ "Voir le détail"|trans }} ';
+                        console.log(voirDetails);
+                        $(divColonneActions).append('<a href="'+ url +'">'+ voirDetails +'</a>').appendTo($('#divRow'+ index));
+
+
+                        var path = '{{ path("modifierOffre", {"offreId": objet.idObjet }) }}';
+                        var condition = '{% if is_granted(\'ROLE_SUPER_ADMIN\') %}';
+                        var trans2 = '{{ "Modifier"|trans }}';
+                        var optAdmin = ' <div class="optionsAdmin"><a href="'+ path +'">'+ modifier +'</a></div>';
+                        var endCondition = '{% endif %}';
+                        $($('#divColAct'+ index)).append(optAdmin);
+
+
+                        /*
                         var newArticle = '<article id="article'+ index +'"></article>';
                         $(newArticle).addClass("objetListe").append($('<h2>'+ getLangueLib(objets[index].nom, langue) +'</h2>')).appendTo($(sectionListe));
 
@@ -69,6 +124,8 @@ $("document").ready(function() {
                         $(newDivLiens).addClass("lienDetailsListe")
                             .append('<a href="'+ url +'">Voir le détail</a>')
                             .appendTo($('#divInfos'+ index));
+
+                            */
                     });
 
                     //--------- Traitement des filtres
@@ -82,7 +139,7 @@ $("document").ready(function() {
 
                     $.each(services, function(i) {
                         var service = $("#"+ services[i].ser_id);
-                        console.log(services[i].ser_id);
+                        //console.log(services[i].ser_id);
                         if(service.attr('name') == "services") {
                             service.removeAttr('disabled');
                             $("label[for='"+ services[i].ser_id +"']").css("color", "black");
@@ -91,7 +148,7 @@ $("document").ready(function() {
 
                     $.each(classments, function(i) {
                         var service = $("#"+ classments[i].lab_id);
-                        console.log(classments[i].lab_id);
+                        //console.log(classments[i].lab_id);
                         if(service.attr('name') == "classements") {
                             service.removeAttr('disabled');
                             $("label[for='"+ classments[i].lab_id +"']").css("color", "black");
@@ -100,7 +157,7 @@ $("document").ready(function() {
 
                     $.each(categories, function(i) {
                         var service = $("#"+ categories[i].cat_id);
-                        console.log(categories[i].cat_id);
+                        //console.log(categories[i].cat_id);
                         if(service.attr('name') == "categories") {
                             service.removeAttr('disabled');
                             $("label[for='"+ categories[i].cat_id +"']").css("color", "black");
@@ -109,7 +166,7 @@ $("document").ready(function() {
 
                     $.each(paiements, function(i) {
                         var service = $("#"+ paiements[i].ser_id);
-                        console.log(paiements[i].ser_id);
+                        //console.log(paiements[i].ser_id);
                         if(service.attr('name') == "services") {
                             service.removeAttr('disabled');
                             $("label[for='"+ paiements[i].ser_id +"']").css("color", "black");
@@ -118,7 +175,7 @@ $("document").ready(function() {
 
                     $.each(tourismes, function(i) {
                         var service = $("#"+ tourismes[i].ser_id);
-                        console.log(tourismes[i].ser_id);
+                        //console.log(tourismes[i].ser_id);
                         if(service.attr('name') == "services") {
                             service.removeAttr('disabled');
                             $("label[for='"+ tourismes[i].ser_id +"']").css("color", "black");

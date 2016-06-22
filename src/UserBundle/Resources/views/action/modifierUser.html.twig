@@ -1,18 +1,30 @@
 {% extends "ApidaeBundle:commun:template.html.twig" %}
 {% block content %}
-    {% for flash_message in app.session.flashbag.get('notice') %}
-        <div class="flash-notice">
-            {{ flash_message }}
+
+<div class="content-wrapper">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12" role="main">
+            {% for flash_message in app.session.flashbag.get('notice') %}
+                {{ flash_message }}
+            {% endfor %}
+            </div>
         </div>
-    {% endfor %}
-    <article>
-        <h2> Modifier un utilisateur </h2>
-        <form action="{{ path('modifierUser', {'userId': user.id}) }}" method="POST">
-            {{ form_widget(form) }}
-            <button type="submit" value="submit">Modifier</button>
-            <button type="button" onclick="javascript:history.go(-1)" value="cancel">Annuler</button>
-        </form>
-    </article>
+
+        <div class="row center-block">
+            <div class="col-md-12" role="main">
+                <div class="section-title text-left">
+                    <h4>{{ "Modifier un utilisateur"|trans }}</h4>
+                </div>
+                <form action="{{ path('modifierUser', {'userId': user.id}) }}" method="POST">
+                    {{ form_widget(form) }}
+                    <button type="submit" value="submit">{{ "Modifier"|trans }}</button>
+                    <button type="button" onclick="javascript:history.go(-1)" value="cancel">{{ "Annuler"|trans }}</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}
 

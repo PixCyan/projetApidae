@@ -4,11 +4,25 @@ namespace ApidaeBundle\Twig\Extension;
 
  use ApidaeBundle\Entity\Langue;
  use ApidaeBundle\Entity\ObjetApidae;
+ use Doctrine\ORM\EntityManager;
  use Twig_Extension;
  use Twig_SimpleFunction;
 
  class Fonctions extends Twig_Extension {
      private $SIT_LANGUE = 'Fr';
+
+     /** @var EntityManager $em  */
+     protected $em;
+     /**
+      * Extension constructor
+      *
+      * @param EntityManager $em
+      * @return Fonctions
+      */
+     public function __construct(\Doctrine\ORM\EntityManager $em) {
+         $this->em = $em;
+     }
+
 
      /**
       * Returns the name of the extension.
@@ -71,8 +85,8 @@ namespace ApidaeBundle\Twig\Extension;
      }
 
      function getLangueLibelle($langue) {
-         $em = $this->container->get('doctrine')->getManager();
-         $l = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
+         //$em = $this->container->get('doctrine')->getManager();
+         $l = $this->em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
          return $l->getLanLibelle();
          //return "test";
      }
