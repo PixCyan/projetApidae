@@ -49,8 +49,12 @@
                                     </li>
 
                                     <li class="user-action">
-                                        {% if user is not defined and app.user is empty %}
-                                            <a data-toggle="modal" href="{{ path('fos_user_security_login') }}" class="btn">{{ "Se connecter"|trans }}</a>
+                                        {% if user is not defined or user is empty %}
+                                            {% if app.user %}
+                                                <a data-toggle="modal" href="{{ path('fos_user_security_logout') }}" class="btn">{{ "Se déconnecter"|trans }}</a>
+                                            {% else %}
+                                                <a data-toggle="modal" href="{{ path('fos_user_security_login') }}" class="btn">{{ "Se connecter"|trans }}</a>
+                                            {% endif %}
                                         {% else %}
                                             <a data-toggle="modal" href="{{ path('fos_user_security_logout') }}" class="btn">{{ "Se déconnecter"|trans }}</a>
                                         {% endif %}
@@ -78,9 +82,13 @@
                                 {% include 'ApidaeBundle:commun:menu.html.twig' %}
                                 <li><a href="#">{{ 'Panier'|trans }}</a>
                                     <ul>
-                                        {% if user is not defined and app.user is empty %}
-                                            <!-- Si non connecté -->
-                                            <li><a href="{{ path('panier') }}"> {{ 'Ma sélection'|trans }}</a></li>
+                                        {% if user is not defined or user is empty %}
+                                            <!-- Si non connecté ou non défini -->
+                                            {% if app.user %}
+                                                <li><a href="{{ path('panier') }}"> {{ 'Gestion des sélections'|trans }} </a></li>
+                                            {% else %}
+                                                <li><a href="{{ path('panier') }}"> {{ 'Ma sélection'|trans }}</a></li>
+                                            {% endif %}
                                         {% else %}
                                             <!-- Si connecté-->
                                             <li><a href="{{ path('panier') }}"> {{ 'Gestion des sélections'|trans }} </a></li>
@@ -89,10 +97,15 @@
                                 </li>
                                 <li><a href="#">{{ 'Mon compte'|trans }}</a>
                                     <ul>
-                                        {% if user is not defined and app.user is empty %}
-                                            <!-- Si non connecté -->
-                                            <li><a href="{{ path('fos_user_registration_register') }}"> {{ "S'enregistrer"|trans }}</a></li>
-                                            <li><a href="{{ path('fos_user_security_login') }}"> {{ 'Se connecter'|trans }}</a></li>
+                                        {% if user is not defined or user is empty %}
+                                            <!-- Si non connecté ou non défini -->
+                                            {% if app.user %}
+                                                <li><a href="{{ path('fos_user_profile_show') }}"> {{ 'Mon profil'|trans }} </a></li>
+                                                <li><a href="{{ path('fos_user_security_logout') }}">{{ 'Se déconnecter'|trans }}</a></li>
+                                            {% else %}
+                                                <li><a href="{{ path('fos_user_registration_register') }}"> {{ "S'enregistrer"|trans }}</a></li>
+                                                <li><a href="{{ path('fos_user_security_login') }}"> {{ 'Se connecter'|trans }}</a></li>
+                                            {% endif %}
                                         {% else %}
                                             <!-- Si connecté-->
                                             <li><a href="{{ path('fos_user_profile_show') }}"> {{ 'Mon profil'|trans }} </a></li>
@@ -100,7 +113,7 @@
                                         {% endif %}
                                     </ul>
                                 </li>
-                               {% if app.user is not empty and is_granted('ROLE_SUPER_ADMIN')%}
+                               {% if is_granted('ROLE_SUPER_ADMIN')%}
                                     <li><a href="#">{{ 'Administration'|trans }}</a>
                                         <ul>
                                             <li><a href="{{ path('listeUsers') }}"> {{ 'Gestion des utilisateurs'|trans }} </a></li>

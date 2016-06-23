@@ -10,4 +10,11 @@ namespace ApidaeBundle\Repository;
  */
 class ServiceRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getObjetsByids($ids) {
+        return $this->createQueryBuilder('s')
+            ->where('s.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
 }

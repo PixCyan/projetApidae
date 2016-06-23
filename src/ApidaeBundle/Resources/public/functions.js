@@ -3,12 +3,13 @@
  */
 $("document").ready(function() {
     $(".filtres").click(function() {
-        console.log('http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/'  + $(this).val() + "/" + $(this).attr('name'));
+        //console.log('http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/'  + $(this).val() + "/" + $(this).attr('name'));
         if($(this).attr('checked')) {
             console.log("checked");
             $.ajax({
                 type : 'POST',
                 url  : 'http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
+                //url : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
                 beforeSend: function() {
@@ -16,7 +17,6 @@ $("document").ready(function() {
                 },
                 success: function(data) {
                     //TODO function de réponse ajax
-                    console.log('Ca marche');
                     var services = data.services;
                     var paiements = data.modesPaiements;
                     var classments = data.classements;
@@ -41,10 +41,11 @@ $("document").ready(function() {
                         $(divObjet).appendTo($(divListe));
 
                         if(objets[index].multimedias && objets[index].multimedias.length > 0) {
-                            if(objets[index].multimedias[0].mul_url_liste) {
+                            if(objets[index].multimedias[0].mul_url_liste != null) {
                                 $(divImage).append('<img src="'+ objets[index].multimedias[0].mul_url_liste +'">').appendTo($('#divObj'+ index));
-                                console.log('ici');
-                            } //TODO else ?
+                            }
+                        }  else {
+                            $(divImage).append('<img src="'+ imgDefaut +'">').appendTo($('#divObj'+ index));
                         }
 
                         //--- Informations réduites objet :
@@ -71,19 +72,18 @@ $("document").ready(function() {
                         $('#divColInfos'+ index).append('<p class="line18">'+ trad  +'</p>');
 
                         //--- Options/Actions :
-                        var url = '{{ path("offre", {"id": "'+ objets[index].id_obj +'"}) }}';
-                        var trans = '{{ "Voir le détail"|trans }} ';
-                        console.log(voirDetails);
-                        $(divColonneActions).append('<a href="'+ url +'">'+ voirDetails +'</a>').appendTo($('#divRow'+ index));
+                        //var url = "{{ path('offre', {'id': '"+ objets[index].id_obj +"'}) }}";
+                        var url = Routing.generate('offre', {'_locale': langue.toLowerCase() ,'id': objets[index].id_obj });
+
+                        $(divColonneActions).append('<a href="'+ url +'" class="btn btn-primary btn-sm">'+ voirDetails +'</a>').appendTo($('#divRow'+ index));
 
 
-                        var path = '{{ path("modifierOffre", {"offreId": objet.idObjet }) }}';
-                        var condition = '{% if is_granted(\'ROLE_SUPER_ADMIN\') %}';
-                        var trans2 = '{{ "Modifier"|trans }}';
-                        var optAdmin = ' <div class="optionsAdmin"><a href="'+ path +'">'+ modifier +'</a></div>';
-                        var endCondition = '{% endif %}';
-                        $($('#divColAct'+ index)).append(optAdmin);
-
+                        //var path = '{{ path("modifierOffre", {"offreId": objet.idObjet }) }}';
+                        var path = Routing.generate('modifierOffre', {'_locale': langue.toLowerCase() ,"offreId": objets[index].id_obj });
+                        if(admin == 1) {
+                            var optAdmin = ' <div class="optionsAdmin"><a href="'+ path +'">'+ modifier +'</a></div>';
+                            $($('#divColAct'+ index)).append(optAdmin);
+                        }
 
                         /*
                         var newArticle = '<article id="article'+ index +'"></article>';

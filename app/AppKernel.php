@@ -15,12 +15,14 @@ class AppKernel extends Kernel
             new Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle(),
-            new AppBundle\AppBundle(),
             new ApidaeBundle\ApidaeBundle(),
 
             new FOS\UserBundle\FOSUserBundle(),
             new UserBundle\UserBundle(),
-            new JMS\SerializerBundle\JMSSerializerBundle()
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+            new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
+
+            new AppBundle\AppBundle()
 
         );
 

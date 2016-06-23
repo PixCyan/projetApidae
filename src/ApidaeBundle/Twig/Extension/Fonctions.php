@@ -19,7 +19,7 @@ namespace ApidaeBundle\Twig\Extension;
       * @param EntityManager $em
       * @return Fonctions
       */
-     public function __construct(\Doctrine\ORM\EntityManager $em) {
+     public function __construct(EntityManager $em) {
          $this->em = $em;
      }
 

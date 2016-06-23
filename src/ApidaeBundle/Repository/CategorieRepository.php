@@ -11,6 +11,14 @@ use ApidaeBundle\Entity\Categorie;
  */
 class CategorieRepository extends \Doctrine\ORM\EntityRepository {
 
+    public function getObjetsByids($ids) {
+        return $this->createQueryBuilder('c')
+            ->where('c.catId IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
 
 
 

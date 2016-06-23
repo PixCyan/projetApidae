@@ -21,7 +21,8 @@
         "coresphere/console-bundle": "^0.4.0",
         "beberlei/DoctrineExtensions": "^1.0",
         "jms/serializer-bundle": "^1.1",
-        "friendsofsymfony/rest-bundle": "^1.7"
+        "friendsofsymfony/rest-bundle": "^1.7",
+        "friendsofsymfony/jsrouting-bundle": "*"
 
     },
     "require-dev": {

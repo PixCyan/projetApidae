@@ -9,6 +9,8 @@ traitement:
 offre:
     path: /offre/{id}
     defaults: { _controller: ApidaeBundle:Default:offre }
+    options:
+        expose: true
 
 listeEvenement:
     path: /listeEvenements/{periode}-jours
@@ -30,6 +32,8 @@ gestionOffres:
 modifierOffre:
     path: /admin/modifier/offre/{offreId}
     defaults: { _controller: ApidaeBundle:GestionOffre:modifierOffre }
+    options:
+        expose: true
 
 rechercheAffinnee:
     path: /recuperationJson/{categorieId}/{typeObjet}
