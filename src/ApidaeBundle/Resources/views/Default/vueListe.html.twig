@@ -5,7 +5,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
-                    <h1 class="hero-title">{{ typeObjet }} {% if categorie is defined and categorie is not empty %} : {{ categorie.selLibelle|langueLib(langue.lanShortCut) }} {% endif %}</h1>
+                    <h1 class="hero-title">{{ typeObjet }} {% if categorieNom is defined %}: {{ categorieNom }} {% endif %}</h1>
                 </div>
             </div>
         </div>

@@ -8,7 +8,7 @@ $("document").ready(function() {
             console.log("checked");
             $.ajax({
                 type : 'POST',
-                url  : 'http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
+                url  : 'http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name')  + "/" + $('#selectionId').text(),
                 //url : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',

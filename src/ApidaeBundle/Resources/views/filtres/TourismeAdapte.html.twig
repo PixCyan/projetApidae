@@ -3,12 +3,10 @@
     {% for s in tourismeAdapte %}
         <div class="sidebar-module-inner">
             <div class="checkbox-block">
-                <input id="{{ s.serId }}" name="services" value="{{ s.serId }}" type="checkbox" class="filtres"/>
+                <input id="{{ s.serId }}" name="tourismes" value="{{ s.serId }}" type="checkbox" class="filtres"/>
                 <label class="" for="{{ s.serId }}">{{ s.serLibelle|langueLib(langue.lanShortCut) }}</label>
             </div>
         </div>
-        <!--
-        <input class="filtres" type="checkbox" id="{{ s.serId }}" value="{{ s.serId }}" name="services">
-        <label for="{{ s.serId }}"> {{ s.serLibelle|langueLib(langue.lanShortCut) }}</label><br/> -->
+        <!-- services -->
     {% endfor %}
 </div>

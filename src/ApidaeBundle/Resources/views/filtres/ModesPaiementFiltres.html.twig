@@ -3,13 +3,11 @@
     {% for p in modesPaiement %}
         <div class="sidebar-module-inner">
             <div class="checkbox-block">
-                <input id="{{ p.serId }}" name="services" value="{{ p.serId }}" type="checkbox" class="filtres"/>
+                <input id="{{ p.serId }}" name="paiements" value="{{ p.serId }}" type="checkbox" class="filtres"/>
                 <label class="" for="{{ p.serId }}">{{ p.serLibelle|langueLib(langue.lanShortCut) }}</label>
             </div>
         </div>
 
-        <!--
-        <input class="filtres" type="checkbox" id="{{ p.serId }}" value="{{ p.serId }}" name="services">
-        <label for="{{ p.serId }}"> {{ p.serLibelle|langueLib(langue.lanShortCut) }}</label><br/> -->
+        <!-- services -->
     {% endfor %}
 </div>

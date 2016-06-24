@@ -216,7 +216,7 @@ class Service
     /**
      * @return mixed
      */
-    public function getObjetsApidae()
+    public function getObjets()
     {
         return $this->objetsApidae;
     }

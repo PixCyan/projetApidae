@@ -151,7 +151,7 @@ class DefaultController extends Controller
      * @param Request $request
      * @return Response
      */
-    public function listeAction(Request $request, $typeObjet, $categorieId, Request $request)
+    public function listeAction(Request $request, $typeObjet, $categorieId, $libelleCategorie)
     {
         $session = $request->getSession();
         $user = $this->getUser();
@@ -183,17 +183,33 @@ class DefaultController extends Controller
   
         //var_dump($typesHabitation);
 
+        //TODO changer en donnant la trad dans BDD
+        $explodeChaine = explode('_', $libelleCategorie);
+        $categorieNom = "";
+        $i = 0;
+        foreach($explodeChaine as $chaine) {
+            if($chaine != "_") {
+                if($i == 0) {
+                    $categorieNom .= ucwords($explodeChaine[$i]).' ';
+                } else {
+                    $categorieNom .= $explodeChaine[$i].' ';
+                }
+            }
+            $i++;
+        }
+
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objets,
                 'langue' => $langue,
-                'typeObjet' => $typeObjet,
-                'categorie' => $selection,
+                'typeObjet' => ucwords($typeObjet),
+                'categorieNom' => $categorieNom,
                 'user' => $user,
                 'services' => $services,
                 'modesPaiement' => $modesPaiement,
                 'labels' => $labelsQualite,
                 'tourismeAdapte' => $tourismeAdapte,
-                'typesHabitation' => $typesHabitation));
+                'typesHabitation' => $typesHabitation,
+                'idSelection' => $selection->getIdSelectionApidae()));
     }
 
 
@@ -222,14 +238,15 @@ class DefaultController extends Controller
                 'user' => $user));
     }
 
-
     /**
-     * Effectue une recherche d'apèrs les filtres cochés
+     * Effectue une recherche d'après les filtres cochés
      * @param Request $request
      * @param $typeObjet
+     * @param $categorieId
      * @return Response
+     * @throws \Exception
      */
-    public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId) {
+    public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId, $idSelection) {
         $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
 
@@ -239,7 +256,12 @@ class DefaultController extends Controller
 
             $idsFiltres = $session->get('idsFiltres');
             if(!$idsFiltres) {
-                $idsFiltres = [];
+                $idsFiltres["categories"] = [];
+                $idsFiltres["services"] = [];
+                $idsFiltres["tourismes"] = [];
+                $idsFiltres["classements"] = [];
+                $idsFiltres["paiements"] = [];
+
                 //$session->set('idsFiltres', $idsFiltres);
             }
 
@@ -260,27 +282,27 @@ class DefaultController extends Controller
                 /* Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
                 peuvent être soit categorie/service/labelQualite */
                 $c = $em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-                if($c && $typeObjet == "categories") {
+                if($c && ($typeObjet == 'categories')) {
                     if(!in_array($c, $idsFiltres['categories'])) {
-                        $idsFiltres['categorie'][] = $c;
+                        $idsFiltres[$typeObjet][] = $c;
                     }
-                    $nouvelleListe = $this->traitementObjetsCategories($c, $listeActuelle, $typeObjet, $idsFiltres);
+                    $nouvelleListe = $this->traitementObjetsCategories($c, $listeActuelle, $typeObjet, $idsFiltres, $idSelection);
                     //print("categories");
                 } else {
                     $s = $em->getRepository(Service::class)->findOneBySerId($categorieId);
-                    if($s && $typeObjet == "services") {
-                        if(!in_array($s, $idsFiltres['services'])) {
-                            $idsFiltres['service'][] = $s;
+                    if($s && ($typeObjet == "services" || $typeObjet == "paiements" || $typeObjet == "tourismes")) {
+                        if(!in_array($s, $idsFiltres[$typeObjet])) {
+                            $idsFiltres[$typeObjet][] = $s;
                         }
-                        $nouvelleListe = $this->traitementObjetsCategories($s, $listeActuelle, $typeObjet, $idsFiltres);
+                        $nouvelleListe = $this->traitementObjetsCategories($s, $listeActuelle, $typeObjet, $idsFiltres, $idSelection);
                         //print("services");
                     } else {
                         $l = $em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
                         if($l && $typeObjet == "classements") {
                             if(!in_array($c, $idsFiltres['classements'])) {
-                                $idsFiltres['classement'][] = $l;
+                                $idsFiltres[$typeObjet][] = $l;
                             }
-                            $nouvelleListe = $this->traitementObjetsCategories($l, $listeActuelle, $typeObjet, $idsFiltres);
+                            $nouvelleListe = $this->traitementObjetsCategories($l, $listeActuelle, $typeObjet, $idsFiltres, $idSelection);
                             //print("labels");
                         } else {
                             //print("else");
@@ -327,12 +349,64 @@ class DefaultController extends Controller
     }
 
     /**
-     * Retourne un ArrayCollection des objets auxquelles sont liées les categories données en param
+     * Retourne un ArrayCollection des objets auxquelles sont liées les categories/services données en param
      * @param $categorie
      * @param $objs
      * @return ArrayCollection
      */
-    private function traitementObjetsCategories($categorie, $objs, $type, $idsFiltres) {
+    private function traitementObjetsCategories($categorie, $objs, $type, $idsFiltres, $idSelection) {
+        //--- NEW
+        $em = $this->getDoctrine()->getManager();
+        $objets = new ArrayCollection();
+        //aller chercher tous les objets qui correspondent à la categorie donnée pour l'option "OU"
+
+        if($type == 'categories') {
+            $objetsCatSel = $em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($categorie->getCatId(), $idSelection);
+            foreach($objs as $o) {
+                if($objetsCatSel->contains($o)){
+                    $objets->add($o);
+                }
+
+            }
+        } elseif ($type == "services"  || $type == "classements"  || $type == "paiements" || $type == "tourismes") {
+            $objetsCatSel = $em->getRepository(ObjetApidae::class)->getObjetsServiceSelection($categorie->getSerId(), $idSelection);
+            /*foreach($objs as $o) {
+                if($objetsCatSel->contains($o)){
+                    $objets->add($o);
+                }
+
+            }*/
+        } elseif ($type == "classements") {
+            $objetsCatSel = $em->getRepository(ObjetApidae::class)->getObjetsLabelsSelection($categorie->getLabId(), $idSelection);
+            foreach($objs as $o) {
+                if($objetsCatSel->contains($o)){
+                    $objets->add($o);
+                }
+
+            }
+        }
+
+
+        if(empty($objets)) {
+            print("vide");
+        }
+
+        return $objets;
+
+        /*
+         * Fonctionne mais bof
+        foreach($idsFiltres[$type] as $filtre) {
+            $objetsFiltre = $filtre->getObjets();
+            foreach($objetsFiltre as $o) {
+                if(!$objets->contains($o) && in_array($o, $objs)) {
+                    $objets->add($o);
+                }
+            }
+        }*/
+
+
+
+        /* ---- AVANT
         $objets = new ArrayCollection();
         if($type == "categories") {
             foreach($objs as $o) {
@@ -354,7 +428,7 @@ class DefaultController extends Controller
             }
         }
 
-        return $objets;
+        return $objets; */
     }
 
     /**
