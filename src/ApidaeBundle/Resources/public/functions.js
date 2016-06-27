@@ -167,7 +167,8 @@ $("document").ready(function() {
                     $.each(paiements, function(i) {
                         var service = $("#"+ paiements[i].ser_id);
                         //console.log(paiements[i].ser_id);
-                        if(service.attr('name') == "services") {
+                        if(service.attr('name') == "paiements") {
+                            console.log('bla');
                             service.removeAttr('disabled');
                             $("label[for='"+ paiements[i].ser_id +"']").css("color", "black");
                         }
@@ -176,7 +177,7 @@ $("document").ready(function() {
                     $.each(tourismes, function(i) {
                         var service = $("#"+ tourismes[i].ser_id);
                         //console.log(tourismes[i].ser_id);
-                        if(service.attr('name') == "services") {
+                        if(service.attr('name') == "tourismes") {
                             service.removeAttr('disabled');
                             $("label[for='"+ tourismes[i].ser_id +"']").css("color", "black");
                         }

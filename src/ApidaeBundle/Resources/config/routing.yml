@@ -43,3 +43,7 @@ rechercheAffinnee:
 rechercheSimple:
     path: /recherche
     defaults: { _controller: ApidaeBundle:Default:rechercheSimple }
+
+test:
+    path: /test
+    defaults: { _controller: ApidaeBundle:Default:tests }
