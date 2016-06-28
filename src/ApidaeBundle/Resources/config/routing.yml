@@ -36,7 +36,7 @@ modifierOffre:
         expose: true
 
 rechercheAffinnee:
-    path: /recuperationJson/{categorieId}/{typeObjet}/{idSelection}
+    path: /recuperationJson/{categorieId}/{typeObjet}/{idSelection}/{option}
     defaults: { _controller: ApidaeBundle:Default:rechercheAffinnee }
     methods: [POST, GET]
 

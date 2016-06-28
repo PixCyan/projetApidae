@@ -30,6 +30,8 @@ $("document").ready(function() {
                     $(divListe).empty();
                     console.log('LANGUE : ' + langue);
 
+                    console.log("COUNT : "+ objets.length);
+
                     //parcours de chaque objets
                     $.each(objets, function(index) {
                         var divObjet = '<div class="package-list-item clearfix" id="divObj'+ index +'"></div>';

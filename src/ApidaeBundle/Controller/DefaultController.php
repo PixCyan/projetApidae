@@ -165,10 +165,20 @@ class DefaultController extends Controller
         //$objets = $em->getRepository(ObjetApidae::class)->getObjetsByids($session->get('listeObjets'));
         $objets = $selection->getObjets();
 
+
+        //Gestion des varibales de session
         $session->remove('listeObjets');
-        $session->remove('filtres');
         $session->remove('listeIntermediaire');
         $session->set('listeObjets', $this->getIdsObjetsFromObjets($objets));
+
+        $session->remove('filtres');
+        $filtres = [];
+        $filtres["categories"] = [];
+        $filtres["services"] = [];
+        $filtres["classements"] = [];
+        $filtres["paiements"] = [];
+        $filtres["tourismes"] = [];
+        $session->set('filtres', $filtres);
 
 
         $services = $this->getServicesFromObjets($objets);
@@ -220,6 +230,7 @@ class DefaultController extends Controller
      * @return Response
      */
     public function listeEvenementsAction(Request $request, $periode) {
+        $session = $request->getSession();
         $user = $this->getUser();
         //$categoriesMenu = $this->getCategoriesMenu();
         $em = $this->getDoctrine()->getManager();
@@ -230,6 +241,20 @@ class DefaultController extends Controller
         $eventRepository =  $em->getRepository(Evenement::class);
 
         $evenements = $periode == 1 ? $eventRepository->getAujourdhui2() : $eventRepository->getInterval($periode);
+
+        //Gestion des varibales de session
+        $session->remove('listeObjets');
+        $session->remove('listeIntermediaire');
+
+        $session->remove('filtres');
+        $filtres = [];
+        $filtres["categories"] = [];
+        $filtres["services"] = [];
+        $filtres["classements"] = [];
+        $filtres["paiements"] = [];
+        $filtres["tourismes"] = [];
+        $session->set('filtres', $filtres);
+
         
         $typeObjet = "Evénements";
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
@@ -244,10 +269,12 @@ class DefaultController extends Controller
      * @param Request $request
      * @param $typeObjet
      * @param $categorieId
+     * @param $idSelection
+     * @param $option
      * @return Response
      * @throws \Exception
      */
-    public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId, $idSelection) {
+    public function rechercheAffinneeAction(Request $request, $typeObjet, $categorieId, $idSelection, $option) {
         $session = $request->getSession();
         $em = $this->getDoctrine()->getManager();
 
@@ -255,205 +282,105 @@ class DefaultController extends Controller
             //$session->remove('listeIntermediaire');
             //$session->remove('listeObjets');
 
-            $filtres = $session->get('filtres');
-            if(!$filtres) {
-                $filtres["categories"] = [];
-                $filtres["services"] = [];
-                $filtres["classements"] = [];
-            }
-
-            $objetsIds = $session->get('listeIntermediaire');
-            if (is_array($objetsIds) && count($objetsIds) > 0) {
-                $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
+            if($option == "true") {
+                //TODO option de-checked
             } else {
-                $objetsIds = $session->get('listeObjets');
+                $filtres = $session->get('filtres');
+
+                $objetsIds = $session->get('listeIntermediaire');
                 if (is_array($objetsIds) && count($objetsIds) > 0) {
                     $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
                 } else {
-                    $listeActuelle = [];
-                }
-            }
-
-            if(!empty($listeActuelle)) {
-                $serializer = $this->container->get('jms_serializer');
-                /* Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
-                peuvent être soit categorie/service/labelQualite */
-                $c = $em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-                if($c && ($typeObjet == 'categories')) {
-                    if(!in_array($c, $filtres['categories'])) {
-                        $filtres[$typeObjet][] = $c;
-                    }
-                    $nouvelleListe = $this->traitementObjetsCategories($c, $listeActuelle, $typeObjet, $filtres, $idSelection);
-                    //print("categories");
-                } else {
-                    $s = $em->getRepository(Service::class)->findOneBySerId($categorieId);
-                    if($s && ($typeObjet == "services" || $typeObjet == "paiements" || $typeObjet == "tourismes")) {
-                        if(!in_array($s, $filtres["services"])) {
-                            $filtres["services"][] = $s;
-                        }
-                        $nouvelleListe = $this->traitementObjetsCategories($s, $listeActuelle, $typeObjet, $filtres, $idSelection);
-                        //print("services");
+                    $objetsIds = $session->get('listeObjets');
+                    if (is_array($objetsIds) && count($objetsIds) > 0) {
+                        $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
                     } else {
-                        $l = $em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
-                        if($l && $typeObjet == "classements") {
-                            if(!in_array($c, $filtres["classements"])) {
-                                $filtres["classements"][] = $l;
-                            }
-                            $nouvelleListe = $this->traitementObjetsCategories($l, $listeActuelle, $typeObjet, $filtres, $idSelection);
-                            //print("labels");
-                        } else {
-                            //print("else");
-                            $nouvelleListe = [];
-                        }
+                        $listeActuelle = [];
                     }
                 }
 
-                //$session->remove('listeObjets');
-                $session->set('filtres', $filtres);
-                $session->set('listeIntermediaire', $this->getIdsObjetsFromObjets($nouvelleListe));
+                if(!empty($listeActuelle)) {
+                    $serializer = $this->container->get('jms_serializer');
+                    /* Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
+                    peuvent être soit categorie/service/labelQualite */
+                    $c = $em->getRepository(Categorie::class)->findOneByCatId($categorieId);
+                    if($c && ($typeObjet == 'categories')) {
+                        if(!in_array($c, $filtres['categories'])) {
+                            $filtres['categories'][] = $c;
+                        }
+                        //$nouvelleListe = $this->traitementObjetsCategories($c, $listeActuelle, $typeObjet, $filtres, $idSelection);
+                        $nouvelleListe = $this->getObjetsForAjax($typeObjet, $listeActuelle, $filtres, $idSelection);
+                        //print("categories");
+                    } else {
+                        $s = $em->getRepository(Service::class)->findOneBySerId($categorieId);
+                        if($s && ($typeObjet == "services" || $typeObjet == "paiements" || $typeObjet == "tourismes")) {
+                            if(!in_array($s, $filtres["services"])) {
+                                if($typeObjet == "paiements") {
+                                    $filtres["paiements"][] = $s;
+                                } elseif($typeObjet == "services") {
+                                    $filtres["services"][] = $s;
+                                } elseif ($typeObjet == "tourismes") {
+                                    $filtres["tourismes"][] = $s;
+                                }
+                            }
+                            //$nouvelleListe = $this->traitementObjetsCategories($s, $listeActuelle, $typeObjet, $filtres, $idSelection);
+                            $nouvelleListe = $this->getObjetsForAjax($typeObjet, $listeActuelle, $filtres, $idSelection);
+                            //print("services");
+                        } else {
+                            $l = $em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
+                            if($l && $typeObjet == "classements") {
+                                if(!in_array($c, $filtres["classements"])) {
+                                    $filtres["classements"][] = $l;
+                                }
+                                //$nouvelleListe = $this->traitementObjetsCategories($l, $listeActuelle, $typeObjet, $filtres, $idSelection);
+                                $nouvelleListe = $this->getObjetsForAjax($typeObjet, $listeActuelle, $filtres, $idSelection);
+                                //print("labels");
+                            } else {
+                                //print("else");
+                                $nouvelleListe = [];
+                            }
+                        }
+                    }
 
-                //Récupératino des données pour le traitement des filtres
-                $services = $this->getServicesFromObjets($nouvelleListe);
-                $modesPaiement = $this->getModesPaimentFromObjets($nouvelleListe);
-                $classements = $this->getClassementsFromObjets($nouvelleListe);
-                $categories = $this->getTypeHabitationFromObjets($nouvelleListe);
-                $tourisme = $this->getTourismeAdapteFromObjets($nouvelleListe);
+                    //$session->remove('listeObjets');
+                    $session->set('filtres', $filtres);
+                    $session->set('listeIntermediaire', $this->getIdsObjetsFromObjets($nouvelleListe));
 
-                //var_dump($session->get('listeObjets'));
-                $objetsTableau = $serializer->serialize($nouvelleListe, 'json');
-                $services = $serializer->serialize($services, 'json');
-                $modesPaiement = $serializer->serialize($modesPaiement, 'json');
-                $classements = $serializer->serialize($classements, 'json');
-                $categories = $serializer->serialize($categories, 'json');
-                $tourisme = $serializer->serialize($tourisme, 'json');
+                    //Récupératino des données pour le traitement des filtres
+                    $services = $this->getServicesFromObjets($nouvelleListe);
+                    $modesPaiement = $this->getModesPaimentFromObjets($nouvelleListe);
+                    $classements = $this->getClassementsFromObjets($nouvelleListe);
+                    $categories = $this->getTypeHabitationFromObjets($nouvelleListe);
+                    $tourisme = $this->getTourismeAdapteFromObjets($nouvelleListe);
 
-                //$langue = $request->getLocale();
-                //$langueJson = '"langue":"'+$langue+'"';
+                    //var_dump($session->get('listeObjets'));
+                    $objetsTableau = $serializer->serialize($nouvelleListe, 'json');
+                    $services = $serializer->serialize($services, 'json');
+                    $modesPaiement = $serializer->serialize($modesPaiement, 'json');
+                    $classements = $serializer->serialize($classements, 'json');
+                    $categories = $serializer->serialize($categories, 'json');
+                    $tourisme = $serializer->serialize($tourisme, 'json');
 
-                return (new JSONResponse())->setData([
-                    'objets' => json_decode($objetsTableau),
-                    'services' => json_decode($services),
-                    'modesPaiements' => json_decode($modesPaiement),
-                    'classements' => json_decode($classements),
-                    'categories' => json_decode($categories),
-                    'tourismesAdaptes' => json_decode($tourisme)]);
-            } else {
-                //TODO else
-              return (new JSONResponse())->setData([]);
+                    //$langue = $request->getLocale();
+                    //$langueJson = '"langue":"'+$langue+'"';
+
+                    return (new JSONResponse())->setData([
+                        'objets' => json_decode($objetsTableau),
+                        'services' => json_decode($services),
+                        'modesPaiements' => json_decode($modesPaiement),
+                        'classements' => json_decode($classements),
+                        'categories' => json_decode($categories),
+                        'tourismesAdaptes' => json_decode($tourisme)]);
+                } else {
+                    //TODO else
+                    return (new JSONResponse())->setData([]);
+                }
             }
+
+
 
         //}
 
-    }
-
-    /**
-     * Retourne un ArrayCollection des objets auxquelles sont liées les categories/services données en param
-     * @param $categorie
-     * @param $objs
-     * @return ArrayCollection
-     */
-    private function traitementObjetsCategories($categorie, $objs, $type, $filtres, $idSelection) {
-        //--- NEW
-        $em = $this->getDoctrine()->getManager();
-        $objets = new ArrayCollection();
-        //aller chercher tous les objets qui correspondent à la categorie donnée pour l'option "OU"
-
-        if($type == 'categories') {
-            $objetsCatSel = $em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($categorie->getCatId(), $idSelection);
-            foreach($objs as $o) {
-                // Objets rattachés au filtre demandé
-                if($objetsCatSel->contains($o)){
-                    $objets->add($o);
-                }
-                // OU (+)
-                // Objets étant déjà dans la liste et ayant le même type de filtre (ici = categorie)
-                if($filtres[$type]) {
-                    foreach($filtres[$type] as $filtre) {
-                        if($o->getCategories()->contains($filtre) && !$objets->contains($o)) {
-                            $objets->add($o);
-                        }
-                    }
-                }
-            }
-
-
-        } elseif ($type == "services" || $type == "paiements" || $type == "tourismes") {
-            //TODO séparer les diff types
-            $objetsCatSel = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsServiceSelection($categorie->getSerId(), $idSelection));
-            // Objets rattachés au filtre demandé
-            foreach($objs as $o) {
-                if($objetsCatSel->contains($o)){
-                    $objets->add($o);
-                }
-                // OU (+)
-                // Objets étant déjà dans la liste et ayant le même type de filtre (ici = categorie)
-                foreach($filtres["services"] as $filtre) {
-                    if($o->getServices()->contains($filtre) && !$objets->contains($o)) {
-                        $objets->add($o);
-                    }
-                }
-            }
-        } elseif ($type == "classements") {
-            $objetsCatSel = $em->getRepository(ObjetApidae::class)->getObjetsLabelsSelection($categorie->getLabId(), $idSelection);
-            // Objets rattachés au filtre demandé
-            foreach($objs as $o) {
-                if($objetsCatSel->contains($o)){
-                    $objets->add($o);
-                }
-                // OU (+)
-                // Objets étant déjà dans la liste et ayant le même type de filtre (ici = categorie)
-                foreach($filtres["classements"] as $filtre) {
-                    if($o->getLabelsQualite()->contains($filtre) && !$objets->contains($o)) {
-                        $objets->add($o);
-                    }
-                }
-            }
-        }
-
-
-        if(empty($objets)) {
-            print("vide");
-        }
-
-        //return $this->render('ApidaeBundle:Default:test.html.twig');
-        return $objets;
-
-        /*
-         * Fonctionne mais bof
-        foreach($idsFiltres[$type] as $filtre) {
-            $objetsFiltre = $filtre->getObjets();
-            foreach($objetsFiltre as $o) {
-                if(!$objets->contains($o) && in_array($o, $objs)) {
-                    $objets->add($o);
-                }
-            }
-        }*/
-
-
-
-        /* ---- AVANT
-        $objets = new ArrayCollection();
-        if($type == "categories") {
-            foreach($objs as $o) {
-                if($o->getCategories()->contains($categorie) && !$objets->contains($o)) {
-                    $objets->add($o);
-                }
-            }
-        } else if($type == "services") {
-            foreach($objs as $o) {
-                if($o->getServices()->contains($categorie) && !$objets->contains($o)) {
-                    $objets->add($o);
-                }
-            }
-        } else if($type == "classements") {
-            foreach($objs as $o) {
-                if($o->getLabelsQualite()->contains($categorie) && !$objets->contains($o)) {
-                    $objets->add($o);
-                }
-            }
-        }
-
-        return $objets; */
     }
 
     /**
@@ -578,160 +505,218 @@ class DefaultController extends Controller
         return $res;
     }
 
-    public function tradTestAction($name, Request $request, $langue) {
+    /**
+     * Retourne un ArrayCollection des objets auxquelles sont liées les categories/services/labels données en param
+     * @param $type
+     * @param $listeActuelle
+     * @param $filtres
+     * @param $selection
+     * @return ArrayCollection
+     * @internal param $categorie
+     * @internal param $objs
+     */
+    public function getObjetsForAjax($type, $listeActuelle, $filtres, $selection) {
+        $res = new ArrayCollection();
+        $em = $this->getDoctrine()->getManager();
+        $objetsActuelle = new ArrayCollection($listeActuelle);
+        if($type == 'categories') {
+            $res = $this->comparerCategories($em, $filtres, $objetsActuelle, $selection);
+            if($filtres["services"]) {
+                $res = $this->comparerServices($em, $filtres, $res, $selection, "services");
+            }
+            if($filtres["classements"]) {
+                $res = $this->comparerClassements($em, $filtres, $res, $selection);
+            }
+            if($filtres["paiements"]) {
+                $res = $this->comparerServices($em, $filtres, $res, $selection, "paiements");
+            }
+            if($filtres["tourismes"]) {
+                $res = $this->comparerServices($em, $filtres, $res, $selection, "tourismes");
+            }
+        } elseif ($type == "services" || $type == "paiements" || $type == "tourismes") {
+            //TODO séparer les diff types
+            if($type == "services") {
+                $res = $this->comparerServices($em, $filtres, $objetsActuelle, $selection, "services");
+                if($filtres["paiements"]) {
+                    $res = $this->comparerServices($em, $filtres, $res, $selection, "paiements");
+                }
+                if($filtres["tourismes"]) {
+                    $res = $this->comparerServices($em, $filtres, $res, $selection, "tourismes");
+                }
+            } elseif($type == "paiements") {
+                $res = $this->comparerServices($em, $filtres, $objetsActuelle, $selection, "paiements");
+                if($filtres["paiements"]) {
+                    $res = $this->comparerServices($em, $filtres, $res, $selection, "services");
+                }
+                if($filtres["tourismes"]) {
+                    $res = $this->comparerServices($em, $filtres, $res, $selection, "tourismes");
+                }
+            } elseif($type == "tourismes") {
+                $res = $this->comparerServices($em, $filtres, $objetsActuelle, $selection, "tourismes");
+                if($filtres["paiements"]) {
+                    $res = $this->comparerServices($em, $filtres, $res, $selection, "paiements");
+                }
+                if($filtres["tourismes"]) {
+                    $res = $this->comparerServices($em, $filtres, $res, $selection, "services");
+                }
+            }
+            //---
+            $res = $this->comparerServices($em, $filtres, $objetsActuelle, $selection, $type);
+            if($filtres["classements"]) {
+                $res = $this->comparerClassements($em, $filtres, $res, $selection);
+            }
+            if($filtres["categories"]) {
+                $res = $this->comparerCategories($em, $filtres, $res, $selection);
+            }
 
-        return $this->render('@Apidae/commun/test.html.twig', array(
-            'name' => $name
-        ));
+        } elseif ($type == "classements") {
+            $res = $this->comparerClassements($em, $filtres, $objetsActuelle, $selection);
+            if($filtres["services"]) {
+                $res = $this->comparerServices($em, $filtres, $res, $selection, "services");
+            }
+            if($filtres["categories"]) {
+                $res = $this->comparerCategories($em, $filtres, $res, $selection);
+            }
+            if($filtres["paiements"]) {
+                $res = $this->comparerServices($em, $filtres, $res, $selection, "paiements");
+            }
+            if($filtres["tourismes"]) {
+                $res = $this->comparerServices($em, $filtres, $res, $selection, "tourismes");
+            }
+        }
+        return $res;
+    }
+
+    private function comparerServices($em, $filtres, $objetsActuelle, $selection, $type){
+        $typeFiltre = [];
+        if($type == "services") {
+            $typeFiltre = $filtres["services"];
+        } elseif($type == "paiements") {
+            $typeFiltre = $filtres["paiements"];
+        } elseif($type == "tourismes") {
+            $typeFiltre = $filtres["tourismes"];
+        }
+
+        $objets = new ArrayCollection();
+        foreach($typeFiltre as $filtre) {
+            //print("filtre");
+            $ob =  new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsServiceSelection($filtre->getSerID(), $selection));
+            $objets = new ArrayCollection(array_merge($ob->toArray(), $objets->toArray()));
+        }
+        $tmp = new ArrayCollection();
+        foreach($objets as $o){
+            if($objetsActuelle->contains($o) && !$tmp->contains($o)) {
+                $tmp->add($o);
+            }
+        }
+        return $tmp;
+    }
+
+    private function comparerClassements($em, $filtres, $objetsActuelle, $selection) {
+        $objets = new ArrayCollection();
+        foreach($filtres["classements"] as $filtre) {
+            //print("/ filtre /");
+            $ob =  new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsLabelsSelection($filtre->getLabID(), $selection));
+            //print("/ l : ".count($ob)." / ");
+            $objets = new ArrayCollection(array_merge($ob->toArray(), $objets->toArray()));
+        }
+        $tmp = new ArrayCollection();
+        foreach($objets as $o){
+            if($objetsActuelle->contains($o) && !$tmp->contains($o)) {
+                $tmp->add($o);
+            }
+        }
+        return $tmp;
+    }
+
+    private function comparerCategories($em, $filtres, $objetsActuelle, $selection) {
+        $objets = new ArrayCollection();
+        foreach($filtres["categories"] as $filtre) {
+            //print("filtre");
+            $ob =  new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($filtre->getCatID(), $selection));
+            $objets = new ArrayCollection(array_merge($ob->toArray(), $objets->toArray()));
+        }
+        $tmp = new ArrayCollection();
+        foreach($objets as $o){
+            if($objetsActuelle->contains($o) && !$tmp->contains($o)) {
+                $tmp->add($o);
+            }
+        }
+        return $tmp;
     }
 
 
-    public function testsAction(Request $request)
-    {
-
-        $categorieId = 40518;
-        $typeObjet = 'services';
-        $session = $request->getSession();
+    public function testsAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
+        print_r($request->getSession()->get('filtres'));
+        $filtres = $request->getSession()->get('filtres');
+        $objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
+/*
+        $objets = new ArrayCollection();
+        $res = new ArrayCollection();
+        //$objetsCatSel = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsServiceSelection(1285, 40518));
 
-        //if($request->isXmlHttpRequest()) {
-        //$session->remove('listeIntermediaire');
-        //$session->remove('listeObjets');
+        print(count($objs));
 
-        $filtres = $session->get('filtres');
-        if (!$filtres) {
-            $filtres["categories"] = [];
-            $filtres["services"] = [];
-            $filtres["classements"] = [];
+        foreach($filtres["services"] as $filtre) {
+            //print("filtre");
+            $ob =  new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsServiceSelection($filtre->getSerID(), 40518));
+            $objets = new ArrayCollection(array_merge($ob->toArray(), $objets->toArray()));
         }
-
-        $objetsIds = $session->get('listeIntermediaire');
-        if (is_array($objetsIds) && count($objetsIds) > 0) {
-            $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
-        } else {
-            $objetsIds = $session->get('listeObjets');
-            if (is_array($objetsIds) && count($objetsIds) > 0) {
-                $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
-            } else {
-                $listeActuelle = [];
+        foreach($objets as $o){
+            if($objs->contains($o)) {
+                $res->add($o);
             }
         }
 
-        if (!empty($listeActuelle)) {
-            $serializer = $this->container->get('jms_serializer');
-            /* Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
-            peuvent être soit categorie/service/labelQualite */
-            $c = $em->getRepository(Categorie::class)->findOneByCatId($categorieId);
-            if ($c && ($typeObjet == 'categories')) {
-                if (!in_array($c, $filtres['categories'])) {
-                    $filtres[$typeObjet][] = $c;
+        $objets->clear();
+        foreach($filtres["classements"] as $filtre) {
+            //print("/ filtre /");
+            $ob =  new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsLabelsSelection($filtre->getLabID(), 40518));
+            //print("/ l : ".count($ob)." / ");
+            $objets = new ArrayCollection(array_merge($ob->toArray(), $objets->toArray()));
+        }
+        $tmp = new ArrayCollection();
+        foreach($objets as $o){
+            if($res->contains($o)) {
+                $tmp->add($o);
+            }
+        }
 
-                    //print("categories");
-                } else {
-                    $s = $em->getRepository(Service::class)->findOneBySerId($categorieId);
-                    if ($s && ($typeObjet == "services" || $typeObjet == "paiements" || $typeObjet == "tourismes")) {
-                        if (!in_array($s, $filtres["services"])) {
-                            $filtres["services"][] = $s;
-                        }
-                        //print("services");
-                    } else {
-                        $l = $em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
-                        if ($l && $typeObjet == "classements") {
-                            if (!in_array($c, $filtres["classements"])) {
-                                $filtres["classements"][] = $l;
-                            }
-                            //print("labels");
-                        } else {
-                            //print("else");
-                            $nouvelleListe = [];
-                        }
-                    }
+        foreach($filtres["categories"] as $filtre) {
+            //print("filtre");
+            $ob =  new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($filtre->getCatID(), 40518));
+            $objets = new ArrayCollection(array_merge($ob->toArray(), $objets->toArray()));
+        }
+        $final = new ArrayCollection();
+        foreach($objets as $o){
+            if($tmp->contains($o)) {
+                $final->add($o);
+            }
+        }
+
+        print(count($final));
+
+        $objets = new ArrayCollection();
+        $tmp = new ArrayCollection();
+        $objetsCatSel = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection(1265, 40518));
+        foreach($objs as $o) {
+            // Objets rattachés au filtre demandé
+            if($objetsCatSel->contains($o)){
+                $objets->add($o);
+            }
+            // OU (+)
+            // Objets étant déjà dans la liste et ayant le même type de filtre (ici = categorie)
+            if($filtres['categories']) {
+                foreach($filtres["categories"] as $filtre) {
+                    //print("filtre");
+                    $ob =  new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($filtre->getCatID(), 40518));
+                    $tmp = new ArrayCollection(array_merge($ob->toArray(), $objets->toArray()));
                 }
-
-                //$session->remove('listeObjets');
-                $session->set('filtres', $filtres);
-                $session->set('listeIntermediaire', $this->getIdsObjetsFromObjets($nouvelleListe));
-
-                //Récupératino des données pour le traitement des filtres
-                $services = $this->getServicesFromObjets($nouvelleListe);
-                $modesPaiement = $this->getModesPaimentFromObjets($nouvelleListe);
-                $classements = $this->getClassementsFromObjets($nouvelleListe);
-                $categories = $this->getTypeHabitationFromObjets($nouvelleListe);
-                $tourisme = $this->getTourismeAdapteFromObjets($nouvelleListe);
-
-                //var_dump($session->get('listeObjets'));
-                $objetsTableau = $serializer->serialize($nouvelleListe, 'json');
-                $services = $serializer->serialize($services, 'json');
-                $modesPaiement = $serializer->serialize($modesPaiement, 'json');
-                $classements = $serializer->serialize($classements, 'json');
-                $categories = $serializer->serialize($categories, 'json');
-                $tourisme = $serializer->serialize($tourisme, 'json');
-
-                //--- NEW
-                $em = $this->getDoctrine()->getManager();
-                $objets = new ArrayCollection();
-                //aller chercher tous les objets qui correspondent à la categorie donnée pour l'option "OU"
-                /*
-                            if ($type == 'categories') {
-                                $objetsCatSel = $em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($categorie->getCatId(), $idSelection);
-                                foreach ($objs as $o) {
-                                    // Objets rattachés au filtre demandé
-                                    if ($objetsCatSel->contains($o)) {
-                                        $objets->add($o);
-                                    }
-                                    // OU (+)
-                                    // Objets étant déjà dans la liste et ayant le même type de filtre (ici = categorie)
-                                    if ($filtres[$type]) {
-                                        foreach ($filtres[$type] as $filtre) {
-                                            if ($o->getCategories()->contains($filtre) && !$objets->contains($o)) {
-                                                $objets->add($o);
-                                            }
-                                        }
-                                    }
-                                }
-
-
-                            } elseif ($type == "services" || $type == "paiements" || $type == "tourismes") {
-                                //TODO séparer les diff types
-                                $objetsCatSel = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsServiceSelection($categorie->getSerId(), $idSelection));
-                                // Objets rattachés au filtre demandé
-                                foreach ($objs as $o) {
-                                    if ($objetsCatSel->contains($o)) {
-                                        $objets->add($o);
-                                    }
-                                    // OU (+)
-                                    // Objets étant déjà dans la liste et ayant le même type de filtre (ici = categorie)
-                                    foreach ($filtres["services"] as $filtre) {
-                                        if ($o->getServices()->contains($filtre) && !$objets->contains($o)) {
-                                            $objets->add($o);
-                                        }
-                                    }
-                                }
-                            } elseif ($type == "classements") {
-                                $objetsCatSel = $em->getRepository(ObjetApidae::class)->getObjetsLabelsSelection($categorie->getLabId(), $idSelection);
-                                // Objets rattachés au filtre demandé
-                                foreach ($objs as $o) {
-                                    if ($objetsCatSel->contains($o)) {
-                                        $objets->add($o);
-                                    }
-                                    // OU (+)
-                                    // Objets étant déjà dans la liste et ayant le même type de filtre (ici = categorie)
-                                    foreach ($filtres["classements"] as $filtre) {
-                                        if ($o->getLabelsQualite()->contains($filtre) && !$objets->contains($o)) {
-                                            $objets->add($o);
-                                        }
-                                    }
-                                }
-                            }
-
-
-                            if (empty($objets)) {
-                                print("vide");
-                            }*/
-
-                return $this->render('ApidaeBundle:Default:test.html.twig');
             }
-        }
+        }*/
+
+        return $this->render('ApidaeBundle:Default:test.html.twig');
     }
 }
 

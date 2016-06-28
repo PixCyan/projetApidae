@@ -116,7 +116,7 @@ class ObjetApidaeRepository extends EntityRepository {
         $qb = $em->createQueryBuilder();
         $qb->select('o')
             ->from('ApidaeBundle:ObjetApidae', 'o')
-            ->innerJoin('o.services', 's', 'WITH', 's.serId = ?1')
+            ->innerJoin('o.labelsQualite', 'l', 'WITH', 'l.labId= ?1')
             ->innerJoin('o.selectionsApidae', 'sel', 'WITH', 'sel.idSelectionApidae = ?2')
             ->setParameters(array(1 => $idLabel, 2 => $idSelection));
         $query = $qb->getQuery()->getResult();
