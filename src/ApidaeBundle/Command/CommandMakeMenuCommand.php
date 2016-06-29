@@ -93,6 +93,11 @@ class CommandMakeMenuCommand extends ContainerAwareCommand
         }
     }
 
+    /**
+     * Renvoie les objets d'une selection Apidae
+     * @param $categories
+     * @return null
+     */
     private function traitementSelection($categories) {
         $objets = null;
         $s = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categories[0]->id);

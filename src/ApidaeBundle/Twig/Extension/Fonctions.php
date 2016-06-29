@@ -23,7 +23,6 @@ namespace ApidaeBundle\Twig\Extension;
          $this->em = $em;
      }
 
-
      /**
       * Returns the name of the extension.
       *
@@ -46,6 +45,13 @@ namespace ApidaeBundle\Twig\Extension;
              );
      }
 
+     /**
+      * Renvoie la chaine de traduction corresondant à la langue (locale) données pour une chaine donnée
+      * Pour une chaine de type : @Fr:foo@En:bar
+      * @param $str
+      * @param string $locale
+      * @return string
+      */
      function getLangueLib($str, $locale='') {
          if (empty ($locale)) {
              $locale = $this->SIT_LANGUE;
@@ -70,24 +76,47 @@ namespace ApidaeBundle\Twig\Extension;
          return $res;
      }
 
-     function getTypeApidae($str) {
-         $chaineExplode = explode("_", $str);
-         return $chaineExplode[0];
-     }
-
+     /**
+      * Renvoie la traduction correspondant à un objet et une langue donnés.
+      * @param ObjetApidae $objet
+      * @param Langue $langue
+      * @return null
+      */
      function getTradLangue(ObjetApidae $objet, Langue $langue) {
-         foreach($objet->getTraductions() as $value) {
+         /*foreach($objet->getTraductions() as $value) {
              if($value->getLangue() == $langue) {
                  return $value;
              }
+         }*/
+         $l = $this->em->getRepository('ApidaeBundle:TraductionObjetApidae')->findOneBy([
+             'langue' => $langue,
+             'objet' => $objet]);
+         if($l) {
+             return $l;
+         } else {
+             return null;
          }
-         return null;
      }
 
+     /**
+      * Renvoie le libelle de la langue correspondant au raccourci donnée (Fr => Français)
+      * @param $langue
+      * @return string
+      */
      function getLangueLibelle($langue) {
          //$em = $this->container->get('doctrine')->getManager();
          $l = $this->em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
          return $l->getLanLibelle();
          //return "test";
+     }
+
+     /**
+      * Renvoie le première élément d'un type Apidae
+      * @param $str
+      * @return mixed
+      */
+     function getTypeApidae($str) {
+         $chaineExplode = explode("_", $str);
+         return $chaineExplode[0];
      }
  }
