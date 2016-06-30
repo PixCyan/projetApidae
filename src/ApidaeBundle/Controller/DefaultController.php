@@ -313,18 +313,18 @@ class DefaultController extends Controller
             } else {
                 $sel = $em->getRepository(SelectionApidae::class)->findOneBy(['idSelectionApidae' => $idSelection]);
                 if($sel) {
-                    $this->redirectToRoute('liste', array(
+                    return $this->redirectToRoute('liste', array(
                         'typeObjet' => $typeObjet,
                         'categorieId' => $idSelection,
-                        'libelleCategorie' => $this->traitementChaineUrl($sel->getIdSelLibelle())));
+                        'libelleCategorie' => $this->traitementChaineUrl($sel->getSelLibelle())));
                 } else {
-                    $this->redirectToRoute('index');
+                    return $this->redirectToRoute('index');
                 }
             }
 
         } else {
             $filtres = $session->get('filtres');
-            $objetsIds = $session->get('listeIntermediaire');
+            /*$objetsIds = $session->get('listeIntermediaire');
             if (is_array($objetsIds) && count($objetsIds) > 0) {
                 $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
             } else {
@@ -334,6 +334,12 @@ class DefaultController extends Controller
                 } else {
                     $listeActuelle = [];
                 }
+            }*/
+            $objetsIds = $session->get('listeObjets');
+            if (is_array($objetsIds) && count($objetsIds) > 0) {
+                $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
+            } else {
+                $listeActuelle = [];
             }
             if(!empty($listeActuelle)) {
                 $serializer = $this->container->get('jms_serializer');
@@ -342,7 +348,7 @@ class DefaultController extends Controller
                 $c = $em->getRepository(Categorie::class)->findOneByCatId($categorieId);
                 if($c && ($typeObjet == 'categories')) {
                     if(!isset($filtres["categories"][$c->getCatId()])) {
-                        $filtres['categories'][$c->getCatId()] = $c;
+                        $filtres['categories'][$c->getCatId()] = $c->getCatId();
                     }
                     //$nouvelleListe = $this->traitementObjetsCategories($c, $listeActuelle, $typeObjet, $filtres, $idSelection);
                     $nouvelleListe = $this->getObjetsForAjax($typeObjet, $listeActuelle, $filtres, $idSelection);
@@ -351,13 +357,13 @@ class DefaultController extends Controller
                     $s = $em->getRepository(Service::class)->findOneBySerId($categorieId);
                     if($s && ($typeObjet == "services" || $typeObjet == "paiements" || $typeObjet == "tourismes")) {
                         if($typeObjet == "paiements" && !isset($filtres["paiements"][$s->getSerId()])) {
-                            $filtres["paiements"][$s->getSerId()] = $s;
+                            $filtres["paiements"][$s->getSerId()] = $s->getSerId();
 
                         } elseif($typeObjet == "services" && !isset($filtres["services"][$s->getSerId()])) {
-                            $filtres["services"][$s->getSerId()] = $s;
+                            $filtres["services"][$s->getSerId()] = $s->getSerId();
 
                         } elseif ($typeObjet == "tourismes" && !isset($filtres["tourismes"][$s->getSerId()])) {
-                            $filtres["tourismes"][$s->getSerId()] = $s;
+                            $filtres["tourismes"][$s->getSerId()] = $s->getSerId();
                         }
                         //$nouvelleListe = $this->traitementObjetsCategories($s, $listeActuelle, $typeObjet, $filtres, $idSelection);
                         $nouvelleListe = $this->getObjetsForAjax($typeObjet, $listeActuelle, $filtres, $idSelection);
@@ -366,7 +372,7 @@ class DefaultController extends Controller
                         $l = $em->getRepository(LabelQualite::class)->findOneByLabId($categorieId);
                         if($l && $typeObjet == "classements") {
                             if(!isset($filtres["classements"][$l->getLabId()])) {
-                                $filtres["classements"][$l->getLabId()] = $l;
+                                $filtres["classements"][$l->getLabId()] = $l->getLabId();
                             }
                             //$nouvelleListe = $this->traitementObjetsCategories($l, $listeActuelle, $typeObjet, $filtres, $idSelection);
                             $nouvelleListe = $this->getObjetsForAjax($typeObjet, $listeActuelle, $filtres, $idSelection);
@@ -406,12 +412,12 @@ class DefaultController extends Controller
                 //TODO else
                 $sel = $em->getRepository(SelectionApidae::class)->findOneBy(['idSelectionApidae' => $idSelection]);
                 if($sel) {
-                    $this->redirectToRoute('liste', array(
+                    return $this->redirectToRoute('liste', array(
                         'typeObjet' => $typeObjet,
                         'categorieId' => $idSelection,
-                        'libelleCategorie' => $this->traitementChaineUrl($sel->getIdSelLibelle())));
+                        'libelleCategorie' => $this->traitementChaineUrl($sel->getSelLibelle())));
                 } else {
-                    $this->redirectToRoute('index');
+                    return $this->redirectToRoute('index');
                 }
             }
         }
@@ -592,7 +598,7 @@ class DefaultController extends Controller
                 }
             } elseif($type == "paiements") {
                 $res = $this->comparerServices($em, $filtres, $objetsActuelle, $selection, "paiements");
-                if($filtres["paiements"]) {
+                if($filtres["services"]) {
                     $res = $this->comparerServices($em, $filtres, $res, $selection, "services");
                 }
                 if($filtres["tourismes"]) {
@@ -603,7 +609,7 @@ class DefaultController extends Controller
                 if($filtres["paiements"]) {
                     $res = $this->comparerServices($em, $filtres, $res, $selection, "paiements");
                 }
-                if($filtres["tourismes"]) {
+                if($filtres["services"]) {
                     $res = $this->comparerServices($em, $filtres, $res, $selection, "services");
                 }
             }
@@ -643,11 +649,12 @@ class DefaultController extends Controller
             $typeFiltre = $filtres["tourismes"];
         }
         $objets = new ArrayCollection();
-        foreach($typeFiltre as $filtre) {
+        /*foreach($typeFiltre as $filtre) {
             //print("filtre");
             $ob =  new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsServiceSelection($filtre->getSerID(), $selection));
             $objets = new ArrayCollection(array_merge($ob->toArray(), $objets->toArray()));
-        }
+        }*/
+        $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsServiceSelection($typeFiltre, $selection));
         $tmp = new ArrayCollection();
         foreach($objets as $o){
             if($objetsActuelle->contains($o) && !$tmp->contains($o)) {
@@ -658,12 +665,13 @@ class DefaultController extends Controller
     }
     private function comparerClassements($em, $filtres, $objetsActuelle, $selection) {
         $objets = new ArrayCollection();
-        foreach($filtres["classements"] as $filtre) {
+        /*foreach($filtres["classements"] as $filtre) {
             //print("/ filtre /");
             $ob =  new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsLabelsSelection($filtre->getLabID(), $selection));
             //print("/ l : ".count($ob)." / ");
             $objets = new ArrayCollection(array_merge($ob->toArray(), $objets->toArray()));
-        }
+        }*/
+        $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsLabelsSelection($filtres["classements"], $selection));
         $tmp = new ArrayCollection();
         foreach($objets as $o){
             if($objetsActuelle->contains($o) && !$tmp->contains($o)) {
@@ -674,11 +682,13 @@ class DefaultController extends Controller
     }
     private function comparerCategories($em, $filtres, $objetsActuelle, $selection) {
         $objets = new ArrayCollection();
-        foreach($filtres["categories"] as $filtre) {
+        /*foreach($filtres["categories"] as $filtre) {
             //print("filtre");
             $ob =  new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($filtre->getCatID(), $selection));
             $objets = new ArrayCollection(array_merge($ob->toArray(), $objets->toArray()));
-        }
+        }*/
+
+        $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($filtres["categories"], $selection));
         $tmp = new ArrayCollection();
         foreach($objets as $o){
             if($objetsActuelle->contains($o) && !$tmp->contains($o)) {
@@ -686,6 +696,22 @@ class DefaultController extends Controller
             }
         }
         return $tmp;
+    }
+
+    /**
+     * Renvoie une chaine traitée pour être passé dans l'url
+     * (enlève les accents, gère les espaces...)
+     * @param $chaine
+     * @return mixed
+     */
+    private function traitementChaineUrl($chaine) {
+        $str =  str_replace(",", "", str_replace(" ", "_", str_replace("'", "", $chaine)));
+        //$str = strtr($str, 'ÁÀÂÄÃÅÇÉÈÊËÍÏÎÌÑÓÒÔÖÕÚÙÛÜÝ', 'AAAAAACEEEEEIIIINOOOOOUUUUY');
+        //$str = strtr($str, 'áàâäãåçéèêëíìîïñóòôöõúùûüýÿ', 'aaaaaaceeeeiiiinooooouuuuyy');
+        $str = htmlentities($str, ENT_NOQUOTES, 'UTF-8');
+        $str = preg_replace('#&([A-za-z])(?:acute|cedil|caron|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
+
+        return strtolower($str);
     }
 
     /**
@@ -706,8 +732,18 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         print_r($request->getSession()->get('filtres'));
         $filtres = $request->getSession()->get('filtres');
-        $objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
+        //$objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
 
+        //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
+        $objs = $em->getRepository(ObjetApidae::class)->getTest(
+            $filtres["services"],
+            $filtres["paiements"],
+            $filtres["tourismes"],
+            $filtres["categories"],
+            $filtres["classements"],
+            40518);
+        print (count($objs));
         return $this->render('ApidaeBundle:Default:test.html.twig');
     }
+
 }

@@ -56,11 +56,25 @@ class ObjetApidaeRepository extends EntityRepository {
 
     /**
      * Renvoie une liste d'objet apidae ayant la categorie donnée et la selection donnée
-     * @param $idCategorie
+     * @param $idsCategories
      * @param $idSelection
      * @return \Doctrine\ORM\Query
+     * @internal param $idCategorie
      */
-    public function getObjetsCategorieSelection($idCategorie, $idSelection) {
+    public function getObjetsCategorieSelection($idsCategories, $idSelection) {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.categories', 'c')
+            ->innerJoin('o.selectionsApidae', 'sel')
+            ->where('c.catId IN (?1)')
+            ->andWhere('sel.idSelectionApidae = ?2')
+            ->setParameters(array(1 => $idsCategories, 2 => $idSelection));
+        $query = $qb->getQuery()->getResult();
+        return $query;
+
+        /*
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('o')
@@ -71,7 +85,7 @@ class ObjetApidaeRepository extends EntityRepository {
         $query = $qb->getQuery()->getResult();
         return $query;
 
-        /* Requete SQL
+        Requete SQL
         select * from objet_apidae as o
             inner join service as s
             inner join objetHasServices as k
@@ -82,19 +96,36 @@ class ObjetApidaeRepository extends EntityRepository {
             inner join selection_apidae_objet_apidae as selObj
             on sel.id = selObj.selection_apidae_id
             and o.id = selObj.objet_apidae_id
-            and sel.idSelectionApidae = 40518
+            and sel.idSelectionApidae = 40518*
+
+
+
+        select idSelectionApidae, id_obj, obj_Nom, serId, labId from objet_apidae as o
         */
     }
 
     /**
      * Renvoie une liste d'objet apidae ayant un service donné et la selection donnée
-     * @param $idService
+     * @param $idsServices
      * @param $idSelection
      * @return \Doctrine\ORM\Query
+     * @internal param $idService
      */
-    public function getObjetsServiceSelection($idService, $idSelection) {
+    public function getObjetsServiceSelection($idsServices, $idSelection) {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
+
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.services', 's')
+            ->innerJoin('o.selectionsApidae', 'sel')
+            ->where('s.serId IN (?1)')
+            ->andWhere('sel.idSelectionApidae = ?2')
+            ->setParameters(array(1 => $idsServices, 2 => $idSelection));
+        $query = $qb->getQuery()->getResult();
+        return $query;
+
+        /*
         $qb->select('o')
             ->from('ApidaeBundle:ObjetApidae', 'o')
             ->innerJoin('o.services', 's', 'WITH', 's.serId = ?1')
@@ -102,25 +133,38 @@ class ObjetApidaeRepository extends EntityRepository {
             ->setParameters(array(1 => $idService, 2 => $idSelection));
         $query = $qb->getQuery()->getResult();
         return $query;
-        //return $query->getArrayResult();
+        //return $query->getArrayResult(); */
     }
 
     /**
      * Renvoie une liste d'objet apidae ayant le label donné et la selection donnée
-     * @param $idLabel
+     * @param $idsLabels
      * @param $idSelection
      * @return \Doctrine\ORM\Query
+     * @internal param $idLabel
      */
-    public function getObjetsLabelsSelection($idLabel, $idSelection) {
+    public function getObjetsLabelsSelection($idsLabels, $idSelection) {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.labelsQualite', 'l')
+            ->innerJoin('o.selectionsApidae', 'sel')
+            ->where('l.labId IN (?1)')
+            ->andWhere('sel.idSelectionApidae = ?2')
+            ->setParameters(array(1 => $idsLabels, 2 => $idSelection));
+        $query = $qb->getQuery()->getResult();
+        return $query;
+
+
+        /*
         $qb->select('o')
             ->from('ApidaeBundle:ObjetApidae', 'o')
             ->innerJoin('o.labelsQualite', 'l', 'WITH', 'l.labId= ?1')
             ->innerJoin('o.selectionsApidae', 'sel', 'WITH', 'sel.idSelectionApidae = ?2')
             ->setParameters(array(1 => $idLabel, 2 => $idSelection));
         $query = $qb->getQuery()->getResult();
-        return $query;
+        return $query;*/
     }
 
     /**
@@ -150,4 +194,24 @@ class ObjetApidaeRepository extends EntityRepository {
          */
     }
 
+    public function getTest($services, $paiements, $tourismes, $categories, $classements,  $idSelection)
+    {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.selectionsApidae', 'sel')
+            ->innerJoin('o.services', 's')
+            ->innerJoin('o.categories', 'c')
+            ->innerJoin('o.labelsQualite', 'l')
+            ->where('s.serId IN (?1)')
+            ->andWhere('s.serId IN  (?2)')
+            ->andWhere('s.serId IN  (?3)')
+            ->andWhere('c.catId IN  (?4)')
+            ->andWhere('l.labId IN  (?5)')
+            ->andWhere('sel.idSelectionApidae = ?6')
+            ->setParameters(array(1 => $services, 2 => $paiements, 3 => $tourismes, 4 => $categories, 5 => $classements, 6 => $idSelection));
+        $query = $qb->getQuery()->getResult();
+        return $query;
+    }
 }
