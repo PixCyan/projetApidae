@@ -36,7 +36,27 @@ $("document").ready(function() {
                 }
             });
         }
-    })
+    });
+
+    $('#resetFiltres').on('click', function () {
+        var Status = $(this).val();
+        $.ajax({
+            type: 'POST',
+            url: 'http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/0/0/' + $('#selectionId').text()+ "/reset" ,
+            //url : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
+            contentType: "application/json; charset=utf-8",
+            dataType: 'json',
+            beforeSend: function () {
+                console.log('en attente');
+            },
+            success: function (data) {
+                getObjets(data);
+                $('input').each(function(){
+                    $(this).removeAttr('checked');
+                })
+            }
+        });
+    });
 });
 
 function getObjets(data) {
@@ -112,6 +132,12 @@ function getObjets(data) {
     });
 
     //--------- Traitement des filtres
+    $('#titreClassement').text($('#titreClassement').text() + " (" + data.countClassements + ")");
+    $('#titreCategories').text($('#titreCategories').text() + " (" + data.countCategories + ")");
+    $('#titreTourisme').text($('#titreTourisme').text() + " (" + data.countTourisme + ")");
+    $('#titreServices').text($('#titreServices').text() + " (" + data.countServices + ")");
+    $('#titrePaiement').text($('#titrePaiement').text() + " (" + data.countPaiements + ")");
+
     $(".filtres").each(function(){
         console.log("disabled");
         if(!$(this).attr('checked')) {

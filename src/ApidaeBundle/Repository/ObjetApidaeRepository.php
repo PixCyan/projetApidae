@@ -194,6 +194,69 @@ class ObjetApidaeRepository extends EntityRepository {
          */
     }
 
+    /**
+     * Renvoie le nombre d'objets liés aux services données et à la sélection donnée
+     * @param $idsServices
+     * @param $idSelection
+     * @return mixed
+     */
+    public function getCountObjetHasServices($idsServices, $idSelection) {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.selectionsApidae', 'sel')
+            ->innerJoin('o.services', 's')
+            ->where('s.serId IN (?1)')
+            ->andWhere('sel.idSelectionApidae = ?2')
+            ->groupBy('o.idObj')
+            ->setParameters(array(1 => $idsServices, 2 => $idSelection));
+        $query = $qb->getQuery()->getResult();
+        return count($query);
+    }
+
+    /**
+     * Renvoie le nombre d'objets liés aux labels donnés et à la sélection donnée
+     * @param $idsLabels
+     * @param $idSelection
+     * @return int
+     */
+    public function getCountObjetHasLabels($idsLabels, $idSelection) {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.selectionsApidae', 'sel')
+            ->innerJoin('o.labelsQualite', 'l')
+            ->where('l.labId IN (?1)')
+            ->andWhere('sel.idSelectionApidae = ?2')
+            ->groupBy('o.idObj')
+            ->setParameters(array(1 => $idsLabels, 2 => $idSelection));
+        $query = $qb->getQuery()->getResult();
+        return count($query);
+    }
+
+    /**
+     * Renvoie le nombre d'objets liés aux categories donnés et à la sélection donnée
+     * @param $idsCategories
+     * @param $idSelection
+     * @return int
+     */
+    public function getCountObjetHasCategories($idsCategories, $idSelection) {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.selectionsApidae', 'sel')
+            ->innerJoin('o.categories', 'c')
+            ->where('c.catId IN (?1)')
+            ->andWhere('sel.idSelectionApidae = ?2')
+            ->groupBy('o.idObj')
+            ->setParameters(array(1 => $idsCategories, 2 => $idSelection));
+        $query = $qb->getQuery()->getResult();
+        return count($query);
+    }
+
     public function getTest($services, $paiements, $tourismes, $categories, $classements,  $idSelection)
     {
         $em = $this->getEntityManager();
