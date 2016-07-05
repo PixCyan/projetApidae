@@ -60,10 +60,14 @@ class Traitement extends ContainerAwareCommand {
 
         //Récupération fichiers :
         try {
-            $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
+            $export = file_get_contents("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/exportInitial/selections.json");
+            $this->communes = json_decode(file_get_contents("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/exportInitial/communes.json"));
+            $fichierRefApidae = json_decode(file_get_contents("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/exportInitial/elements_reference.json", true));
+            $file = '/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/references.json';
+            /*$export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
             $this->communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
             $fichierRefApidae = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json", true));
-            $file = '/var/www/local/Symfony/projetApidae/tools/tmp/references.json';
+            $file = '/var/www/local/Symfony/projetApidae/tools/tmp/references.json';*/
 
             //----- Traitement du fichier d'élements références
             if(!file_exists($file)){

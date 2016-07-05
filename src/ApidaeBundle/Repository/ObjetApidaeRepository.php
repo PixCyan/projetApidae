@@ -19,6 +19,21 @@ class ObjetApidaeRepository extends EntityRepository {
     //public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null);
 
     /**
+     * Renvoie les ids de tous les objets
+     * @return array
+     */
+    public function getAllIds() {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o.id')
+            ->from('ApidaeBundle:ObjetApidae', 'o');
+        $query = $qb->getQuery()->getArrayResult();
+        return $query;
+    }
+
+
+
+    /**
      * Renvoie tous les objets correspondant à la liste de categorie donnée
      * @param $categories
      * @return array
@@ -198,9 +213,10 @@ class ObjetApidaeRepository extends EntityRepository {
      * Renvoie le nombre d'objets liés aux services données et à la sélection donnée
      * @param $idsServices
      * @param $idSelection
+     * @param $idsObjets
      * @return mixed
      */
-    public function getCountObjetHasServices($idsServices, $idSelection) {
+    public function getCountObjetHasServices($idsServices, $idSelection, $idsObjets) {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('o')
@@ -208,9 +224,10 @@ class ObjetApidaeRepository extends EntityRepository {
             ->innerJoin('o.selectionsApidae', 'sel')
             ->innerJoin('o.services', 's')
             ->where('s.serId IN (?1)')
-            ->andWhere('sel.idSelectionApidae = ?2')
+            ->andWhere('o.idObj IN (?2)')
+            ->andWhere('sel.idSelectionApidae = ?3')
             ->groupBy('o.idObj')
-            ->setParameters(array(1 => $idsServices, 2 => $idSelection));
+            ->setParameters(array(1 => $idsServices, 2 => $idsObjets, 3 => $idSelection));
         $query = $qb->getQuery()->getResult();
         return count($query);
     }
@@ -219,9 +236,10 @@ class ObjetApidaeRepository extends EntityRepository {
      * Renvoie le nombre d'objets liés aux labels donnés et à la sélection donnée
      * @param $idsLabels
      * @param $idSelection
+     * @param $idsObjets
      * @return int
      */
-    public function getCountObjetHasLabels($idsLabels, $idSelection) {
+    public function getCountObjetHasLabels($idsLabels, $idSelection, $idsObjets) {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('o')
@@ -229,9 +247,10 @@ class ObjetApidaeRepository extends EntityRepository {
             ->innerJoin('o.selectionsApidae', 'sel')
             ->innerJoin('o.labelsQualite', 'l')
             ->where('l.labId IN (?1)')
-            ->andWhere('sel.idSelectionApidae = ?2')
+            ->andWhere('o.idObj IN (?2)')
+            ->andWhere('sel.idSelectionApidae = ?3')
             ->groupBy('o.idObj')
-            ->setParameters(array(1 => $idsLabels, 2 => $idSelection));
+            ->setParameters(array(1 => $idsLabels, 2 => $idsObjets, 3 => $idSelection));
         $query = $qb->getQuery()->getResult();
         return count($query);
     }
@@ -240,9 +259,10 @@ class ObjetApidaeRepository extends EntityRepository {
      * Renvoie le nombre d'objets liés aux categories donnés et à la sélection donnée
      * @param $idsCategories
      * @param $idSelection
+     * @param $idsObjets
      * @return int
      */
-    public function getCountObjetHasCategories($idsCategories, $idSelection) {
+    public function getCountObjetHasCategories($idsCategories, $idSelection, $idsObjets) {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('o')
@@ -250,13 +270,16 @@ class ObjetApidaeRepository extends EntityRepository {
             ->innerJoin('o.selectionsApidae', 'sel')
             ->innerJoin('o.categories', 'c')
             ->where('c.catId IN (?1)')
-            ->andWhere('sel.idSelectionApidae = ?2')
+            ->andWhere('o.idObj IN (?2)')
+            ->andWhere('sel.idSelectionApidae = ?3')
             ->groupBy('o.idObj')
-            ->setParameters(array(1 => $idsCategories, 2 => $idSelection));
+            ->setParameters(array(1 => $idsCategories, 2 => $idsObjets, 3 => $idSelection));
         $query = $qb->getQuery()->getResult();
         return count($query);
     }
 
+
+    //-------------- Fonction de test
     public function getTest($services, $paiements, $tourismes, $categories, $classements,  $idSelection)
     {
         $em = $this->getEntityManager();

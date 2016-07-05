@@ -4,6 +4,7 @@ use ApidaeBundle\Entity\Categorie;
 use ApidaeBundle\Entity\Evenement;
 use ApidaeBundle\Entity\LabelQualite;
 use ApidaeBundle\Entity\Langue;
+use ApidaeBundle\Entity\Multimedia;
 use ApidaeBundle\Entity\SelectionApidae;
 use ApidaeBundle\Entity\Service;
 use ApidaeBundle\Entity\TraductionObjetApidae;
@@ -149,7 +150,8 @@ class DefaultController extends Controller
         //Gestion des varibales de session
         $session->remove('listeObjets');
         $session->remove('listeIntermediaire');
-        $session->set('listeObjets', $this->getIdsObjetsFromObjets($objets));
+        $idsObjets =  $this->getIdsObjetsFromObjets($objets);
+        $session->set('listeObjets', $idsObjets);
         $session->remove('filtres');
         $filtres = [];
         $filtres["categories"] = [];
@@ -168,7 +170,6 @@ class DefaultController extends Controller
             $typesHabitation =[];
         }
 
-        //var_dump($typesHabitation);
         //TODO changer en donnant la trad dans BDD
         $explodeChaine = explode('_', $libelleCategorie);
         $categorieNom = "";
@@ -183,6 +184,13 @@ class DefaultController extends Controller
             }
             $i++;
         }
+
+        $countPaiements = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($modesPaiement), $selection->getIdSelectionApidae(), $idsObjets);
+        $countServices = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($services), $selection->getIdSelectionApidae(), $idsObjets);
+        $countTourismes = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($tourismeAdapte), $selection->getIdSelectionApidae(), $idsObjets);
+        $countClassements = $em->getRepository(ObjetApidae::class)->getCountObjetHasLabels($this->getIdsClassements($labelsQualite), $selection->getIdSelectionApidae(), $idsObjets);
+        $countCategories = $em->getRepository(ObjetApidae::class)->getCountObjetHasCategories($this->getIdsCategories($typesHabitation), $selection->getIdSelectionApidae(), $idsObjets);
+
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objets,
                 'langue' => $langue,
@@ -194,7 +202,12 @@ class DefaultController extends Controller
                 'labels' => $labelsQualite,
                 'tourismeAdapte' => $tourismeAdapte,
                 'typesHabitation' => $typesHabitation,
-                'idSelection' => $selection->getIdSelectionApidae()));
+                'idSelection' => $selection->getIdSelectionApidae(),
+                'countPaiements' => $countPaiements,
+                'countServices' => $countServices,
+                'countTourisme' => $countTourismes,
+                'countClassements' => $countClassements,
+                'countCategories' => $countCategories));
     }
     /**
      * Renvoie la liste de tous les objets "Evènement" selon la période donnée
@@ -355,13 +368,13 @@ class DefaultController extends Controller
 
             $objetsIds = $session->get('listeObjets');
             if (is_array($objetsIds) && count($objetsIds) > 0) {
-                $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
+                $listeInitiale = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
             } else {
-                $listeActuelle = [];
+                $listeInitiale = [];
             }
 
-            if(!empty($listeActuelle)) {
-                $datas = $this->returnJsonData($listeActuelle, $idSelection);
+            if(!empty($listeInitiale)) {
+                $datas = $this->returnJsonData($listeInitiale, $idSelection);
 
                 return (new JSONResponse())->setData($datas);
             } else {
@@ -388,11 +401,13 @@ class DefaultController extends Controller
         $categories = $this->getTypeHabitationFromObjets($nouvelleListe);
         $tourisme = $this->getTourismeAdapteFromObjets($nouvelleListe);
 
-        $countPaiements = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($modesPaiement), $idSelection);
-        $countServices = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($services), $idSelection);
-        $countTourismes = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($tourisme), $idSelection);
-        $countClassements = $em->getRepository(ObjetApidae::class)->getCountObjetHasLabels($this->getIdsClassements($classements), $idSelection);
-        $countCategories = $em->getRepository(ObjetApidae::class)->getCountObjetHasCategories($this->getIdsCategories($categories), $idSelection);
+        $idsObjets = $this->getIdsObjetsFromObjets($nouvelleListe);
+
+        $countPaiements = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($modesPaiement), $idSelection, $idsObjets);
+        $countServices = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($services), $idSelection, $idsObjets);
+        $countTourismes = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($tourisme), $idSelection, $idsObjets);
+        $countClassements = $em->getRepository(ObjetApidae::class)->getCountObjetHasLabels($this->getIdsClassements($classements), $idSelection, $idsObjets);
+        $countCategories = $em->getRepository(ObjetApidae::class)->getCountObjetHasCategories($this->getIdsCategories($categories), $idSelection, $idsObjets);
 
         $objetsTableau = $serializer->serialize($nouvelleListe, 'json');
         $services = $serializer->serialize($services, 'json');
@@ -564,6 +579,15 @@ class DefaultController extends Controller
         return $res;
     }
 
+    /**
+     * Renvoie la liste des objets correspondant à des services(paiement/service/tourisme adapté) et une sélection donnés
+     * @param $em
+     * @param $filtres
+     * @param $objetsActuelle
+     * @param $selection
+     * @param $type
+     * @return ArrayCollection
+     */
     private function comparerServices($em, $filtres, $objetsActuelle, $selection, $type){
         $typeFiltre = [];
         if($type == "services") {
@@ -583,6 +607,15 @@ class DefaultController extends Controller
         }
         return $tmp;
     }
+
+    /**
+     * Renvoie la liste des objets correspondant à des labels qualité et une sélection donnés
+     * @param $em
+     * @param $filtres
+     * @param $objetsActuelle
+     * @param $selection
+     * @return ArrayCollection
+     */
     private function comparerClassements($em, $filtres, $objetsActuelle, $selection) {
         $objets = new ArrayCollection();
         $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsLabelsSelection($filtres["classements"], $selection));
@@ -594,6 +627,15 @@ class DefaultController extends Controller
         }
         return $tmp;
     }
+
+    /**
+     * Renvoie la liste des objets correspondant à des categories et une sélection donnés
+     * @param $em
+     * @param $filtres
+     * @param $objetsActuelle
+     * @param $selection
+     * @return ArrayCollection
+     */
     private function comparerCategories($em, $filtres, $objetsActuelle, $selection) {
         $objets = new ArrayCollection();
         $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($filtres["categories"], $selection));
@@ -636,22 +678,6 @@ class DefaultController extends Controller
         }
     }
 
-    public function testsAction(Request $request) {
-        $em = $this->getDoctrine()->getManager();
-        //print_r($request->getSession()->get('filtres'));
-        $filtres = $request->getSession()->get('filtres');
-        //$objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
-
-        //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
-
-        $objetsIds = $request->getSession()->get('listeObjets');
-        $services =  $this->getModesPaimentFromObjets($em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds));
-
-        $objs = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($services), 40518);
-        print($objs);
-        return $this->render('ApidaeBundle:Default:test.html.twig');
-    }
-
     /**
      * Renvoie un tableau d'ids concernant les services donnés
      * @param $services
@@ -690,5 +716,36 @@ class DefaultController extends Controller
         }
         return $res;
     }
+
+
+    public function testsAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        //print_r($request->getSession()->get('filtres'));
+        $filtres = $request->getSession()->get('filtres');
+        //$objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
+
+        //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
+
+        $idsObjets = $em->getRepository(ObjetApidae::class)->getAllIds();
+        print_r($idsObjets);
+        /*foreach($idsObjets as $key => $id) {
+            //Récupération des images correspondant à l'objet actuel
+            print($id);
+            $multimedias = $em->getRepository(Multimedia::class)->getMultimediasByObjectId($id);
+            foreach ($multimedias as $multimedia) {
+                //-- Image originale
+                $url = $multimedia->getMulUrl();
+                $file = "/home/www/vhosts/swad.fr/apidae.swad.fr/web/bundles/apidae/imgApidae/originale/";
+                if(is_dir($file.$id)) {
+                    $this->copierImage($file, $url, $id);
+                } else {
+                    mkdir($file.$id);
+                }
+            }
+        }*/
+
+        return $this->render('ApidaeBundle:Default:test.html.twig');
+    }
+
 
 }

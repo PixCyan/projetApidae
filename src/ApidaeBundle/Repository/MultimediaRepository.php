@@ -10,4 +10,21 @@ namespace ApidaeBundle\Repository;
  */
 class MultimediaRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    /**
+     * Renvoie tous les multimedias correspondant à un objet
+     * @param $id
+     * @return array
+     */
+    public function getMultimediasByObjectId($id) {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('m')
+            ->from('ApidaeBundle:Multimedia', 'm')
+            ->where('m.objetApidae = ?1')
+            ->setParameters(array(1 => $id));
+        $query = $qb->getQuery()->getArrayResult();
+        return $query;
+    }
+
 }

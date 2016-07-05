@@ -40,7 +40,7 @@
 </div>
 <div hidden>
     <p id="langue" >{{ langue.lanShortCut }}</p>
-    <p id="selectionId">{{ idSelection }}</p>
+    <p id="selectionId">{% if idSelection is defined %}{{ idSelection }}{% endif %}</p>
     {% include "ApidaeBundle:translateForJS:translateForJS.html.twig" %}
 </div>
 

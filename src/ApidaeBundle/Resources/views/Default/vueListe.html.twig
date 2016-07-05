@@ -46,33 +46,34 @@
                                 </form>-->
                             </div>
                         </div>
-                        <div class="sidebar-header clearfix">
-                            <h4>{{ 'Filtres'|trans }}</h4>
-                            <a href="#" class="sidebar-reset-filter" id="resetFiltres"><i class="fa fa-times"></i> reset filter</a>
-                        </div>
+                        {% if typeObjet != "Evénements" %}
+                            <div class="sidebar-header clearfix">
+                                <h4>{{ 'Filtres'|trans }}</h4>
+                                <a href="#" class="sidebar-reset-filter" id="resetFiltres"><i class="fa fa-times"></i>{{ 'Réinitialiser'|trans }}</a>
+                            </div>
 
-
-                        <form id="form_recherche" action="" method="POST">
-                            {% if typesHabitation is defined and typesHabitation is not empty %}
-                                {% include "ApidaeBundle:filtres:TypesHabitationFiltres.html.twig" %}
-                                <div class="clear"></div>
-                            {% endif %}
-                            {% if modesPaiement is defined and modesPaiement is not empty %}
-                                {% include "ApidaeBundle:filtres:ModesPaiementFiltres.html.twig" %}
-                                <div class="clear"></div>
-                            {% endif %}
-                            {% if services is defined and services is not empty %}
-                                {% include "ApidaeBundle:filtres:ServicesFiltres.html.twig" %}
-                                <div class="clear"></div>
-                            {% endif %}
-                            {% if labels is defined and labels is not empty %}
-                                {% include "ApidaeBundle:filtres:Classements.html.twig" %}
-                                <div class="clear"></div>
-                            {% endif %}
-                            {% if tourismeAdapte is defined and tourismeAdapte is not empty %}
-                                {% include "ApidaeBundle:filtres:TourismeAdapte.html.twig" %}
-                            {% endif %}
-                        </form>
+                            <form id="form_recherche" action="" method="POST">
+                                {% if typesHabitation is defined and typesHabitation is not empty %}
+                                    {% include "ApidaeBundle:filtres:TypesHabitationFiltres.html.twig" %}
+                                    <div class="clear"></div>
+                                {% endif %}
+                                {% if modesPaiement is defined and modesPaiement is not empty %}
+                                    {% include "ApidaeBundle:filtres:ModesPaiementFiltres.html.twig" %}
+                                    <div class="clear"></div>
+                                {% endif %}
+                                {% if services is defined and services is not empty %}
+                                    {% include "ApidaeBundle:filtres:ServicesFiltres.html.twig" %}
+                                    <div class="clear"></div>
+                                {% endif %}
+                                {% if labels is defined and labels is not empty %}
+                                    {% include "ApidaeBundle:filtres:Classements.html.twig" %}
+                                    <div class="clear"></div>
+                                {% endif %}
+                                {% if tourismeAdapte is defined and tourismeAdapte is not empty %}
+                                    {% include "ApidaeBundle:filtres:TourismeAdapte.html.twig" %}
+                                {% endif %}
+                            </form>
+                        {% endif %}
 
                     </aside>
 
@@ -80,6 +81,7 @@
                 </div>
                 <!-- Liste objets -->
                 <div class="col-sm-8 col-md-9">
+                    <h3> {{ 'Résultats trouvés'|trans }} : <span id="objetsTotal">{{ objets|length }}</span></h3>
                     {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
                 </div>
             </div>

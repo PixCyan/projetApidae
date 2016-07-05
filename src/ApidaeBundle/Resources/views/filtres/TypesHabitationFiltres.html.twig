@@ -1,5 +1,5 @@
 <div class="sidebar-module">
-    <h6 id="titreTypeHabitation" class="sidebar-title"> {{ "Types d'habitation"|trans }}</h6>
+    <h6 class="sidebar-title"> {{ "Types d'habitation"|trans }} <span id="titreTypeHabitation" >({{ countCategories }})</span></h6>
     {% for t in typesHabitation %}
         <div class="sidebar-module-inner">
             <div class="checkbox-block">

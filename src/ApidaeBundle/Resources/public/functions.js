@@ -132,11 +132,14 @@ function getObjets(data) {
     });
 
     //--------- Traitement des filtres
-    $('#titreClassement').text($('#titreClassement').text() + " (" + data.countClassements + ")");
-    $('#titreCategories').text($('#titreCategories').text() + " (" + data.countCategories + ")");
-    $('#titreTourisme').text($('#titreTourisme').text() + " (" + data.countTourisme + ")");
-    $('#titreServices').text($('#titreServices').text() + " (" + data.countServices + ")");
-    $('#titrePaiement').text($('#titrePaiement').text() + " (" + data.countPaiements + ")");
+    $('#titreClassement').text(" (" + data.countClassements + ")");
+    $('#titreCategories').text( " (" + data.countCategories + ")");
+    $('#titreTourisme').text(" (" + data.countTourisme + ")");
+    $('#titreServices').text(" (" + data.countServices + ")");
+    $('#titrePaiement').text(" (" + data.countPaiements + ")");
+    console.log("Count paiements : " + data.countPaiements);
+
+    $('#objetsTotal').text(objets.length);
 
     $(".filtres").each(function(){
         console.log("disabled");
