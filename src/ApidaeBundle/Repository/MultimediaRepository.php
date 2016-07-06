@@ -23,7 +23,7 @@ class MultimediaRepository extends \Doctrine\ORM\EntityRepository
             ->from('ApidaeBundle:Multimedia', 'm')
             ->where('m.objetApidae = ?1')
             ->setParameters(array(1 => $id));
-        $query = $qb->getQuery()->getArrayResult();
+        $query = $qb->getQuery()->getResult();
         return $query;
     }
 

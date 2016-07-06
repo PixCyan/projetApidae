@@ -25,7 +25,7 @@ class ObjetApidaeRepository extends EntityRepository {
     public function getAllIds() {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
-        $qb->select('o.id')
+        $qb->select('o.id', 'o.idObj')
             ->from('ApidaeBundle:ObjetApidae', 'o');
         $query = $qb->getQuery()->getArrayResult();
         return $query;

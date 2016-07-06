@@ -717,7 +717,6 @@ class DefaultController extends Controller
         return $res;
     }
 
-
     public function testsAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         //print_r($request->getSession()->get('filtres'));
@@ -726,26 +725,65 @@ class DefaultController extends Controller
 
         //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
 
+        $count = 0;
         $idsObjets = $em->getRepository(ObjetApidae::class)->getAllIds();
-        print_r($idsObjets);
-        /*foreach($idsObjets as $key => $id) {
+        foreach($idsObjets as $ids) {
             //Récupération des images correspondant à l'objet actuel
-            print($id);
-            $multimedias = $em->getRepository(Multimedia::class)->getMultimediasByObjectId($id);
+            print($ids['idObj']."<br>");
+            $multimedias = $em->getRepository(Multimedia::class)->getMultimediasByObjectId($ids['id']);
             foreach ($multimedias as $multimedia) {
                 //-- Image originale
                 $url = $multimedia->getMulUrl();
-                $file = "/home/www/vhosts/swad.fr/apidae.swad.fr/web/bundles/apidae/imgApidae/originale/";
-                if(is_dir($file.$id)) {
-                    $this->copierImage($file, $url, $id);
-                } else {
-                    mkdir($file.$id);
-                }
+                $this->traitementImage($url, $ids);
+
+                //-- Image liste
+                $url = $multimedia->getMulUrlListe();
+                $this->traitementImage($url, $ids);
+
+                //-- Image fiche
+                $url = $multimedia->getMulUrlFiche();
+                $this->traitementImage($url, $ids);
+
+                //-- Image diaporama
+                $url = $multimedia->getMulUrlDiapo();
+                $this->traitementImage($url, $ids);
             }
-        }*/
+            $count++;
+            if($count == 50) {
+                die();
+            }
+        }
 
         return $this->render('ApidaeBundle:Default:test.html.twig');
     }
 
+    private function traitementImage($url,$ids){
+        $array = explode('/',$url);
+        $name = array_pop($array);
+        //print($name."<br>");
+        $file = "/home/www/vhosts/swad.fr/apidae.swad.fr/web/bundles/apidae/imgApidae/";
+        if(file_exists($file.$ids['idObj'])) {
+            $this->copierImage($file.$ids['idObj']."/", $url);
+        } else {
+            mkdir($file . $ids['idObj']);
+            $this->copierImage($file.$ids['idObj']."/", $url);
+        }
+    }
+
+    private function copierImage($path, $url) {
+        $array = explode('/',$url);
+        $name = array_pop($array);
+
+        if($this->urlExists($url) && !file_exists($path.$name)) {
+            print("Là <br>");
+            //$img = file_get_contents($url);
+            //file_put_contents($path.$name, $img);
+        }
+    }
+
+    private function urlExists($url){
+        $headers=get_headers($url);
+        return stripos($headers[0],"200 OK")?true:false;
+    }
 
 }

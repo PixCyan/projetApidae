@@ -5,9 +5,7 @@ namespace ApidaeBundle\Command;
 use ApidaeBundle\Entity\Multimedia;
 use ApidaeBundle\Entity\ObjetApidae;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CommandGetMultimediasCommand extends ContainerAwareCommand
@@ -30,33 +28,84 @@ class CommandGetMultimediasCommand extends ContainerAwareCommand
                     //--récupérer l'image à l'url donnée d'après son nom
                     //-- si l'image du même nom n'existe pas déjà
                         //-- l'enregistrer dans le dossier d'id i
-            //-- Même procédure poru chaque type d'utl
+            //-- Même procédure pour chaque type d'utl
+
+        $logs = fopen('logImages.txt', 'w');
 
         $idsObjets = $em->getRepository(ObjetApidae::class)->getAllIds();
-        foreach($idsObjets as $id) {
+        foreach($idsObjets as $ids) {
+            fputs($logs, $ids['idObj']."\n");
             //Récupération des images correspondant à l'objet actuel
-            $multimedias = $em->getRepository(Multimedia::class)->getMultimediasByObjectId($id);
+            $multimedias = $em->getRepository(Multimedia::class)->getMultimediasByObjectId($ids['id']);
             foreach ($multimedias as $multimedia) {
                 //-- Image originale
-                $url = $multimedia->getMulUrl();
-                $file = "/home/www/vhosts/swad.fr/apidae.swad.fr/web/bundles/apidae/imgApidae/originale/";
-                if(is_dir($file.$id)) {
-                    $this->copierImage($file, $url, $id);
-                } else {
-                    mkdir($file.$id);
+                    $url = $multimedia->getMulUrl();
+                    $this->traitementImage($url, $ids);
+
+                    //-- Image liste
+                   $url = $multimedia->getMulUrlListe();
+                   $this->traitementImage($url, $ids);
+
+                   //-- Image fiche
+                   $url = $multimedia->getMulUrlFiche();
+                   $this->traitementImage($url, $ids);
+
+                   //-- Image diaporama
+                   $url = $multimedia->getMulUrlDiapo();
+                   $this->traitementImage($url, $ids);
                 }
-
-
-            }
+            //$output->writeln($ids['idObj']."\n");
         }
+        fclose($logs);
 
         $output->writeln('Command result.');
     }
 
-    private function copierImage($path, $url, $id) {
-        $nom = array_pop(explode('/',$url));
-        $img = file_get_contents($url);
-        file_put_contents($path.$id, $img);
+    /**
+     * Traite le chemin de destination de l'image
+     * @param $url
+     * @param $ids
+     */
+    private function traitementImage($url,$ids){
+        $file = "/home/www/vhosts/swad.fr/apidae.swad.fr/web/bundles/apidae/imgApidae/";
+        //$file = "/var/www/local/Symfony/projetApidae/web/bundles/apidae/imgApidae/";
+        $array = explode('/',$url);
+        $name = array_pop($array);
+        $path = $file.$ids['idObj']."/";
+
+        if(file_exists($file.$ids['idObj']) && !file_exists($path.$name)) {
+            $this->copierImage($path.$name, $url);
+        } else if(!file_exists($file.$ids['idObj'])) {
+            mkdir($file . $ids['idObj']);
+            $this->copierImage($path.$name, $url);
+        }
+    }
+
+    /**
+     * Récupère et Enregistre l'image dans le dossier
+     * @param $path
+     * @param $url
+     */
+    private function copierImage($path, $url) {
+        if($this->urlExists($url)) {
+            //$img = file_get_contents($url);
+            //$img = fopen($url, "r");
+            //file_put_contents($path, $img);
+            if(!copy($url, $path)) {
+                print("Erreur lors de la copie");
+                die();
+            }
+        }
+    }
+
+    /**
+     * Vérifie si l'url est bonne
+     * @param $url
+     * @return bool
+     */
+    private function urlExists($url){
+        $headers=get_headers($url);
+        return stripos($headers[0],"200 OK")?true:false;
     }
 
 }
