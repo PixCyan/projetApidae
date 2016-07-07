@@ -42,10 +42,6 @@ class CommandGetMultimediasCommand extends ContainerAwareCommand
                     $url = $multimedia->getMulUrl();
                     $this->traitementImage($url, $ids);
 
-                    //-- Image liste
-                   $url = $multimedia->getMulUrlListe();
-                   $this->traitementImage($url, $ids);
-
                    //-- Image fiche
                    $url = $multimedia->getMulUrlFiche();
                    $this->traitementImage($url, $ids);
@@ -67,7 +63,7 @@ class CommandGetMultimediasCommand extends ContainerAwareCommand
      * @param $ids
      */
     private function traitementImage($url,$ids){
-        $file = "/home/www/vhosts/swad.fr/apidae.swad.fr/web/bundles/apidae/imgApidae/";
+        $file = "/home/www/vhosts/swad.fr/apidae.swad.fr/src/ApidaeBundle/Resources/public/imgApidae/";
         //$file = "/var/www/local/Symfony/projetApidae/web/bundles/apidae/imgApidae/";
         $array = explode('/',$url);
         $name = array_pop($array);

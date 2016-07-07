@@ -1,6 +1,9 @@
 /**
  * Created by Nadia on 18/04/2016.
  */
+
+PATH = "http://apidae.swad.fr/web/bundles/apidae/imgApidae/";
+
 $("document").ready(function() {
     $(".filtres").click(function() {
         //console.log('http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/'  + $(this).val() + "/" + $(this).attr('name'));
@@ -87,7 +90,7 @@ function getObjets(data) {
 
         if(objets[index].multimedias && objets[index].multimedias.length > 0) {
             if(objets[index].multimedias[0].mul_url_liste != null) {
-                $(divImage).append('<img src="'+ objets[index].multimedias[0].mul_url_liste +'">').appendTo($('#divObj'+ index));
+                $(divImage).append('<img src="'+ getPathMultimedia(objets[index].multimedias[0].mul_url_diapo, objets[index].id_obj )+'">').appendTo($('#divObj'+ index));
             }
         }  else {
             $(divImage).append('<img src="'+ imgDefaut +'">').appendTo($('#divObj'+ index));
@@ -194,6 +197,25 @@ function getObjets(data) {
         }
     });
     console.log('Fin');
+}
+
+function getPathMultimedia(url, idObj) {
+    //Traitement de la châine PATH
+    var array = url.split('/');
+    var name = array.pop();
+    var path = PATH + idObj + "/" + name;
+
+    return path;
+}
+
+function getNextImgPath(multimedias) {
+    var res = null;
+    multimedias.each(function(key, value){
+        if(value.mulUrlDiapo == null && res != null) {
+            res = value.mulUrlDiapo;
+        }
+    });
+    return res;
 }
 
 function getLangueLib(str, locale) {
@@ -367,5 +389,3 @@ function substr (str, start, len) {
     }
 }
 
-//TODO ajouter le lien pour détails
-//TODO mettre la bonne langue

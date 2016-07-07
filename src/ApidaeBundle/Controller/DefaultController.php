@@ -300,7 +300,17 @@ class DefaultController extends Controller
                 return (new JSONResponse())->setData($datas);
 
             } else {
-                $this->redirectSelection($idSelection, $typeObjet);
+                //$this->redirectSelection($idSelection, $typeObjet);
+                $em = $this->getDoctrine()->getManager();
+                $sel = $em->getRepository(SelectionApidae::class)->findOneBy(['idSelectionApidae' => $idSelection]);
+                if($sel) {
+                    return $this->redirectToRoute('liste', array(
+                        'typeObjet' => $typeObjet,
+                        'categorieId' => $idSelection,
+                        'libelleCategorie' => $this->traitementChaineUrl($sel->getSelLibelle())));
+                } else {
+                    return $this->redirectToRoute('index');
+                }
             }
 
         } else if($checked == "true"){
@@ -354,7 +364,17 @@ class DefaultController extends Controller
 
                 return (new JSONResponse())->setData($datas);
             } else {
-                $this->redirectSelection($idSelection, $typeObjet);
+                //$this->redirectSelection($idSelection, $typeObjet);
+                $em = $this->getDoctrine()->getManager();
+                $sel = $em->getRepository(SelectionApidae::class)->findOneBy(['idSelectionApidae' => $idSelection]);
+                if($sel) {
+                    return $this->redirectToRoute('liste', array(
+                        'typeObjet' => $typeObjet,
+                        'categorieId' => $idSelection,
+                        'libelleCategorie' => $this->traitementChaineUrl($sel->getSelLibelle())));
+                } else {
+                    return $this->redirectToRoute('index');
+                }
             }
         } else if($checked == "reset") {
             //Réinitialise les filtres
@@ -378,7 +398,17 @@ class DefaultController extends Controller
 
                 return (new JSONResponse())->setData($datas);
             } else {
-                $this->redirectSelection($idSelection, $typeObjet);
+                //$this->redirectSelection($idSelection, $typeObjet);
+                $em = $this->getDoctrine()->getManager();
+                $sel = $em->getRepository(SelectionApidae::class)->findOneBy(['idSelectionApidae' => $idSelection]);
+                if($sel) {
+                    return $this->redirectToRoute('liste', array(
+                        'typeObjet' => $typeObjet,
+                        'categorieId' => $idSelection,
+                        'libelleCategorie' => $this->traitementChaineUrl($sel->getSelLibelle())));
+                } else {
+                    return $this->redirectToRoute('index');
+                }
             }
 
         }
@@ -717,46 +747,6 @@ class DefaultController extends Controller
         return $res;
     }
 
-    public function testsAction(Request $request) {
-        $em = $this->getDoctrine()->getManager();
-        //print_r($request->getSession()->get('filtres'));
-        $filtres = $request->getSession()->get('filtres');
-        //$objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
-
-        //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
-
-        $count = 0;
-        $idsObjets = $em->getRepository(ObjetApidae::class)->getAllIds();
-        foreach($idsObjets as $ids) {
-            //Récupération des images correspondant à l'objet actuel
-            print($ids['idObj']."<br>");
-            $multimedias = $em->getRepository(Multimedia::class)->getMultimediasByObjectId($ids['id']);
-            foreach ($multimedias as $multimedia) {
-                //-- Image originale
-                $url = $multimedia->getMulUrl();
-                $this->traitementImage($url, $ids);
-
-                //-- Image liste
-                $url = $multimedia->getMulUrlListe();
-                $this->traitementImage($url, $ids);
-
-                //-- Image fiche
-                $url = $multimedia->getMulUrlFiche();
-                $this->traitementImage($url, $ids);
-
-                //-- Image diaporama
-                $url = $multimedia->getMulUrlDiapo();
-                $this->traitementImage($url, $ids);
-            }
-            $count++;
-            if($count == 50) {
-                die();
-            }
-        }
-
-        return $this->render('ApidaeBundle:Default:test.html.twig');
-    }
-
     private function traitementImage($url,$ids){
         $array = explode('/',$url);
         $name = array_pop($array);
@@ -784,6 +774,20 @@ class DefaultController extends Controller
     private function urlExists($url){
         $headers=get_headers($url);
         return stripos($headers[0],"200 OK")?true:false;
+    }
+
+    public function testsAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        //print_r($request->getSession()->get('filtres'));
+        $filtres = $request->getSession()->get('filtres');
+        //$objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
+
+        //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
+
+        $objet = $em->getRepository(ObjetApidae::class)->find(353);
+
+
+        return $this->render('ApidaeBundle:Default:test.html.twig', array('objet' => $objet));
     }
 
 }

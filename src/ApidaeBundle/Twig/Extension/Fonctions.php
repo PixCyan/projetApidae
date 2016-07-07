@@ -10,6 +10,7 @@ namespace ApidaeBundle\Twig\Extension;
 
  class Fonctions extends Twig_Extension {
      private $SIT_LANGUE = 'Fr';
+     private $PATH = "http://apidae.swad.fr/web/bundles/apidae/imgApidae/";
 
      /** @var EntityManager $em  */
      protected $em;
@@ -41,7 +42,9 @@ namespace ApidaeBundle\Twig\Extension;
 
      public function getFunctions() {
          return array(new Twig_SimpleFunction('tradLangue', array($this, 'getTradLangue')),
-             new \Twig_SimpleFunction('langueLibelle', array($this, 'getLangueLibelle'))
+             new \Twig_SimpleFunction('langueLibelle', array($this, 'getLangueLibelle')),
+             new \Twig_SimpleFunction('pathMultimedia', array($this, 'getPathMultimedia')),
+             new \Twig_SimpleFunction('nextImgPath', array($this, 'getNextImgPath'))
              );
      }
 
@@ -118,5 +121,37 @@ namespace ApidaeBundle\Twig\Extension;
      function getTypeApidae($str) {
          $chaineExplode = explode("_", $str);
          return $chaineExplode[0];
+     }
+
+     /**
+      * Renvoie le path du multimedia
+      * @param $url
+      * @param $idObj
+      * @return string
+      */
+     function getPathMultimedia($url, $idObj) {
+         //Traitement de la châine PATH
+         $array = explode('/', $url);
+         $name = array_pop($array);
+         $path = $this->PATH.$idObj."/".$name;
+
+         return $path;
+     }
+
+     /**
+      * Parcour la liste des mutlimedias et renvoi le premier qui possède un path diaporama valide
+      * @param $multimedias
+      * @return null
+      */
+     function getNextImgPath($multimedias) {
+         $res = null;
+         foreach ($multimedias as $m) {
+             if($m->getMulUrlDiapo()) {
+                 $res = $m->getMulUrlDiapo();
+                 break;
+             }
+         }
+        return $res;
+
      }
  }

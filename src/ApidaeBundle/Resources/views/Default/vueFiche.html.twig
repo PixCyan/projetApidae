@@ -23,7 +23,7 @@
                                     <div class="slider gallery-slideshow">
                                         {% for m in objet.multimedias %}
                                             {% if m.mulUrlFiche is not empty %}
-                                                <img src="{{ m.mulUrlFiche}}">
+                                                <img src="{{ pathMultimedia(m.mulUrlDiapo, objet.idObjet) }}">
                                             {% endif %}
                                         {%  endfor %}
                                     </div>
@@ -31,7 +31,7 @@
                                     <div class="slider gallery-nav">
                                         {% for m in objet.multimedias %}
                                             {% if m.mulUrlFiche is not empty %}
-                                                <img src="{{ m.mulUrlFiche}}">
+                                                <img src="{{ pathMultimedia(m.mulUrlDiapo, objet.idObjet) }}">
                                             {% endif %}
                                         {%  endfor %}
                                     </div>

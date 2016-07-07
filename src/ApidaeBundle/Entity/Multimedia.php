@@ -52,13 +52,6 @@ class Multimedia
     /**
      * @var string
      *
-     * @ORM\Column(name="path", type="string", length=255)
-     */
-    private $path;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(name="mulUrl", type="string", length=255, nullable=true)
      *
      */
@@ -85,6 +78,9 @@ class Multimedia
      * @var string
      *
      * @ORM\Column(name="mulUrlDiapo", type="string", length=255, nullable=true)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $mulUrlDiapo;
 
@@ -304,22 +300,6 @@ class Multimedia
     public function setMulUrl($mulUrl)
     {
         $this->mulUrl = $mulUrl;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
-     * @param string $path
-     */
-    public function setPath($path)
-    {
-        $this->path = $path;
     }
 }
 

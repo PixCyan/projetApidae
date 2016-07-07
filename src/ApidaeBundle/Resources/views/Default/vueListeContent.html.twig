@@ -3,7 +3,14 @@
     <div class="package-list-item clearfix">
         <div class="image">
             {% if objet.multimedias is not empty %}
-                <img src="{{ objet.multimedias.first.mulUrlListe}}" alt="" />
+                {% if objet.multimedias.first.mulUrlDiapo is not null %}
+                    <img src="{{ pathMultimedia(objet.multimedias.first.mulUrlDiapo, objet.idObjet) }}" alt="" />
+                {% else %}
+
+                    <img src="{{ pathMultimedia(nextImgPath(objet.multimedias), objet.idObjet) }}" alt="" />
+
+                {% endif %}
+
             {% else %}
                 <img src="{{ asset('bundles/apidae/images/tour-package/01.jpg') }}" alt="" />
             {% endif %}
