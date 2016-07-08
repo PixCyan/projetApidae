@@ -15,7 +15,7 @@
                 <p>{{ 'Aucune suggestion disponibles.'|trans }}</p>
             {% else %}
                 {%  for suggestion in suggestions %}
-                   <div class="grid-item" data-colspan="20" data-rowspan="10">
+                   <div class="grid-item" data-colspan="10" data-rowspan="6">
                         <a href="{{ path('offre', {'langueLocale': langue.lanShortCut,'id': suggestion.idObjet }) }}"
                            {% set path = pathMultimedia(suggestion.multimedias.first.mulUrl, suggestion.idObjet) %}
                            class="top-destination-image-bg" style="background-image:url('{{ path }}');">

@@ -16,6 +16,7 @@ use ApidaeBundle\Entity\ObjetApidae;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+
 class DefaultController extends Controller
 {
     private $em;
@@ -303,14 +304,9 @@ class DefaultController extends Controller
                 //$this->redirectSelection($idSelection, $typeObjet);
                 $em = $this->getDoctrine()->getManager();
                 $sel = $em->getRepository(SelectionApidae::class)->findOneBy(['idSelectionApidae' => $idSelection]);
-                if($sel) {
-                    return $this->redirectToRoute('liste', array(
-                        'typeObjet' => $typeObjet,
-                        'categorieId' => $idSelection,
-                        'libelleCategorie' => $this->traitementChaineUrl($sel->getSelLibelle())));
-                } else {
-                    return $this->redirectToRoute('index');
-                }
+                $datas = $this->returnJsonData($sel->getObjets(), $idSelection);
+                return (new JSONResponse())->setData($datas);
+
             }
 
         } else if($checked == "true"){
@@ -367,14 +363,8 @@ class DefaultController extends Controller
                 //$this->redirectSelection($idSelection, $typeObjet);
                 $em = $this->getDoctrine()->getManager();
                 $sel = $em->getRepository(SelectionApidae::class)->findOneBy(['idSelectionApidae' => $idSelection]);
-                if($sel) {
-                    return $this->redirectToRoute('liste', array(
-                        'typeObjet' => $typeObjet,
-                        'categorieId' => $idSelection,
-                        'libelleCategorie' => $this->traitementChaineUrl($sel->getSelLibelle())));
-                } else {
-                    return $this->redirectToRoute('index');
-                }
+                $datas = $this->returnJsonData($sel->getObjets(), $idSelection);
+                return (new JSONResponse())->setData($datas);
             }
         } else if($checked == "reset") {
             //Réinitialise les filtres
@@ -401,14 +391,8 @@ class DefaultController extends Controller
                 //$this->redirectSelection($idSelection, $typeObjet);
                 $em = $this->getDoctrine()->getManager();
                 $sel = $em->getRepository(SelectionApidae::class)->findOneBy(['idSelectionApidae' => $idSelection]);
-                if($sel) {
-                    return $this->redirectToRoute('liste', array(
-                        'typeObjet' => $typeObjet,
-                        'categorieId' => $idSelection,
-                        'libelleCategorie' => $this->traitementChaineUrl($sel->getSelLibelle())));
-                } else {
-                    return $this->redirectToRoute('index');
-                }
+                $datas = $this->returnJsonData($sel->getObjets(), $idSelection);
+                return (new JSONResponse())->setData($datas);
             }
 
         }
@@ -457,25 +441,6 @@ class DefaultController extends Controller
             'countTourisme' => $countTourismes,
             'countClassements' => $countClassements,
             'countCategories' => $countCategories];
-    }
-
-    /**
-     * Redirige vers la selection actuelle (exemple : Hôtels)
-     * @param $idSelection
-     * @param $typeObjet
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
-    private function redirectSelection($idSelection, $typeObjet) {
-        $em = $this->getDoctrine()->getManager();
-        $sel = $em->getRepository(SelectionApidae::class)->findOneBy(['idSelectionApidae' => $idSelection]);
-        if($sel) {
-            return $this->redirectToRoute('liste', array(
-                'typeObjet' => $typeObjet,
-                'categorieId' => $idSelection,
-                'libelleCategorie' => $this->traitementChaineUrl($sel->getSelLibelle())));
-        } else {
-            return $this->redirectToRoute('index');
-        }
     }
 
     /**

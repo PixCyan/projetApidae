@@ -30,13 +30,6 @@ class Panier
     private $panLibelle;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="utiIdUtilisateur", type="integer")
-     */
-    private $utiIdUtilisateur;
-
-    /**
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="paniers")
      * @ORM\JoinColumn(nullable=true)
      */
@@ -47,6 +40,13 @@ class Panier
      * @ORM\JoinColumn(nullable=true)
      */
     private $user;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="idCookie", type="integer", nullable=true)
+     */
+    private $idCookie;
 
 
     public function __construct() {
@@ -107,34 +107,42 @@ class Panier
     }
 
     /**
-     * Set utiIdUtilisateur
-     *
-     * @param integer $utiIdUtilisateur
-     *
-     * @return SelectionApidaeHasObjetApidae
-     */
-    public function setutiIdUtilisateur($utiIdUtilisateur)
-    {
-        $this->utiIdUtilisateur = $utiIdUtilisateur;
-
-        return $this;
-    }
-
-    /**
-     * Get utiIdUtilisateur
-     *
-     * @return int
-     */
-    public function getutiIdUtilisateur()
-    {
-        return $this->utiIdUtilisateur;
-    }
-
-    /**
      *@return un tableau 
      */
     public function getObjets() {
         return $this->objets;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIdCookie()
+    {
+        return $this->idCookie;
+    }
+
+    /**
+     * @param mixed $idCookie
+     */
+    public function setIdCookie($idCookie)
+    {
+        $this->idCookie = $idCookie;
     }
 }
 

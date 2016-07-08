@@ -1,3 +1,7 @@
+test:
+    path: /test
+    defaults: { _controller: ApidaeBundle:Default:tests }
+
 indexAccueil:
     path : /accueil
     defaults: { _controller: ApidaeBundle:Default:index }
@@ -44,6 +48,28 @@ rechercheSimple:
     path: /recherche
     defaults: { _controller: ApidaeBundle:Default:rechercheSimple }
 
-test:
-    path: /test
-    defaults: { _controller: ApidaeBundle:Default:tests }
+panier_index:
+    path: /panier_index
+    defaults: { _controller: ApidaeBundle:Panier:index }
+
+nouveauPanier:
+    path: /panier/nouveau
+    defaults: { _controller: ApidaeBundle:Panier:new }
+    methods: [POST, GET]
+
+voirPaniers:
+    path: /panier/liste
+    defaults: { _controller: ApidaeBundle:Panier:listePanier }
+
+voirUneSelection:
+    path: /panier/{id}
+    defaults: { _controller: ApidaeBundle:Panier:show }
+
+updatePanier:
+    path: /panier/miseAjour/{id}
+    defaults: { _controller: ApidaeBundle:Panier:edit }
+    methods: [POST, GET]
+
+deletePanier:
+    path: /panier/supprimer/{id}
+    defaults: { _controller: ApidaeBundle:Panier:delete }

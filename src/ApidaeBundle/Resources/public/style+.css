@@ -14,3 +14,14 @@ ul.listesInfos li {
 .container-wrapper, .content-wrapper, body  {
     height: 100%;
 }
+
+.boutonModifier {
+    float : right;
+}
+
+#traduction_objet_apidae_objet_objSuggestion {
+    float : initial;
+    width : initial;
+    display : inline-block;
+    opacity : initial;
+}

@@ -6,11 +6,13 @@
                 {% if objet.multimedias.first.mulUrlDiapo is not null %}
                     <img src="{{ pathMultimedia(objet.multimedias.first.mulUrlDiapo, objet.idObjet) }}" alt="" />
                 {% else %}
-
-                    <img src="{{ pathMultimedia(nextImgPath(objet.multimedias), objet.idObjet) }}" alt="" />
-
+                    {% set nextImage = nextImgPath(objet.multimedias) %}
+                    {% if nextImage == null %}
+                        <img src="{{ asset('bundles/apidae/images/tour-package/01.jpg') }}" alt="" />
+                    {% else %}
+                        <img src="{{ pathMultimedia(nextImage, objet.idObjet) }}" alt="" />
+                    {% endif %}
                 {% endif %}
-
             {% else %}
                 <img src="{{ asset('bundles/apidae/images/tour-package/01.jpg') }}" alt="" />
             {% endif %}

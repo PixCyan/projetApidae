@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Panier list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Panlibelle</th>
+                <th>Idcookie</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for panier in paniers %}
+            <tr>
+                <td><a href="{{ path('voirUneSelection', { 'id': panier.id }) }}">{{ panier.id }}</a></td>
+                <td>{{ panier.panLibelle }}</td>
+                <td>{{ panier.idCookie }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('voirUneSelection', { 'id': panier.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('updatePanier', { 'id': panier.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('nouveauPanier') }}">Create a new entry</a>
+        </li>
+    </ul>
+{% endblock %}

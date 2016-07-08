@@ -41,13 +41,15 @@ class GestionOffreController extends Controller
                     'L\'objet Apidae a bien été modifiée.'
                 );
                 return $this->redirectToRoute('gestionOffres');
-            } else {
-                $this->addFlash(
-                    'notice',
-                    'Ceci est un test.'
-                );
             }
+        } else {
+            $this->addFlash(
+                'notice',
+                'Erreur lors de la validation du formulaire de modification.'
+            );
+            $formTrad = null;
         }
+
         return $this->render('ApidaeBundle:GestionOffre:modifierOffre.html.twig', array(
            'langue' => $langue, 'objet' => $objet, 'form' => $formTrad->createView()));
     }

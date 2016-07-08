@@ -16,12 +16,11 @@ class TraductionObjetApidaeType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('traDescriptionCourte')
-            ->add('traDescriptionLongue')
+            ->add('objet', ObjetApidaeType::class)
             ->add('traDescriptionPersonnalisee')
             ->add('traBonsPlans')
             ->add('traInfosSup')
-            ->add('objet', ObjetApidaeType::class)
+
         ;
     }
     

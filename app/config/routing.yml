@@ -1,3 +1,7 @@
+apidae_panier:
+    resource: "@ApidaeBundle/Controller/PanierController.php"
+    type:     annotation
+
 user:
     resource: "@UserBundle/Controller/"
     type:     annotation

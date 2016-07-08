@@ -89,8 +89,15 @@ function getObjets(data) {
         $(divObjet).appendTo($(divListe));
 
         if(objets[index].multimedias && objets[index].multimedias.length > 0) {
-            if(objets[index].multimedias[0].mul_url_liste != null) {
+            if(objets[index].multimedias[0].mul_url_diapo != null) {
                 $(divImage).append('<img src="'+ getPathMultimedia(objets[index].multimedias[0].mul_url_diapo, objets[index].id_obj )+'">').appendTo($('#divObj'+ index));
+            } else {
+                var nextImg = getNextImgPath(objets[index].multimedias[0]);
+                if(nextImg != null) {
+                    $(divImage).append('<img src="'+ getPathMultimedia(nextImg, objets[index].id_obj )+'">').appendTo($('#divObj'+ index));
+                } else {
+                    $(divImage).append('<img src="'+ imgDefaut +'">').appendTo($('#divObj'+ index));
+                }
             }
         }  else {
             $(divImage).append('<img src="'+ imgDefaut +'">').appendTo($('#divObj'+ index));
@@ -136,7 +143,7 @@ function getObjets(data) {
 
     //--------- Traitement des filtres
     $('#titreClassement').text(" (" + data.countClassements + ")");
-    $('#titreCategories').text( " (" + data.countCategories + ")");
+    $('#titreTypeHabitation').text( " (" + data.countCategories + ")");
     $('#titreTourisme').text(" (" + data.countTourisme + ")");
     $('#titreServices').text(" (" + data.countServices + ")");
     $('#titrePaiement').text(" (" + data.countPaiements + ")");
@@ -210,7 +217,7 @@ function getPathMultimedia(url, idObj) {
 
 function getNextImgPath(multimedias) {
     var res = null;
-    multimedias.each(function(key, value){
+    $.each(multimedias, function(key, value){
         if(value.mulUrlDiapo == null && res != null) {
             res = value.mulUrlDiapo;
         }
