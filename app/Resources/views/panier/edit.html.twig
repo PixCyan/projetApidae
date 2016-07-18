@@ -1,21 +1,34 @@
-{% extends 'base.html.twig' %}
+{% extends "ApidaeBundle:commun:template.html.twig"  %}
 
-{% block body %}
-    <h1>Panier edit</h1>
+{% block content %}
+    <!-- start end Page title -->
+    <div class="page-title" style="background-image:url({{ asset('bundles/apidae/images/hero-header/breadcrumb.jpg') }});">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+                    <h1 class="hero-title">{{ 'Modifier une sélection'|trans }}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end Page title -->
+    <div class="content-wrapper">
+        <div class="container">
+            <div class="row center-block">
+                <div class="col-md-3 col-md-offset-4" role="main">
+                    {{ form_start(edit_form) }}
+                    {{ form_widget(edit_form) }}
+                    <input type="submit" value="{{ 'Modifier'|trans }}" />
+                    {{ form_end(edit_form) }}
 
-    {{ form_start(edit_form) }}
-        {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
-    {{ form_end(edit_form) }}
+                    {{ form_start(delete_form) }}
+                    <input type="submit" value="{{ 'Supprimer'|trans }}">
+                    {{ form_end(delete_form) }}
 
-    <ul>
-        <li>
-            <a href="{{ path('panier_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+                    <a href="{{ path('voirPaniers') }}"> {{ 'Retour à la liste'|trans }}</a>
+
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

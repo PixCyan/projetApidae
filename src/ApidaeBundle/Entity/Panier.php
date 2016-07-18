@@ -56,7 +56,7 @@ class Panier
     /**
      * Ajoute/lie un objetApidae à la categorie
      */
-    public function addTraduction(ObjetApidae $objet) {
+    public function addObjet(ObjetApidae $objet) {
         $this->objets[] = $objet;
 
     }
@@ -64,7 +64,7 @@ class Panier
     /**
      * Supprime objetApidae de la categorie
      */
-    public function removeTraduction(ObjetApidae $objet) {
+    public function removeObjet(ObjetApidae $objet) {
         $this->objets->removeElement($objet);
     }
 
@@ -107,7 +107,7 @@ class Panier
     }
 
     /**
-     *@return un tableau 
+     * @return ArrayCollection
      */
     public function getObjets() {
         return $this->objets;

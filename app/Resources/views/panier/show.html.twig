@@ -1,8 +1,37 @@
-{% extends 'base.html.twig' %}
+{% extends "ApidaeBundle:commun:template.html.twig"  %}
 
-{% block body %}
+{% block content %}
+<!-- start end Page title -->
+<div class="page-title" style="background-image:url({{ asset('bundles/apidae/images/hero-header/breadcrumb.jpg') }});">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+                <h1 class="hero-title">Sélection : {{ panier.panLibelle }}</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end Page title -->
+<div class="content-wrapper">
+    <div class="container">
+        <div class="">
+            <a href="{{ path('voirPaniers') }}">{{ 'Retour à la liste'|trans }}</a>
+            <a href="{{ path('updatePanier', { 'id': panier.id }) }}">{{ 'Modifier'|trans }}</a>
+            {{ form_start(delete_form) }}
+            <input type="submit" value="{{ 'Supprimer'|trans }}">
+            {{ form_end(delete_form) }}
+
+            {% if objets is defined and objets is not empty %}
+                {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+
+    <!--
     <h1>Panier</h1>
-
     <table>
         <tbody>
             <tr>
@@ -14,7 +43,7 @@
 
     <ul>
         <li>
-            <a href="{{ path('panier_index') }}">Back to the list</a>
+
         </li>
         <li>
             <a href="{{ path('updatePanier', { 'id': panier.id }) }}">Edit</a>
@@ -24,5 +53,5 @@
                 <input type="submit" value="Delete">
             {{ form_end(delete_form) }}
         </li>
-    </ul>
+    </ul> -->
 {% endblock %}

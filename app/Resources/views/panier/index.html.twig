@@ -1,8 +1,45 @@
-{% extends 'base.html.twig' %}
+{% extends "ApidaeBundle:commun:template.html.twig"  %}
 
-{% block body %}
+{% block content %}
+    <!-- start end Page title -->
+    <div class="page-title" style="background-image:url({{ asset('bundles/apidae/images/hero-header/breadcrumb.jpg') }});">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-3">
+                    <h1 class="hero-title">{{ 'Liste de vos sélections'|trans }}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- end Page title -->
+    <div class="content-wrapper">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <a href="{{ path('nouveauPanier') }}" class="btn btn-primary btn-sm">{{ 'Créer une nouvelle liste'|trans }}</a>
+                    {% if paniers is defined and paniers is not empty %}
+                    {% for panier in paniers %}
+                        <div class="package-list-item clearfix">
+                            <div class="row gap-10">
+                                <div class="col-sm-12 col-md-8">
+                                    <h5>{{ panier.panLibelle }}</h5>
+                                </div>
+                                <div class="col-sm-12 col-md-4 text-right text-left-sm">
+                                    <a href="{{ path('voirUneSelection', { 'id': panier.id }) }}" class="btn btn-primary btn-sm btnDetails"> {{ 'Voir le détail'|trans }} </a>
+                                    <a href="{{ path('deletePanier', { 'id': panier.id }) }}" class="btn btn-primary btn-sm btnSupprimer"> {{ 'Supprimer'|trans }} </a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<!--
     <h1>Panier list</h1>
-
     <table>
         <thead>
             <tr>
@@ -38,4 +75,6 @@
             <a href="{{ path('nouveauPanier') }}">Create a new entry</a>
         </li>
     </ul>
+    -->
+
 {% endblock %}

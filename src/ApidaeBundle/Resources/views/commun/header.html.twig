@@ -85,7 +85,7 @@
                                         {% if user is not defined or user is empty %}
                                             <!-- Si non connecté ou non défini -->
                                             {% if app.user %}
-                                                <li><a href="{{ path('panier') }}"> {{ 'Gestion des sélections'|trans }} </a></li>
+                                                <li><a href="{{ path('voirPaniers') }}"> {{ 'Gestion des sélections'|trans }} </a></li>
                                             {% else %}
                                                 <li><a href="{{ path('panier') }}"> {{ 'Ma sélection'|trans }}</a></li>
                                             {% endif %}

@@ -25,3 +25,11 @@ ul.listesInfos li {
     display : inline-block;
     opacity : initial;
 }
+
+.btnSupprimer {
+    float: right;
+}
+
+.btnDetails {
+    float: left;
+}

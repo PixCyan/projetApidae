@@ -26,7 +26,7 @@ liste:
 
 panier:
     path: /panier
-    defaults: { _controller: UserBundle:Default:voirPanier }
+    defaults: { _controller: ApidaeBundle:Panier:maSelection }
 
 gestionOffres:
     path: /admin/gestion/offres/
@@ -73,3 +73,7 @@ updatePanier:
 deletePanier:
     path: /panier/supprimer/{id}
     defaults: { _controller: ApidaeBundle:Panier:delete }
+
+ajoutObjetPanier:
+    path: /panier/ajouterObjet/{idObjet}
+    defaults: { _controller: ApidaeBundle:Panier:ajouterObjetPanier }
