@@ -2,7 +2,8 @@
  * Created by Nadia on 18/04/2016.
  */
 
-PATH = "http://apidae.swad.fr/web/bundles/apidae/imgApidae/";
+var PATH = "http://apidae.swad.fr/web/bundles/apidae/imgApidae/";
+var objetFavori;
 
 $("document").ready(function() {
     $(".filtres").click(function() {
@@ -60,6 +61,31 @@ $("document").ready(function() {
             }
         });
     });
+
+    $(".favoris").click(function() {
+        objetFavori = $(this).attr('id');
+        console.log(objetFavori);
+    });
+
+    $(".choixPanier").click(function() {
+        console.log('ok');
+        console.log('http://apidae.swad.fr/web/app_dev.php/fr/panier/ajouterObjet/'+ objetFavori +'/'+ $(this).attr('id'));
+        $.ajax({
+         type: 'POST',
+         url: 'http://apidae.swad.fr/web/app_dev.php/fr/panier/ajouterObjet/'+ objetFavori +'/'+ $(this).attr('id'),
+         //url : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
+         contentType: "application/json; charset=utf-8",
+         dataType: 'json',
+         beforeSend: function () {
+         console.log('en attente');
+         },
+         success: function (data) {
+            console.log('Fin');
+             $('.modal-dialog').css('display', 'none');
+         }
+         });
+    });
+
 });
 
 function getObjets(data) {

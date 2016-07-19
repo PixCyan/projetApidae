@@ -5,6 +5,7 @@ use ApidaeBundle\Entity\Evenement;
 use ApidaeBundle\Entity\LabelQualite;
 use ApidaeBundle\Entity\Langue;
 use ApidaeBundle\Entity\Multimedia;
+use ApidaeBundle\Entity\Panier;
 use ApidaeBundle\Entity\SelectionApidae;
 use ApidaeBundle\Entity\Service;
 use ApidaeBundle\Entity\TraductionObjetApidae;
@@ -13,6 +14,7 @@ use ApidaeBundle\Fonctions\Fonctions;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -126,7 +128,8 @@ class DefaultController extends Controller
                 'langue' => $langue,
                 'typeObjet' => 'Recherche : '.end($keywords),
                 'user' => $user,
-                'services' => $services));
+                'services' => $services,
+                'paniers' => $this->getPaniers($request)));
     }
     /**
      * Affiche la liste de tous les objets d'une categorie donnée (Catégories définies par le menu)
@@ -208,7 +211,8 @@ class DefaultController extends Controller
                 'countServices' => $countServices,
                 'countTourisme' => $countTourismes,
                 'countClassements' => $countClassements,
-                'countCategories' => $countCategories));
+                'countCategories' => $countCategories,
+                'paniers' => $this->getPaniers($request)));
     }
     /**
      * Renvoie la liste de tous les objets "Evènement" selon la période donnée
@@ -242,7 +246,8 @@ class DefaultController extends Controller
             array('objets' => $evenements,
                 'langue' => $langue,
                 'typeObjet' => $typeObjet,
-                'user' => $user));
+                'user' => $user,
+                'paniers' => $this->getPaniers($request)));
     }
 
     /**
@@ -753,6 +758,38 @@ class DefaultController extends Controller
 
 
         return $this->render('ApidaeBundle:Default:test.html.twig', array('objet' => $objet));
+    }
+
+    public function getPaniers(Request $request)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        if ($user) {
+            $paniers = $em->getRepository(Panier::class)->findBy(['user' => $user]);
+        } else {
+            $cookies = $request->cookies;
+            if ($cookies->has('apidaeSwad')) {
+                $cookie = $cookies->get("apidaeSwad");
+                $paniers = $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
+            } else {
+                $response = new Response();
+                /*$cookie = array(
+                    'name'  => 'apidaeSwad',
+                    'value' => self::getCOUNTCOOKIE(),
+                    'time'  => time() + 3600 * 24 * 7
+                );*/
+                $cookie = new Cookie('apidaeSwad', PanierController::getCOUNTCOOKIE(), time() + 3600 * 24 * 7);
+                PanierController::setCOUNTCOOKIE(PanierController::$COUNT_COOKIE++);
+                $paniers = new Panier();
+                $paniers->setIdCookie( PanierController::getCOUNTCOOKIE());
+                $paniers->setpanLibelle("Favoris");
+                $em->persist($paniers);
+                $em->flush();
+                $response->headers->setCookie($cookie);
+                $response->send();
+            }
+        }
+        return $paniers;
     }
 
 }

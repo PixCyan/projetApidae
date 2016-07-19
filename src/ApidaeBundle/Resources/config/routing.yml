@@ -74,6 +74,19 @@ deletePanier:
     path: /panier/supprimer/{id}
     defaults: { _controller: ApidaeBundle:Panier:delete }
 
+testPanier:
+    path: /panier/ajouterObjet/{idObjet}/{idPanier}
+    defaults: { _controller: ApidaeBundle:Panier:ajouterTest }
+
 ajoutObjetPanier:
-    path: /panier/ajouterObjet/{idObjet}
+    path: /panier/ajouterObjet/{idObjet}/
     defaults: { _controller: ApidaeBundle:Panier:ajouterObjetPanier }
+
+retirerObjetPanier:
+    path: /panier/retirerObjet/{idPanier}/{idObjet}
+    defaults: { _controller: ApidaeBundle:Panier:retirerListe }
+
+getPaniersJson:
+    path: /getPaniersJson
+    defaults: { _controller: ApidaeBundle:Panier:getPaniersJson }
+    methods: [POST, GET]

@@ -86,4 +86,27 @@
         </div>
     </div>
 
+    <div id="choix_panier" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Choisissez une liste</h4>
+                </div>
+                <div class="modal-body">
+                    {% for panier in paniers %}
+                        <div class="package-list-item clearfix">
+                            <p class="choixPanier" id="{{ panier.id }}">{{ panier.panLibelle }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'Annuler'|trans }}</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
 {% endblock %}

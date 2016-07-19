@@ -26,10 +26,6 @@ ul.listesInfos li {
     opacity : initial;
 }
 
-.btnSupprimer {
-    float: right;
-}
-
-.btnDetails {
-    float: left;
+.optsFavoris {
+    margin : 5px;
 }

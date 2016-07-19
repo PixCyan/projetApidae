@@ -19,7 +19,9 @@
         </div>
 
         <div class="content">
-            <h5>{{ objet.nom|langueLib(langue.lanShortCut) }} <a href="{{ path('ajoutObjetPanier', {'idObjet': objet.idObjet }) }}" ><button class="btn"><i class="fa fa-heart-o"></i></button></a></h5>
+            <h5>{{ objet.nom|langueLib(langue.lanShortCut) }}
+                <a href="#" ><button class="btn favoris" id="{{ objet.idObjet }}" data-toggle="modal" data-target="#choix_panier"><i class="fa fa-heart-o"></i></button></a></h5>
+            <!-- {{ path('ajoutObjetPanier', {'idObjet': objet.idObjet }) }} -->
             <div class="row gap-10">
                 <div class="col-sm-12 col-md-9">
                     {% if objet.commune is not empty %}

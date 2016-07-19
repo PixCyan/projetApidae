@@ -1,0 +1,57 @@
+<div class="package-list-item-wrapper on-page-result-page" id="listesItems">
+    {% for objet in objets %}
+        <div class="package-list-item clearfix">
+            <div class="image">
+                {% if objet.multimedias is not empty %}
+                    {% if objet.multimedias.first.mulUrlDiapo is not null %}
+                        <img src="{{ pathMultimedia(objet.multimedias.first.mulUrlDiapo, objet.idObjet) }}" alt="" />
+                    {% else %}
+                        {% set nextImage = nextImgPath(objet.multimedias) %}
+                        {% if nextImage == null %}
+                            <img src="{{ asset('bundles/apidae/images/tour-package/01.jpg') }}" alt="" />
+                        {% else %}
+                            <img src="{{ pathMultimedia(nextImage, objet.idObjet) }}" alt="" />
+                        {% endif %}
+                    {% endif %}
+                {% else %}
+                    <img src="{{ asset('bundles/apidae/images/tour-package/01.jpg') }}" alt="" />
+                {% endif %}
+            </div>
+
+            <div class="content">
+                <h5>{{ objet.nom|langueLib(langue.lanShortCut) }} </h5>
+                <div class="row gap-10">
+                    <div class="col-sm-12 col-md-9">
+                        {% if objet.commune is not empty %}
+                            <ul class="list-info">
+                                <li><span class="icon"><i class="fa fa-map-marker"></i></span> <span class="font600">{{ objet.commune.comNom }}</span></li>
+                            </ul>
+                        {%  endif %}
+                        {% if objet.tarifEnClair is not empty %}
+                            <p class="line18">{{ objet.tarifEnClair|langueLib(langue.lanShortCut) }}</p>
+                        {% endif %}
+                        {% if tradLangue(objet, langue) is not null %}
+                            <p class="line18">{{ tradLangue(objet, langue).traDescriptionCourte }} </p>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-12 col-md-3 text-right text-left-sm">
+                        <a href="{{ path('offre', {'id': objet.idObjet }) }}" class="btn btn-primary btn-sm"> {{ 'Voir le détail'|trans }} </a>
+                        <a href="{{ path('retirerObjetPanier', {'idPanier': panier.id, 'idObjet': objet.idObjet }) }}" >{{ 'Retirer de la liste'|trans }}</button></a>
+                        {% if is_granted('ROLE_SUPER_ADMIN') %}
+                            <div class="optionsAdmin">
+                                <a href="{{ path('modifierOffre', {'offreId': objet.idObjet }) }}"> {{ 'Modifier'|trans }}</a>
+                            </div>
+                        {%  endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+<div hidden>
+    <p id="langue" >{{ langue.lanShortCut }}</p>
+    <p id="selectionId">{% if idSelection is defined %}{{ idSelection }}{% endif %}</p>
+    {% include "ApidaeBundle:translateForJS:translateForJS.html.twig" %}
+</div>
+
+

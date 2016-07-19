@@ -5,6 +5,7 @@ namespace ApidaeBundle\Controller;
 use ApidaeBundle\Entity\Langue;
 use ApidaeBundle\Entity\ObjetApidae;
 use Symfony\Component\HttpFoundation\Cookie;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -18,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @Route("/panier")
  */
 class PanierController extends Controller {
-    private static $COUNT_COOKIE = 0;
+    public static $COUNT_COOKIE = 0;
 
     /**
      * Lists all Panier entities.
@@ -65,21 +66,25 @@ class PanierController extends Controller {
     public function listePanierAction(Request $request) {
         //TODO liste de panier pour un USER
         $user = $this->getUser();
-        $em = $this->getDoctrine()->getManager();
-        $langue = $request->getLocale();
-        $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
-        //$categoriesMenu = $this->getCategoriesMenu();
-        $user = $this->getUser();
-        if($user != null) {
-            $paniers = $user->getPaniers();
+        if($user) {
+            $em = $this->getDoctrine()->getManager();
+            $langue = $request->getLocale();
+            $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
+            //$categoriesMenu = $this->getCategoriesMenu();
+            $user = $this->getUser();
+            if($user != null) {
+                $paniers = $user->getPaniers();
+            } else {
+                $paniers = null;
+            }
+            return $this->render(':panier:index.html.twig', array(
+                //'categoriesMenu' => $categoriesMenu,
+                'langue' => $langue,
+                'paniers' => $paniers,
+                'user' => $user));
         } else {
-            $paniers = null;
+            return $this->redirectToRoute('panier');
         }
-        return $this->render(':panier:index.html.twig', array(
-            //'categoriesMenu' => $categoriesMenu,
-            'langue' => $langue,
-            'paniers' => $paniers,
-            'user' => $user));
     }
 
 
@@ -124,6 +129,7 @@ class PanierController extends Controller {
             'panier' => $panier,
             'objets' => $panier->getObjets(),
             'langue' => $langue,
+            'user' => $user,
             'delete_form' => $deleteForm->createView(),
         ));
     }
@@ -192,7 +198,7 @@ class PanierController extends Controller {
             $cookies = $request->cookies;
             if( $cookies->has('apidaeSwad')) {
                 $cookie = $cookies->get("apidaeSwad");
-                $panier =  $panier = $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
+                $panier = $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
                 $objet->addPanier($panier);
                 $panier->addObjet($objet);
                 $em->merge($panier);
@@ -219,8 +225,83 @@ class PanierController extends Controller {
             }
         }
 
-        return $this->redirectToRoute('panier_index');
+        return $this->redirect($request->server->get('HTTP_REFERER'));
 
+    }
+
+    public function ajouterTestAction(Request $request, $idObjet, $idPanier) {
+        //TODO voir panier/cookie
+        //$idPanier = -1, $idCookie = -1
+        $em = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        $objet = $em->getRepository(ObjetApidae::class)->findOneBy(['idObj' => $idObjet]);
+        //Voir si utilisateur connecté
+        if($user) {
+            //ajout l'objet à la liste souhaitée
+            $panier = $em->getRepository(Panier::class)->findOneBy(['id' => $idPanier]);
+            if(!$panier->getObjets()->contains($objet)){
+                $objet->addPanier($panier);
+                $panier->addObjet($objet);
+                $em->merge($panier);
+                $em->merge($objet);
+                $em->flush();
+            }
+        } else {
+            $cookies = $request->cookies;
+            if( $cookies->has('apidaeSwad')) {
+                $cookie = $cookies->get("apidaeSwad");
+                $panier = $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
+                $objet->addPanier($panier);
+                $panier->addObjet($objet);
+                $em->merge($panier);
+                $em->merge($objet);
+                $em->flush();
+            } else {
+                $response = new Response();
+                /*$cookie = array(
+                    'name'  => 'apidaeSwad',
+                    'value' => self::getCOUNTCOOKIE(),
+                    'time'  => time() + 3600 * 24 * 7
+                );*/
+                $cookie = new Cookie('apidaeSwad', self::getCOUNTCOOKIE(), time() + 3600 * 24 * 7);
+                self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
+                $panier = new Panier();
+                $panier->setIdCookie(self::getCOUNTCOOKIE());
+                $panier->setpanLibelle("Favoris");
+                $em->persist($panier);
+                $panier->addObjet($objet);
+                $em->merge($objet);
+                $em->flush();
+                $response->headers->setCookie($cookie);
+                $response->send();
+            }
+        }
+
+        return $this->redirect($request->server->get('HTTP_REFERER'));
+
+    }
+
+    /**
+     * Retire un objet d'une liste de favoris (panier) donnée
+     * @param Request $request
+     * @param $idPanier
+     * @param $idObjet
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function retirerListeAction(Request $request, $idPanier, $idObjet) {
+        $em = $this->getDoctrine()->getManager();
+        $objet = $em->getRepository(ObjetApidae::class)->findOneBy(['idObj' => $idObjet]);
+        if($objet) {
+            $panier = $em->getRepository(Panier::class)->findOneBy(['id' => $idPanier]);
+            if($panier) {
+                $objet->removePanier($panier);
+                $panier->removeObjet($objet);
+                $em->merge($panier);
+                $em->merge($objet);
+                $em->flush();
+            }
+        }
+        return $this->redirect($request->server->get('HTTP_REFERER'));
     }
 
 
@@ -229,7 +310,7 @@ class PanierController extends Controller {
         $cookies = $request->cookies;
         if($cookies->has('apidaeSwad')) {
             $cookie = $cookies->get("apidaeSwad");
-            $panier =  $panier = $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
+            $panier = $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
         } else {
             $response = new Response();
             /*$cookie = array(
@@ -264,6 +345,42 @@ class PanierController extends Controller {
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+
+    public function getPaniersJsonAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $user = $this->getUser();
+        if($user) {
+            $paniers = $em->getRepository(Panier::class)->findOneBy(['user' => $user]);
+        } else {
+            $cookies = $request->cookies;
+            if($cookies->has('apidaeSwad')) {
+                $cookie = $cookies->get("apidaeSwad");
+                $paniers =  $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
+            } else {
+                $response = new Response();
+                /*$cookie = array(
+                    'name'  => 'apidaeSwad',
+                    'value' => self::getCOUNTCOOKIE(),
+                    'time'  => time() + 3600 * 24 * 7
+                );*/
+                $cookie = new Cookie('apidaeSwad', self::getCOUNTCOOKIE(), time() + 3600 * 24 * 7);
+                self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
+                $paniers = new Panier();
+                $paniers->setIdCookie(self::getCOUNTCOOKIE());
+                $paniers->setpanLibelle("Favoris");
+                $em->persist($paniers);
+                $em->flush();
+                $response->headers->setCookie($cookie);
+                $response->send();
+            }
+        }
+        $serializer = $this->container->get('jms_serializer');
+        $paniers = $serializer->serialize($paniers, 'json');
+
+        return (new JSONResponse())->setData(['paniers' => json_decode($paniers)]);
+
     }
 
     /**

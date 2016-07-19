@@ -14,16 +14,15 @@
 <!-- end Page title -->
 <div class="content-wrapper">
     <div class="container">
-        <div class="">
-            <a href="{{ path('voirPaniers') }}">{{ 'Retour à la liste'|trans }}</a>
-            <a href="{{ path('updatePanier', { 'id': panier.id }) }}">{{ 'Modifier'|trans }}</a>
-            {{ form_start(delete_form) }}
-            <input type="submit" value="{{ 'Supprimer'|trans }}">
-            {{ form_end(delete_form) }}
+        <div class="col-md-12">
+            {% if user is defined and user is not empty %}
+                <a href="{{ path('voirPaniers') }}">{{ 'Retour à la liste'|trans }}</a>
+            {% endif %}
 
             {% if objets is defined and objets is not empty %}
-                {% include "ApidaeBundle:Default:vueListeContent.html.twig" %}
+                {% include ":panier:listeFavoris.html.twig" %}
             {% endif %}
+
         </div>
     </div>
 

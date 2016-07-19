@@ -8,6 +8,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 /**
  * Panier
  *
+ * @JMS\ExclusionPolicy("all")
+ *
  * @ORM\Table(name="panier")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\PanierRepository")
  */
@@ -19,6 +21,10 @@ class Panier
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JMS\Expose
+     * @JMS\Type("integer")
+     *
      */
     private $id;
 
@@ -26,6 +32,9 @@ class Panier
      * @var string
      *
      * @ORM\Column(name="panLibelle", type="string", length=255)
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $panLibelle;
 
