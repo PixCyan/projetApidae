@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PanierController extends Controller {
     public static $COUNT_COOKIE = 0;
+    private static $lastPathShow;
 
     /**
      * Lists all Panier entities.
@@ -42,8 +43,6 @@ class PanierController extends Controller {
     {
         $user = $this->getUser();
         $panier = new Panier();
-
-        //TODO cookie si user pas connecté
         $form = $this->createForm('ApidaeBundle\Form\PanierType', $panier);
         $form->handleRequest($request);
 
@@ -93,6 +92,7 @@ class PanierController extends Controller {
      */
     public function showAction(Request $request, $id)
     {
+        echo $id;
         $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
         $langue = $request->getLocale();
@@ -103,7 +103,7 @@ class PanierController extends Controller {
             $cookies = $request->cookies;
             if($cookies->has('apidaeSwad')) {
                 $cookie = $cookies->get("apidaeSwad");
-                $panier =  $panier = $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
+                $panier =  $panier = $em->getRepository(Panier::class)->findOneBy(['id' => $cookie]);
             } else {
                 $response = new Response();
                 /*$cookie = array(
@@ -111,14 +111,9 @@ class PanierController extends Controller {
                     'value' => self::getCOUNTCOOKIE(),
                     'time'  => time() + 3600 * 24 * 7
                 );*/
-                $cookie = new Cookie('apidaeSwad', self::getCOUNTCOOKIE(), time() + 3600 * 24 * 7);
-                self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
-                $panier = new Panier();
-                $panier->setIdCookie(self::getCOUNTCOOKIE());
-                $panier->setpanLibelle("Favoris");
-                $em->persist($panier);
-                $em->flush();
-                $response->headers->setCookie($cookie);
+                $tab = $this->setCookie();
+                $panier = $tab['panier'];
+                $response->headers->setCookie($tab['cookie']);
                 $response->send();
             }
         }
@@ -130,7 +125,7 @@ class PanierController extends Controller {
             'objets' => $panier->getObjets(),
             'langue' => $langue,
             'user' => $user,
-            'delete_form' => $deleteForm->createView(),
+            'delete_form' => $deleteForm->createView()
         ));
     }
 
@@ -189,21 +184,27 @@ class PanierController extends Controller {
         if($user) {
             //ajout l'objet à la liste souhaitée
             $panier = $em->getRepository(Panier::class)->findOneBy(['id' => 1]);
-            $objet->addPanier($panier);
-            $panier->addObjet($objet);
-            $em->merge($panier);
-            $em->merge($objet);
-            $em->flush();
-        } else {
-            $cookies = $request->cookies;
-            if( $cookies->has('apidaeSwad')) {
-                $cookie = $cookies->get("apidaeSwad");
-                $panier = $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
+            if(!$panier->getObjets()->contains($objet)) {
                 $objet->addPanier($panier);
                 $panier->addObjet($objet);
                 $em->merge($panier);
                 $em->merge($objet);
                 $em->flush();
+            }
+
+        } else {
+            $cookies = $request->cookies;
+            if( $cookies->has('apidaeSwad')) {
+                $cookie = $cookies->get("apidaeSwad");
+                $panier = $em->getRepository(Panier::class)->findOneBy(['id' => $cookie]);
+                if(!$panier->getObjets()->contains($objet)) {
+                    $objet->addPanier($panier);
+                    $panier->addObjet($objet);
+                    $em->merge($panier);
+                    $em->merge($objet);
+                    $em->flush();
+                }
+
             } else {
                 $response = new Response();
                 /*$cookie = array(
@@ -211,21 +212,14 @@ class PanierController extends Controller {
                     'value' => self::getCOUNTCOOKIE(),
                     'time'  => time() + 3600 * 24 * 7
                 );*/
-                $cookie = new Cookie('apidaeSwad', self::getCOUNTCOOKIE(), time() + 3600 * 24 * 7);
-                self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
-                $panier = new Panier();
-                $panier->setIdCookie(self::getCOUNTCOOKIE());
-                $panier->setpanLibelle("Favoris");
-                $em->persist($panier);
-                $panier->addObjet($objet);
-                $em->merge($objet);
-                $em->flush();
-                $response->headers->setCookie($cookie);
+                $tab = $this->setCookie();
+                $panier = $tab['panier'];
+                $response->headers->setCookie($tab['cookie']);
                 $response->send();
             }
         }
 
-        return $this->redirect($request->server->get('HTTP_REFERER'));
+        return $this->redirect(self::$lastPathShow);
 
     }
 
@@ -250,12 +244,15 @@ class PanierController extends Controller {
             $cookies = $request->cookies;
             if( $cookies->has('apidaeSwad')) {
                 $cookie = $cookies->get("apidaeSwad");
-                $panier = $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
-                $objet->addPanier($panier);
-                $panier->addObjet($objet);
-                $em->merge($panier);
-                $em->merge($objet);
-                $em->flush();
+                $panier = $em->getRepository(Panier::class)->findOneBy(['id' => $cookie]);
+                if(!$panier->getObjets()->contains($objet)) {
+                    $objet->addPanier($panier);
+                    $panier->addObjet($objet);
+                    $em->merge($panier);
+                    $em->merge($objet);
+                    $em->flush();
+                }
+
             } else {
                 $response = new Response();
                 /*$cookie = array(
@@ -263,21 +260,14 @@ class PanierController extends Controller {
                     'value' => self::getCOUNTCOOKIE(),
                     'time'  => time() + 3600 * 24 * 7
                 );*/
-                $cookie = new Cookie('apidaeSwad', self::getCOUNTCOOKIE(), time() + 3600 * 24 * 7);
-                self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
-                $panier = new Panier();
-                $panier->setIdCookie(self::getCOUNTCOOKIE());
-                $panier->setpanLibelle("Favoris");
-                $em->persist($panier);
-                $panier->addObjet($objet);
-                $em->merge($objet);
-                $em->flush();
-                $response->headers->setCookie($cookie);
+                $tab = $this->setCookie();
+                $panier = $tab['panier'];
+                $response->headers->setCookie($tab['cookie']);
                 $response->send();
             }
         }
 
-        return $this->redirect($request->server->get('HTTP_REFERER'));
+        return new Response();
 
     }
 
@@ -310,25 +300,54 @@ class PanierController extends Controller {
         $cookies = $request->cookies;
         if($cookies->has('apidaeSwad')) {
             $cookie = $cookies->get("apidaeSwad");
-            $panier = $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
+            $panier = $em->getRepository(Panier::class)->findOneBy(['id' => $cookie]);
         } else {
             $response = new Response();
-            /*$cookie = array(
-                'name'  => 'apidaeSwad',
-                'value' => self::getCOUNTCOOKIE(),
-                'time'  => time() + 3600 * 24 * 7
-            );*/
-            $cookie = new Cookie('apidaeSwad', self::getCOUNTCOOKIE(), time() + 3600 * 24 * 7);
-            self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
+            $tab = $this->setCookie();
+            $panier = $tab['panier'];
+            $response->headers->setCookie($tab['cookie']);
+            $response->send();
+        }
+        return $this->redirectToRoute('voirUneSelection', array("id" => $panier->getId()));
+    }
+
+
+    private function setCookie() {
+        $em = $this->getDoctrine()->getManager();
+        $panier = new Panier();
+        $panier->setIdCookie(self::getCOUNTCOOKIE());
+        $panier->setpanLibelle("Favoris");
+        $em->persist($panier);
+        $em->flush();
+
+        $cookie = new Cookie('apidaeSwad', $panier->getId(), time() + 3600 * 24 * 7);
+        self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
+        return array('cookie' => $cookie, 'panier' => $panier);
+    }
+
+
+    //Controleur imbriqué -- plante
+    public function getPanierCookieAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        $cookies = $request->cookies;
+        if($cookies->has('apidaeSwad')) {
+            $cookie = $cookies->get('apidaeSwad');
+            $panier = $em->getRepository(Panier::class)->findOneBy(['id' => $cookie]);
+        } else {
+            $response = new Response();
+
             $panier = new Panier();
             $panier->setIdCookie(self::getCOUNTCOOKIE());
             $panier->setpanLibelle("Favoris");
             $em->persist($panier);
             $em->flush();
+
+            $cookie = new Cookie('apidaeSwad', $panier->getId(), time() + 3600 * 24 * 7);
+            self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
             $response->headers->setCookie($cookie);
             $response->send();
         }
-        return $this->redirectToRoute('voirUneSelection', array("id" => $panier->getId()));
+        return new Response($panier->getId());
     }
 
     /**
@@ -344,7 +363,7 @@ class PanierController extends Controller {
             ->setAction($this->generateUrl('deletePanier', array('id' => $panier->getId())))
             ->setMethod('DELETE')
             ->getForm()
-        ;
+            ;
     }
 
 
@@ -357,7 +376,7 @@ class PanierController extends Controller {
             $cookies = $request->cookies;
             if($cookies->has('apidaeSwad')) {
                 $cookie = $cookies->get("apidaeSwad");
-                $paniers =  $em->getRepository(Panier::class)->findOneBy(['idCookie' => $cookie]);
+                $paniers =  $em->getRepository(Panier::class)->findOneBy(['id' => $cookie]);
             } else {
                 $response = new Response();
                 /*$cookie = array(
@@ -365,13 +384,14 @@ class PanierController extends Controller {
                     'value' => self::getCOUNTCOOKIE(),
                     'time'  => time() + 3600 * 24 * 7
                 );*/
-                $cookie = new Cookie('apidaeSwad', self::getCOUNTCOOKIE(), time() + 3600 * 24 * 7);
-                self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
-                $paniers = new Panier();
-                $paniers->setIdCookie(self::getCOUNTCOOKIE());
-                $paniers->setpanLibelle("Favoris");
-                $em->persist($paniers);
+                $panier = new Panier();
+                $panier->setIdCookie(self::getCOUNTCOOKIE());
+                $panier->setpanLibelle("Favoris");
+                $em->persist($panier);
                 $em->flush();
+
+                $cookie = new Cookie('apidaeSwad', $panier->getId(), time() + 3600 * 24 * 7);
+                self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
                 $response->headers->setCookie($cookie);
                 $response->send();
             }

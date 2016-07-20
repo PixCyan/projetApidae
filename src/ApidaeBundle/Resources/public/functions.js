@@ -81,7 +81,6 @@ $("document").ready(function() {
          },
          success: function (data) {
             console.log('Fin');
-             $('.modal-dialog').css('display', 'none');
          }
          });
     });
