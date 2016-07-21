@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PanierController extends Controller {
     public static $COUNT_COOKIE = 0;
-    private static $lastPathShow;
 
     /**
      * Lists all Panier entities.
@@ -39,7 +38,7 @@ class PanierController extends Controller {
     /**
      * Creates a new Panier entity.
      */
-    public function newAction(Request $request)
+    public function newAction(Request $request, $idObjet)
     {
         $user = $this->getUser();
         $panier = new Panier();
@@ -51,6 +50,14 @@ class PanierController extends Controller {
             $panier = $form->getData();
             $panier->setUser($user);
             $em->persist($panier);
+
+            $objet = $em->getRepository(ObjetApidae::class)->findOneBy(['idObj' => $idObjet]);
+            if($objet) {
+                $objet->addPanier($panier);
+                $panier->addObjet($objet);
+                $em->merge($panier);
+                $em->merge($objet);
+            }
             $em->flush();
 
             return $this->redirectToRoute('voirUneSelection', array('id' => $panier->getId()));
@@ -92,7 +99,6 @@ class PanierController extends Controller {
      */
     public function showAction(Request $request, $id)
     {
-        echo $id;
         $user = $this->getUser();
         $em = $this->getDoctrine()->getManager();
         $langue = $request->getLocale();
@@ -174,57 +180,7 @@ class PanierController extends Controller {
      * @param $idObjet
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function ajouterObjetPanierAction(Request $request, $idObjet) {
-        //TODO voir panier/cookie
-        //$idPanier = -1, $idCookie = -1
-        $em = $this->getDoctrine()->getManager();
-        $user = $this->getUser();
-        $objet = $em->getRepository(ObjetApidae::class)->findOneBy(['idObj' => $idObjet]);
-        //Voir si utilisateur connecté
-        if($user) {
-            //ajout l'objet à la liste souhaitée
-            $panier = $em->getRepository(Panier::class)->findOneBy(['id' => 1]);
-            if(!$panier->getObjets()->contains($objet)) {
-                $objet->addPanier($panier);
-                $panier->addObjet($objet);
-                $em->merge($panier);
-                $em->merge($objet);
-                $em->flush();
-            }
-
-        } else {
-            $cookies = $request->cookies;
-            if( $cookies->has('apidaeSwad')) {
-                $cookie = $cookies->get("apidaeSwad");
-                $panier = $em->getRepository(Panier::class)->findOneBy(['id' => $cookie]);
-                if(!$panier->getObjets()->contains($objet)) {
-                    $objet->addPanier($panier);
-                    $panier->addObjet($objet);
-                    $em->merge($panier);
-                    $em->merge($objet);
-                    $em->flush();
-                }
-
-            } else {
-                $response = new Response();
-                /*$cookie = array(
-                    'name'  => 'apidaeSwad',
-                    'value' => self::getCOUNTCOOKIE(),
-                    'time'  => time() + 3600 * 24 * 7
-                );*/
-                $tab = $this->setCookie();
-                $panier = $tab['panier'];
-                $response->headers->setCookie($tab['cookie']);
-                $response->send();
-            }
-        }
-
-        return $this->redirect(self::$lastPathShow);
-
-    }
-
-    public function ajouterTestAction(Request $request, $idObjet, $idPanier) {
-        //TODO voir panier/cookie
+    public function ajouterObjetPanierAction(Request $request, $idObjet, $idPanier) {
         //$idPanier = -1, $idCookie = -1
         $em = $this->getDoctrine()->getManager();
         $user = $this->getUser();
@@ -266,9 +222,7 @@ class PanierController extends Controller {
                 $response->send();
             }
         }
-
         return new Response();
-
     }
 
     /**
@@ -311,17 +265,17 @@ class PanierController extends Controller {
         return $this->redirectToRoute('voirUneSelection', array("id" => $panier->getId()));
     }
 
-
     private function setCookie() {
         $em = $this->getDoctrine()->getManager();
         $panier = new Panier();
-        $panier->setIdCookie(self::getCOUNTCOOKIE());
+        $idCookie = self::getCOUNTCOOKIE();
+        $panier->setIdCookie($idCookie++);
         $panier->setpanLibelle("Favoris");
         $em->persist($panier);
         $em->flush();
 
         $cookie = new Cookie('apidaeSwad', $panier->getId(), time() + 3600 * 24 * 7);
-        self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
+        self::setCOUNTCOOKIE($idCookie);
         return array('cookie' => $cookie, 'panier' => $panier);
     }
 

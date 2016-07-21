@@ -16,7 +16,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-8 col-md-offset-2">
-                    <a href="{{ path('nouveauPanier') }}" class="btn btn-primary btn-sm">{{ 'Créer une nouvelle liste'|trans }}</a>
+                    <a href="{{ path('nouveauPanier', { 'idObjet': "-1" }) }}" class="btn btn-primary btn-sm">{{ 'Créer une nouvelle liste'|trans }}</a>
                     {% if paniers is defined and paniers is not empty %}
                     {% for panier in paniers %}
                         <div class="package-list-item clearfix">
@@ -37,45 +37,5 @@
             </div>
         </div>
     </div>
-
-
-<!--
-    <h1>Panier list</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Panlibelle</th>
-                <th>Idcookie</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for panier in paniers %}
-            <tr>
-                <td><a href="{{ path('voirUneSelection', { 'id': panier.id }) }}">{{ panier.id }}</a></td>
-                <td>{{ panier.panLibelle }}</td>
-                <td>{{ panier.idCookie }}</td>
-                <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('voirUneSelection', { 'id': panier.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('updatePanier', { 'id': panier.id }) }}">edit</a>
-                        </li>
-                    </ul>
-                </td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <ul>
-        <li>
-            <a href="{{ path('nouveauPanier') }}">Create a new entry</a>
-        </li>
-    </ul>
-    -->
 
 {% endblock %}

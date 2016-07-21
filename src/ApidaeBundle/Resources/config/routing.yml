@@ -53,7 +53,7 @@ panier_index:
     defaults: { _controller: ApidaeBundle:Panier:index }
 
 nouveauPanier:
-    path: /panier/nouveau
+    path: /panier/nouveau/{idObjet}
     defaults: { _controller: ApidaeBundle:Panier:new }
     methods: [POST, GET]
 
@@ -74,12 +74,8 @@ deletePanier:
     path: /panier/supprimer/{id}
     defaults: { _controller: ApidaeBundle:Panier:delete }
 
-testPanier:
-    path: /panier/ajouterObjet/{idObjet}/{idPanier}
-    defaults: { _controller: ApidaeBundle:Panier:ajouterTest }
-
 ajoutObjetPanier:
-    path: /panier/ajouterObjet/{idObjet}/
+    path: /panier/ajouterObjet/{idObjet}/{idPanier}
     defaults: { _controller: ApidaeBundle:Panier:ajouterObjetPanier }
 
 retirerObjetPanier:

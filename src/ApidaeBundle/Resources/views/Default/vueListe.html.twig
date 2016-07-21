@@ -95,17 +95,19 @@
                     <h4 class="modal-title">Choisissez une liste</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="package-list-item clearfix">
                     {% if paniers|length == 1 %}
-                        <p class="choixPanier" id="{{ paniers.id }}" data-dismiss="modal">{{ paniers.panLibelle }}</p>
+                        <h5 class="choixPanier" id="{{ paniers.id }}" data-dismiss="modal">{{ paniers.panLibelle }}</h5>
                         {% else %}
                             {% for panier in paniers %}
-                                <p class="choixPanier" id="{{ panier.id }}" data-dismiss="modal">{{ panier.panLibelle }}</p>
+                                <h5 class="choixPanier" id="{{ panier.id }}" data-dismiss="modal">{{ panier.panLibelle }}</h5>
                             {% endfor %}
                     {% endif %}
-                    </div>
+
                 </div>
                 <div class="modal-footer">
+                    {% if user is not empty %}
+                        <button type="button" class="btn btn-default choixNew" data-dismiss="modal">{{ 'Créer une nouvelle liste'|trans }}</button>
+                    {% endif %}
                     <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'Annuler'|trans }}</button>
                 </div>
             </div>
