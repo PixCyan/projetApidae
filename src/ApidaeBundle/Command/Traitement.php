@@ -60,14 +60,14 @@ class Traitement extends ContainerAwareCommand {
 
         //Récupération fichiers :
         try {
-            $export = file_get_contents("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/exportInitial/selections.json");
+            /*$export = file_get_contents("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/exportInitial/selections.json");
             $this->communes = json_decode(file_get_contents("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/exportInitial/communes.json"));
             $fichierRefApidae = json_decode(file_get_contents("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/exportInitial/elements_reference.json", true));
-            $file = '/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/references.json';
-            /*$export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
+            $file = '/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/references.json';*/
+            $export = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/selections.json");
             $this->communes = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/communes.json"));
             $fichierRefApidae = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/elements_reference.json", true));
-            $file = '/var/www/local/Symfony/projetApidae/tools/tmp/references.json';*/
+            $file = '/var/www/local/Symfony/projetApidae/tools/tmp/references.json';
 
             //----- Traitement du fichier d'élements références
             if(!file_exists($file)){
@@ -86,15 +86,20 @@ class Traitement extends ContainerAwareCommand {
                 fclose($references);
             }
             //------ Fin du traitement
+            //$this->fichierRef = json_decode(file_get_contents("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/references.json"));
             $this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/references.json"));
 
             //---- Test lecture récupération de tous les fichiers objets
             $tableauObjets = [];
+            //$dir = opendir("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/exportInitial/objets_modifies/");
             $dir = opendir("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/");
+
+
             while($fichier = readdir($dir)) {
                 if($fichier != '.' && $fichier != '..' && $fichier != 'index.php') {
                     $explode = explode('-', $fichier);
                     $explode2 = explode('.', $explode[1]);
+                    //$tableauObjets[$explode2[0]] = file_get_contents("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/exportInitial/objets_modifies/".$fichier);
                     $tableauObjets[$explode2[0]] = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/".$fichier);
                 }
             }
@@ -922,7 +927,7 @@ class Traitement extends ContainerAwareCommand {
         }
     }
     private function updateService($service, $objetApidae, $update) {
-        if(!$service->getObjetsApidae()->contains($objetApidae)) {
+        if(!$service->getObjets()->contains($objetApidae)) {
             //Associe le service à la traduction :
             $service->addObjetApidae($objetApidae);
         }

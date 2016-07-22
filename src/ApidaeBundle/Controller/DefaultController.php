@@ -746,20 +746,6 @@ class DefaultController extends Controller
         return stripos($headers[0],"200 OK")?true:false;
     }
 
-    public function testsAction(Request $request) {
-        $em = $this->getDoctrine()->getManager();
-        //print_r($request->getSession()->get('filtres'));
-        $filtres = $request->getSession()->get('filtres');
-        //$objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
-
-        //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
-
-        $objet = $em->getRepository(ObjetApidae::class)->find(353);
-
-
-        return $this->render('ApidaeBundle:Default:test.html.twig', array('objet' => $objet));
-    }
-
     public function getPaniers(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -773,13 +759,8 @@ class DefaultController extends Controller
                 $paniers = $em->getRepository(Panier::class)->findOneBy(['id' => $cookie]);
             } else {
                 $response = new Response();
-                /*$cookie = array(
-                    'name'  => 'apidaeSwad',
-                    'value' => self::getCOUNTCOOKIE(),
-                    'time'  => time() + 3600 * 24 * 7
-                );*/
                 $tab = $this->setCookie();
-                $panier = $tab['panier'];
+                $paniers = $tab['panier'];
                 $response->headers->setCookie($tab['cookie']);
                 $response->send();
             }
@@ -790,14 +771,28 @@ class DefaultController extends Controller
     private function setCookie() {
         $em = $this->getDoctrine()->getManager();
         $panier = new Panier();
-        $panier->setIdCookie(self::getCOUNTCOOKIE());
+        $panier->setIdCookie(PanierController::getCOUNTCOOKIE());
         $panier->setpanLibelle("Favoris");
         $em->persist($panier);
         $em->flush();
 
         $cookie = new Cookie('apidaeSwad', $panier->getId(), time() + 3600 * 24 * 7);
-        self::setCOUNTCOOKIE(self::$COUNT_COOKIE++);
+        PanierController::setCOUNTCOOKIE(PanierController::$COUNT_COOKIE++);
         return array('cookie' => $cookie, 'panier' => $panier);
     }
+
+    public function testsAction(Request $request) {
+        $em = $this->getDoctrine()->getManager();
+        //print_r($request->getSession()->get('filtres'));
+        $filtres = $request->getSession()->get('filtres');
+        //$objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
+
+        //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
+
+        $objet = $em->getRepository(ObjetApidae::class)->find(353);
+
+        return $this->render('ApidaeBundle:Default:test.html.twig', array('objet' => $objet));
+    }
+
 
 }
