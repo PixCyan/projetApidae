@@ -15,6 +15,7 @@ use Exception;
 
 /**
  * Commande chargée de générer le menu d'après le fichier 'donneesMenu.json'
+ *
  * Class CommandMakeMenuCommand
  * @package ApidaeBundle\Command
  */

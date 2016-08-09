@@ -5,8 +5,16 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class RecuperationDonneesApidaeCommand extends ContainerAwareCommand
-{
+/**
+ * La commande RecuperationDonneesApidaeCommand récupère l'export préparé par la plateforme Apidae
+ * Décompresse le fichier
+ *
+ * Informe du succès ou non du traitement par email.
+ *
+ * Class RecuperationDonneesApidaeCommand
+ * @package AppBundle\Command
+ */
+class RecuperationDonneesApidaeCommand extends ContainerAwareCommand {
     protected function configure()
     {
         $this

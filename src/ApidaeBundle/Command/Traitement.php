@@ -30,6 +30,10 @@ use ApidaeBundle\Entity\Ouverture;
 use ApidaeBundle\Entity\TypePublic;
 
 /**
+ * La commande Traitement gère les données des exports Apidae.
+ * Charge les fichiers objets JSON etles Sélections créées sur la plateforme.
+ * Traite les fichiers objet un par un dans l'ordre d'apparition dans les séléctions Apidae
+ *
  * @Doctrine\ORM\Mapping\Entity
  * @Doctrine\ORM\Mapping\Table(name="traitement")
  */
@@ -41,7 +45,7 @@ class Traitement extends ContainerAwareCommand {
     private $sansCategorie;
     private $sansType;
 
-    // …
+    //Configuration de la commande
     protected function configure() {
         $this
             ->setName('command:traitement')
@@ -70,6 +74,7 @@ class Traitement extends ContainerAwareCommand {
             $file = '/var/www/local/Symfony/projetApidae/tools/tmp/references.json';
 
             //----- Traitement du fichier d'élements références
+            //- Création d'un fichier sous forme de tableau pour accéder plus rapidemtn aux éléments références
             if(!file_exists($file)){
                 $references = fopen($file, 'w');
                 file_put_contents($file, "{ \n", FILE_APPEND);
@@ -86,6 +91,7 @@ class Traitement extends ContainerAwareCommand {
                 fclose($references);
             }
             //------ Fin du traitement
+
             //$this->fichierRef = json_decode(file_get_contents("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/references.json"));
             $this->fichierRef = json_decode(file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/references.json"));
 
@@ -93,8 +99,6 @@ class Traitement extends ContainerAwareCommand {
             $tableauObjets = [];
             //$dir = opendir("/home/www/vhosts/swad.fr/apidae.swad.fr/tools/tmp/exportInitial/objets_modifies/");
             $dir = opendir("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/");
-
-
             while($fichier = readdir($dir)) {
                 if($fichier != '.' && $fichier != '..' && $fichier != 'index.php') {
                     $explode = explode('-', $fichier);
@@ -103,8 +107,11 @@ class Traitement extends ContainerAwareCommand {
                     $tableauObjets[$explode2[0]] = file_get_contents("/var/www/local/Symfony/projetApidae/tools/tmp/exportInitial/objets_modifies/".$fichier);
                 }
             }
+            //-- Fin récupération des fichiers
 
+            //-- Traitement pour chaque objet => récupération de son fichier et enregistrement des données
             $selections_data = json_decode($export);
+            //-- Pour chaque sélection Apidae
             foreach ($selections_data as $value) {
                 $selectionApidae = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($value->id);
                 if ($selectionApidae == null) {
@@ -117,7 +124,9 @@ class Traitement extends ContainerAwareCommand {
                     $selectionApidae->setSelLibelle($value->nom);
                     $this->em->merge($selectionApidae);
                 }
-                print($selectionApidae->getSelLibelle() . "\n");
+                //print($selectionApidae->getSelLibelle() . "\n");
+
+                //Pour chaque objet touristique
                 foreach ($value->objetsTouristiques as $val) {
                     print($val->id . "\n");
                     //=> $data = aller chercher le bon fichier dans objetsModifies
@@ -153,12 +162,21 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * Parcours les informations d'un objet touristique pour les enregistrer
+     * @param $selectionApidae
+     * @param $data
+     * @param $chaineType
+     * @param $chaineInformations
+     * @param $languesSite
+     */
     private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite) {
         $this->total++;
         $typeObjet = $data->type;
         //print($typeObjet);
         //-------------------- ObjetApidae ----------------------
         $update = true;
+        //-- Interroge la BDD pour savoir si l'objet existe déjà selon son type (Restaurant, Hebergement, Activite,Evènement, SejourPackage)
         if($typeObjet == "RESTAURATION") {
             $objetApidae = $this->em->getRepository(Restaurant::class)->findOneByIdObj($data->id);
             if($objetApidae == null) {
@@ -194,13 +212,14 @@ class Traitement extends ContainerAwareCommand {
                 $objetApidae = new SejourPackage();
             }
         }
-
         if(!$update) {
+            //création de l'objet en BDD
             $this->updateObjetApidae($objetApidae, $data, $selectionApidae, $languesSite, false);
         } else {
             //update de l'objet
             $this->updateObjetApidae($objetApidae, $data, $selectionApidae, $languesSite, true);
         }
+
         //-------------------- Adresse - Communes ----------------------
         if($adr = $data->localisation->adresse) {
             $objetApidae->setCodePostal($adr->codePostal);
@@ -239,17 +258,8 @@ class Traitement extends ContainerAwareCommand {
 
         //-------------------- Categories ----------------------
         //Récupération de la/des catégorie(s)
-        /*if(!isset($data->$chaineInformations->categories)) {
-            $this->sansCategorie++;
-            print("Pas de categorie \n");
-        }
-        if(!isset($data->$chaineInformations->typesManifestation) &&
-            !isset($data->$chaineInformations->typesHabitation) &&
-            !isset($data->$chaineInformations->$chaineType)) {
-            $this->sansType++;
-            print("Pas de type \n");
-        }*/
-
+        //Celles-ci sont stockées dans différents objet json selon le type d'objet
+        //Certain objet n'ont pas de catégorie stockée directement dans "categorie", c'est pourquoi toutes les vérifications sont faite ici
         if(isset($data->$chaineInformations->categories)) {
             foreach($data->$chaineInformations->categories as $categorie) {
                 $v = $this->traitementReference($categorie->elementReferenceType,$categorie->id);
@@ -296,7 +306,7 @@ class Traitement extends ContainerAwareCommand {
 
         //--------------------Langue ----------------------
         $i = 0;
-        $langueTrad= "";
+        //Pour chaque langue => traitement de la traduction correspondante
         foreach($languesSite as $key => $value) {
             $shortCut = $value[0] . $value[1];
             $langue = $this->em->getRepository(Langue::class)->findOneByLanLibelle($value);
@@ -314,7 +324,6 @@ class Traitement extends ContainerAwareCommand {
             $chaineLangue = "libelle" . $shortCut;
 
             //------------------------------------------------ Traduction -------------------------------------------------
-            //$traduction = new TraductionObjetApidae();
             $traduction = $this->em->getRepository(TraductionObjetApidae::class)->findOneBy(array("langue"=> $langue, "objet"=>$objetApidae));
             if($traduction != null) {
                 $this->updateTraduction($traduction, $data, $chaineLangue, $langueTrad, $objetApidae, true);
@@ -325,14 +334,13 @@ class Traitement extends ContainerAwareCommand {
             $i++;
         }
 
-
-        //--- obj changements
         $nom = $this->traitementLibelleLangues($languesSite, $data->nom);
         $objetApidae->setNom($nom);
         $objetApidae->setDateEnClair(null);
         $objetApidae->setTarifEnClair(null);
 
         //-------------------- Types de Public ----------------------
+        //Récupération du type de public
         if(isset($data->prestations->typesClientele)) {
             $tab = $data->prestations;
             for($i = 0; $i < count($tab->typesClientele); $i++) {
@@ -348,6 +356,7 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //-------------------- Moyens de Communication ----------------------
+        //Récupération des moyens de communication
         if(isset($data->informations->moyensCommunication)) {
             $tab = $data->informations;
             for($i = 0; $i < count($tab->moyensCommunication); $i++) {
@@ -378,6 +387,7 @@ class Traitement extends ContainerAwareCommand {
             }
         }
         //-------------------- Equipements ----------------------
+        //Récupération des équipements de type conforts (intérieur)
         if(isset($data->prestations->conforts)) {
             $tab = $data->prestations;
             for($i = 0; $i < count($tab->conforts); $i++) {
@@ -411,6 +421,7 @@ class Traitement extends ContainerAwareCommand {
             }
         }
 
+        //Récupération des équipements de type équipement (extérieur)
         if(isset($data->prestations->equipements)) {
             $tab = $data->prestations;
             for($i = 0; $i < count($tab->equipements); $i++) {
@@ -439,7 +450,7 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //-------------------- Services ----------------------
-        //services
+        //Récupération des services de type services
         if(isset($data->prestations->services)) {
             $tab = $data->prestations;
             for($i = 0; $i < count($tab->services); $i++) {
@@ -461,7 +472,7 @@ class Traitement extends ContainerAwareCommand {
             }
         }
 
-        //modes de paiement :
+        //Récupération des services de type modes de paiement :
         if(isset($data->descriptionTarif->modesPaiement)) {
             $tab = $data->descriptionTarif;
             for($i = 0; $i < count($tab->modesPaiement); $i++) {
@@ -482,7 +493,7 @@ class Traitement extends ContainerAwareCommand {
             }
         }
 
-        //Handicap (tourismesAdaptes)
+        //Récupération des services de type Handicap (tourismesAdaptes)
         if(isset($data->prestations->tourismesAdaptes)) {
             $tab = $data->prestations;
             for($i = 0; $i < count($tab->tourismesAdaptes); $i++) {
@@ -503,7 +514,6 @@ class Traitement extends ContainerAwareCommand {
             }
         }
 
-        //TODO ?Langues parlées
         //-------------------- Labels ----------------------
         //labelsQualité
         if(isset($data->$chaineInformations->labels)) {
@@ -534,7 +544,8 @@ class Traitement extends ContainerAwareCommand {
                 }
             }
         }
-        //étoiles
+
+        //Récupération du label étoilé si présent
         if(isset($data->$chaineInformations->classement)) {
             if(isset($data->$chaineInformations->classement)) {
                 $v = $this->traitementReference($data->$chaineInformations->classement->elementReferenceType, $data->$chaineInformations->classement->id);
@@ -544,6 +555,7 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //-------------------- Tarifs ----------------------
+        //Récupération des tarifs
         if(isset($data->descriptionTarif)) {
             $tab = $data->descriptionTarif;
             if(isset($data->descriptionTarif)) {
@@ -574,6 +586,7 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //-------------------- Ouvertures ----------------------
+        //Récupération des informations de période d'ouverture
         if(isset($data->ouverture)) {
             if(isset($data->ouverture->periodeEnClair)) {
                 if(isset($data->ouverture->periodeEnClair)) {
@@ -611,6 +624,7 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //-------------------- Multimedias ----------------------
+        //Récupération des multimédias
         if(isset($data->illustrations)) {
             for($i = 0; $i < count($data->illustrations); $i++) {
                 $multimedia = $this->em->getRepository(Multimedia::class)->findOneByIdMultimedia($data->illustrations[$i]->identifiant);
@@ -624,11 +638,14 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //-------------------- Capacite ----------------------
+        //Récupère les infotmations sur la capacité et les informations spéciales en fonction du type de l'objet
         if(isset($data->$chaineInformations->capacite)) {
+            //setCapacité => méthode abstraite instancier par héritage
             $objetApidae->setCapacite($data->$chaineInformations->capacite);
         }
 
         //-------------------- Duree ----------------------
+        //Récupération de la/les durée(s) d'un évènement
         if(isset($data->$chaineInformations->durees)) {
             $tab = array();
             if(isset($data->$chaineInformations->dureeSeance)) {
@@ -638,6 +655,7 @@ class Traitement extends ContainerAwareCommand {
                 $tab['nbJours'] = $data->$chaineInformations->nombreJours;
             }
 
+            //setCapacité => méthode abstraite instancier par héritage
             $objetApidae->setCapacite($tab);
             for($i = 0; $i < count($data->$chaineInformations->durees); $i++) {
                 $v = $this->traitementReference($data->$chaineInformations->durees[$i]->elementReferenceType,
@@ -667,30 +685,15 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //--------------- ActiviteType / RubriqueEquipement / patrimoineCulturelType --------------------
+        //Récupération des différents types possibles (option de filtre)
         if(isset($data->$chaineInformations->activiteType)) {
             $this->traitementActiviteTypes($data->$chaineInformations->activiteType, $languesSite, $objetApidae);
         } else if(isset($data->$chaineInformations->rubrique)) {
             $this->traitementActiviteTypes($data->$chaineInformations->rubrique, $languesSite, $objetApidae);
-        } /*else if(isset($data->$chaineInformations->patrimoineCulturelType)) {
-            $this->traitementActiviteTypes($data->$chaineInformations->patrimoineCulturelType, $languesSite, $objetApidae);
-        }*/
-
-
-        //ActivitePrestation ...
-        /*if($objetApidae->getObjTypeApidae() == "ACTIVITE" || $objetApidae->getObjTypeApidae() == "EQUIPEMENT") {
-            if(isset($data->$chaineInformations->activitesSportives)) {
-                foreach ($data->$chaineInformations->activitesSportives as $v) {
-                    $this->traitementActiviteTypes($v, $languesSite, $objetApidae);
-                }
-            }
-            if(isset($data->prestations->activites)) {
-                foreach($data->prestations->activites as $v) {
-                    $this->traitementActiviteTypes($v, $languesSite, $objetApidae);
-                }
-            }
-        }*/
+        }
 
         //-------------------- Portee ----------------------
+        //Récupération de la portée d'un évènement (ex : régionale)
         if(isset($data->$chaineInformations->portee)) {
             $tab = array();
             $v = $this->traitementReference($data->$chaineInformations->portee->elementReferenceType, $data->$chaineInformations->portee->id);
@@ -708,6 +711,8 @@ class Traitement extends ContainerAwareCommand {
         }
 
         //-------------------- ObjetsLies ----------------------
+        //Actuellement les ids des objetsLies à l'objet courant sont enregistré dans un champs
+        //Pas de liaison objet disponible en BDD
         //TODO objetsLies traitement
         if(isset($data->liens)) {
             for ($i = 0; $i < count($data->liens); $i++) {
@@ -723,16 +728,35 @@ class Traitement extends ContainerAwareCommand {
         $this->em->flush();
     }
 
+    /**
+     * Cherche l'élément référence souhaité dans le fichier créer en début de traitement et le retourne
+     * @param $type
+     * @param $id
+     * @return mixed
+     */
     private function traitementReference($type, $id) {
         $key = $id.$type;
         return $this->fichierRef->$key;
     }
 
+    /**
+     * Recherche l'élément référence souhaité, traite son libellé et le renvoie
+     * @param $id
+     * @param $languesSite
+     * @return string
+     */
     private function traitementFamilleCritere($id, $languesSite) {
         $v = $this->traitementReference("FamilleCritere", $id);
         return $this->traitementLibelleLangues($languesSite, $v);
     }
 
+    /**
+     * Recherche l'élément référence de type service souhaité, traite son libellé et ajoute le service en BDD si non existant
+     * @param $tab
+     * @param $i
+     * @param $service
+     * @param $languesSite
+     */
     private function traitementServices($tab, $i, $service, $languesSite) {
         if(isset($tab->services[$i]->id)) {
             $v = $this->traitementReference("PrestationService", $tab->services[$i]->id);
@@ -752,16 +776,16 @@ class Traitement extends ContainerAwareCommand {
             $v = $this->traitementReference("TourismeAdapte", $tab->tourismesAdaptes[$i]->id);
             $lib = $this->traitementLibelleLangues($languesSite, $v);
             $service->setSerLibelle($lib);
-            //$this->traitementServiceLibelle($v, $service, $chaineLangue);
             $this->traitementServiceDetails($service, $v, $languesSite);
         }
     }
 
-    private function traitementServiceLibelle($v, $service, $languesSite) {
-        $lib = $this->traitementLibelleLangues($languesSite, $v);
-        $service->setSerLibelle($lib);
-    }
-
+    /**
+     * Traite les informations concernant les services
+     * @param $service
+     * @param $v
+     * @param $languesSite
+     */
     private function traitementServiceDetails($service, $v, $languesSite) {
         if(isset($v->familleCritere)) {
             $type = $this->traitementFamilleCritere($v->familleCritere->id, $languesSite);
@@ -772,6 +796,12 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * Traite les informations concernant les categorie
+     * @param $catLibelle
+     * @param $objetCatRef
+     * @param $objetApidae
+     */
     private function traitementCategorieDetails($catLibelle, $objetCatRef, $objetApidae) {
         //On vérifie si la catégorie existe déjà
         $catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($objetCatRef->id);
@@ -787,6 +817,13 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * Met à jour les informations et les relations objet d'une categorie
+     * @param $catLibelle
+     * @param $categorie
+     * @param $objetCatRef
+     * @param $objetApidae
+     */
     private function updateCategorie($catLibelle,$categorie, $objetCatRef, $objetApidae) {
         $categorie->setCatId($objetCatRef->id);
         $categorie->setCatLibelle($catLibelle);
@@ -801,6 +838,12 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * Traite le type d'une categorie en cherchant l'élément référence correspondant
+     * @param $tab
+     * @param $objetApidae
+     * @param $languesSite
+     */
     private function traitementTypeCategories($tab, $objetApidae, $languesSite) {
         foreach($tab as $categorie) {
             $v = $this->traitementReference($categorie->elementReferenceType, $categorie->id);
@@ -809,6 +852,16 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * Traite les informations et les relations objet d'un multimedia
+     * Met à jour si le multimedia existe déjà sinon le créé en BDD
+     * @param $multi
+     * @param $languesSite
+     * @param $i
+     * @param $data
+     * @param $objetApidae
+     * @param $update
+     */
     private function updateMultimedia($multi, $languesSite, $i, $data, $objetApidae, $update) {
         $multi->setIdMultimedia($data->illustrations[$i]->identifiant);
         if(isset($data->illustrations[$i]->nom)) {
@@ -849,6 +902,16 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * Traite les informations et les relations objet d'une traduction
+     * Met à jour si elle existe sinon la créé en BDD
+     * @param $traduction
+     * @param $data
+     * @param $chaineLangue
+     * @param $langueTrad
+     * @param $objetApidae
+     * @param $update
+     */
     private function updateTraduction($traduction, $data, $chaineLangue, $langueTrad, $objetApidae, $update) {
         //Presentation
         if(isset($data->presentation)) {
@@ -893,6 +956,15 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * Traite les informations et les relations objet d'un objetApidae
+     * Met à jour s'il existe sinon le créé en BDD
+     * @param $objetApidae
+     * @param $data
+     * @param $selectionApidae
+     * @param $languesSite
+     * @param $update
+     */
     private function updateObjetApidae($objetApidae, $data, $selectionApidae,$languesSite, $update) {
         if(isset($data->localisation->geolocalisation)) {
             $geo = $data->localisation->geolocalisation;
@@ -926,6 +998,14 @@ class Traitement extends ContainerAwareCommand {
             }
         }
     }
+
+    /**
+     * Traite les informations et les relations d'un service
+     * Met à jour s'il existe sinon le créé en BDD
+     * @param $service
+     * @param $objetApidae
+     * @param $update
+     */
     private function updateService($service, $objetApidae, $update) {
         if(!$service->getObjets()->contains($objetApidae)) {
             //Associe le service à la traduction :
@@ -944,7 +1024,13 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
-
+    /**
+     * Traite les informations et les relations objet d'un équipeemnt
+     * Met à jour s'il existe sinon le créé en BDD
+     * @param $equipement
+     * @param $objetApidae
+     * @param $update
+     */
     private function updateEquipement($equipement, $objetApidae, $update) {
         if(!$equipement->getObjetsApidae()->contains($objetApidae) ) {
             //Associe l'équipement à la traduction
@@ -963,6 +1049,16 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * Traite les informations et les relations objet d'un type de client
+     * Met à jour s'il existe sinon le créé en BDD
+     * @param $typeClient
+     * @param $i
+     * @param $tab
+     * @param $languesSite
+     * @param $objetApidae
+     * @param $update
+     */
     private function updateTypeCLient($typeClient, $i, $tab, $languesSite, $objetApidae, $update) {
         $typeClient->setTypId($tab->typesClientele[$i]->id);
         if(isset($tab->typesClientele[$i])) {
@@ -1002,6 +1098,15 @@ class Traitement extends ContainerAwareCommand {
         //$this->em->flush();
     }
 
+    /**
+     * Traite les informations et les relations objet d'un tarif
+     * Met à jour s'il existe sinon le créé en BDD
+     * @param $tarifType
+     * @param $tarif
+     * @param $tab
+     * @param $objetApidae
+     * @param $update
+     */
     public function traitementInfosTarif($tarifType, $tarif, $tab, $objetApidae, $update) {
         $infosTarifs = $this->em->getRepository(InformationsTarif::class)->findOneBy(
             array("objetApidae"=> $objetApidae, "tarifType" => $tarifType));
@@ -1044,7 +1149,13 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
-
+    /**
+     * Traite les informations et les relations obejt d'un type d'activité
+     * Met à jour s'il existe sinon le créé en BDD
+     * @param $tab
+     * @param $languesSite
+     * @param $objetApidae
+     */
     public function traitementActiviteTypes($tab, $languesSite, $objetApidae) {
         $act =  $this->em->getRepository(ActiviteType::class)->findOneByIdActiviteType($tab->id);
         $update = true;
@@ -1070,6 +1181,12 @@ class Traitement extends ContainerAwareCommand {
         }
     }
 
+    /**
+     * Traite plusieurs chaines de caractère pour créé un libellé sous la forme : "@Fr:Test@En:Toto"
+     * @param $languesSite
+     * @param $objet
+     * @return string
+     */
     private function traitementLibelleLangues($languesSite, $objet) {
         $chaineFinale= "";
         //pour chaque langue :

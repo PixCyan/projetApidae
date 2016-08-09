@@ -131,8 +131,10 @@ class DefaultController extends Controller
                 'services' => $services,
                 'paniers' => $this->getPaniers($request)));
     }
+
     /**
      * Affiche la liste de tous les objets d'une categorie donnée (Catégories définies par le menu)
+     *
      * @param $typeObjet
      * @param $categorieId
      * @param Request $request
@@ -214,6 +216,7 @@ class DefaultController extends Controller
                 'countCategories' => $countCategories,
                 'paniers' => $this->getPaniers($request)));
     }
+
     /**
      * Renvoie la liste de tous les objets "Evènement" selon la période donnée
      * @param $periode
@@ -497,6 +500,7 @@ class DefaultController extends Controller
         }
         return $lq;
     }
+
     /**
      * Get tous les services de tourisme adapté liés aux objets de la liste donnée
      * @param $rechercheActuelle
@@ -513,6 +517,7 @@ class DefaultController extends Controller
         }
         return $ta;
     }
+
     /**
      * Retourne un tableau de categories liés à la liste d'objets passé en paramètre et dont le type de categorie est "TypeHabitation"
      * @param $rechercheActuelle
@@ -529,6 +534,7 @@ class DefaultController extends Controller
         }
         return $typeHabitation;
     }
+
     /**
      * Retourne un tableau d'id d'après un tableau d'objets Apidae
      * @param $objets
@@ -541,7 +547,6 @@ class DefaultController extends Controller
         }
         return $idsObjets;
     }
-
 
     /**
      * Retourne un ArrayCollection des objets auxquelles sont liées les categories/services/labels données en param
@@ -735,7 +740,6 @@ class DefaultController extends Controller
         $name = array_pop($array);
 
         if($this->urlExists($url) && !file_exists($path.$name)) {
-            print("Là <br>");
             //$img = file_get_contents($url);
             //file_put_contents($path.$name, $img);
         }
@@ -746,6 +750,12 @@ class DefaultController extends Controller
         return stripos($headers[0],"200 OK")?true:false;
     }
 
+    /**
+     * Retourne une liste de paniers (listes de favoris) si l'utilisateur connecté en possède
+     * Sinon rennvoi null
+     * @param Request $request
+     * @return Panier|\ApidaeBundle\Entity\Panier[]|array|mixed|null|object
+     */
     public function getPaniers(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
@@ -768,6 +778,10 @@ class DefaultController extends Controller
         return $paniers;
     }
 
+    /**
+     * Créé un cookie et l'enregistre en BDD
+     * @return array
+     */
     private function setCookie() {
         $em = $this->getDoctrine()->getManager();
         $panier = new Panier();
@@ -781,12 +795,16 @@ class DefaultController extends Controller
         return array('cookie' => $cookie, 'panier' => $panier);
     }
 
+    /**
+     * Méthode de test
+     * @param Request $request
+     * @return Response
+     */
     public function testsAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         //print_r($request->getSession()->get('filtres'));
         $filtres = $request->getSession()->get('filtres');
         //$objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
-
         //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
 
         $objet = $em->getRepository(ObjetApidae::class)->find(353);

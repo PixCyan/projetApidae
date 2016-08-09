@@ -16,15 +16,19 @@ use Symfony\Component\HttpFoundation\Session\Session;
 
 class GestionOffreController extends Controller
 {
-    //0 = FR, 1 = EN
-    private $lan = 0;
 
+    /**
+     * Modifie les informations d'un objet d'après son id
+     *
+     * @param $offreId
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|\Symfony\Component\HttpFoundation\Response
+     */
     public function modifierOffreAction($offreId, Request $request) {
         $em = $this->getDoctrine()->getManager();
         $langue = $request->getLocale();
         $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
-        //TODO getOffre
-        
+
         $objet = $em->getRepository(ObjetApidae::class)->findOneByIdObj($offreId);
         $trad = $em->getRepository(TraductionObjetApidae::class)->findOneBy(
             array("objet"=> $objet, "langue" => $langue));
@@ -54,6 +58,12 @@ class GestionOffreController extends Controller
            'langue' => $langue, 'objet' => $objet, 'form' => $formTrad->createView()));
     }
 
+    /**
+     * Recherche d'une offre d'après des mots clés
+     *
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\Response
+     */
     public function gestionOffresAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $langue = $request->getLocale();
