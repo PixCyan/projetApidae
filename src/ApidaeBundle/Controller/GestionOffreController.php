@@ -13,7 +13,14 @@ use ApidaeBundle\Entity\Langue;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 
-
+/**
+ * GestionOffre Controller
+ *
+ * Gestion des modifications des fiche objet Apidae
+ * 
+ * Class GestionOffreController
+ * @package ApidaeBundle\Controller
+ */
 class GestionOffreController extends Controller
 {
 

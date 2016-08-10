@@ -19,6 +19,12 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Gestion des fonctionnalités utilisateurs (Recherches) et affichages (liste, fiche détaillée)
+ *
+ * Class DefaultController
+ * @package ApidaeBundle\Controller
+ */
 class DefaultController extends Controller
 {
     private $em;
@@ -45,6 +51,7 @@ class DefaultController extends Controller
         //$request->setLocale('en_En');
         return $response;
     }
+
     /**
      * Renvoie la fiche détaillée d'un objetApidae d'après son id
      * @param $id

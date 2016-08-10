@@ -9,12 +9,12 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * La commande CommandGetMultimediasCommand gère la récupération de tous les multimedias et les enregistre en local
+ * La commande GetMultimediasCommand gère la récupération de tous les multimedias et les enregistre en local
  *
- * Class CommandGetMultimediasCommand
+ * Class GetMultimediasCommand
  * @package ApidaeBundle\Command
  */
-class CommandGetMultimediasCommand extends ContainerAwareCommand
+class GetMultimediasCommand extends ContainerAwareCommand
 {
     protected function configure()
     {

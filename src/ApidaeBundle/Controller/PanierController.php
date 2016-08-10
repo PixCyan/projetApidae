@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Panier controller.
+ * Gestion des paniers (liste de favoris)
  *
  * @Route("/panier")
  */
@@ -37,6 +38,9 @@ class PanierController extends Controller {
 
     /**
      * Creates a new Panier entity.
+     * @param Request $request
+     * @param $idObjet
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function newAction(Request $request, $idObjet)
     {
@@ -69,10 +73,16 @@ class PanierController extends Controller {
         ));
     }
 
+    /**
+     * Renvoie une liste de panier associé à un user connecté ou la liste de favoris d'un user non connecté
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
     public function listePanierAction(Request $request) {
         //TODO liste de panier pour un USER
         $user = $this->getUser();
         if($user) {
+            //Cherche la liste de panier d'un utilisateur connecté
             $em = $this->getDoctrine()->getManager();
             $langue = $request->getLocale();
             $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
@@ -89,6 +99,7 @@ class PanierController extends Controller {
                 'paniers' => $paniers,
                 'user' => $user));
         } else {
+            //Utilisateur non connecté renvoie à la méthode d'affichage d'un panier détaillé
             return $this->redirectToRoute('panier');
         }
     }
@@ -96,6 +107,9 @@ class PanierController extends Controller {
 
     /**
      * Finds and displays a Panier entity.
+     * @param Request $request
+     * @param $id
+     * @return Response
      */
     public function showAction(Request $request, $id)
     {
@@ -248,7 +262,11 @@ class PanierController extends Controller {
         return $this->redirect($request->server->get('HTTP_REFERER'));
     }
 
-
+    /**
+     * Renvoi un panier détaillé
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function maSelectionAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $cookies = $request->cookies;
@@ -265,6 +283,10 @@ class PanierController extends Controller {
         return $this->redirectToRoute('voirUneSelection', array("id" => $panier->getId()));
     }
 
+    /**
+     * Créé un cookie
+     * @return array
+     */
     private function setCookie() {
         $em = $this->getDoctrine()->getManager();
         $panier = new Panier();
@@ -320,7 +342,11 @@ class PanierController extends Controller {
             ;
     }
 
-
+    /**
+     * Renvoie une liste de paniers au format JSON
+     * @param Request $request
+     * @return JsonResponse
+     */
     public function getPaniersJsonAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         $user = $this->getUser();
@@ -352,9 +378,7 @@ class PanierController extends Controller {
         }
         $serializer = $this->container->get('jms_serializer');
         $paniers = $serializer->serialize($paniers, 'json');
-
         return (new JSONResponse())->setData(['paniers' => json_decode($paniers)]);
-
     }
 
     /**
