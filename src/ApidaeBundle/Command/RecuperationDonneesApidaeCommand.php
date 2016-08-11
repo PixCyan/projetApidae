@@ -6,15 +6,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * La commande RecuperationDonneesApidaeCommand récupère l'export préparé par la plateforme Apidae
- * Décompresse le fichier
- *
- * Informe du succès ou non du traitement par email.
+ * La commande RecuperationDonneesApidaeCommand recupere l'export prepare par la plateforme Apidae. Decompresse le fichier.
+ * Informe du succes ou non du traitement par email.
  *
  * Class RecuperationDonneesApidaeCommand
- * @package AppBundle\Command
+ * @package ApidaeBundle\Command
  */
 class RecuperationDonneesApidaeCommand extends ContainerAwareCommand {
+
+    /**
+     * Configuration de la commande
+     */
     protected function configure()
     {
         $this
@@ -22,6 +24,12 @@ class RecuperationDonneesApidaeCommand extends ContainerAwareCommand {
             ->setDescription('Récupération des dichiers de données d\'Apidae');
     }
 
+    /**
+     * Execution de la commande
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         //TODO récupération URL
@@ -43,7 +51,10 @@ class RecuperationDonneesApidaeCommand extends ContainerAwareCommand {
         }
     }
 
-    private function notificationMail() {
+    /**
+     * Notifie par email, informe de l'etat du processus (succes/error)
+     */
+    protected function notificationMail() {
         $message = \Swift_Message::newInstance()
             ->setSubject('[ERROR] Récupération du fichier de données Apidae')
             ->setFrom('send@example.com')

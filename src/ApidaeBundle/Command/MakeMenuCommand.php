@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Exception;
 
 /**
- * Commande chargée de générer le menu d'après le fichier 'donneesMenu.json'
+ * Commande chargee de generer le menu d'apres le fichier 'donneesMenu.json'
  *
  * Class MakeMenuCommand
  * @package ApidaeBundle\Command
@@ -25,6 +25,9 @@ class MakeMenuCommand extends ContainerAwareCommand
     private $SITE_LANGUE = "Fr";
     private $langues;
 
+    /**
+     * Configuration de la commande
+     */
     protected function configure() {
         $this
             ->setName('command:makeMenu')
@@ -34,6 +37,12 @@ class MakeMenuCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * Execution de la commande
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
@@ -101,7 +110,7 @@ class MakeMenuCommand extends ContainerAwareCommand
      * @param $categories
      * @return null
      */
-    private function traitementSelection($categories) {
+    protected function traitementSelection($categories) {
         $objets = null;
         $s = $this->em->getRepository(SelectionApidae::class)->findOneByIdSelectionApidae($categories[0]->id);
         if($s) {
@@ -122,12 +131,12 @@ class MakeMenuCommand extends ContainerAwareCommand
     }
 
     /**
-     * Renvoie une chaine qui génère les '<li>' contenant les liens '<a>' du menu
-     * @param $v  l'objet que l'ont traite
-     * @param $langue  la langue que l'ont traite
+     * Renvoie une chaine qui genere les '<li>' contenant les liens '<a>' du menu
+     * @param $v  l'objet que l'on traite
+     * @param $langue  la langue que l'on traite
      * @return string
      */
-    private function traitementChaine($v, $langue) {
+    protected function traitementChaine($v, $langue) {
         if(isset($v->selectionApidae)) {
             $liDebut = "\t \t \t<li><a href=\"{{ path('liste', {'typeObjet': '".
                 $this->traitementChaineUrl($this->getLangueLib($v->typeObjet, $langue->getLanShortCut() ))
@@ -144,12 +153,12 @@ class MakeMenuCommand extends ContainerAwareCommand
     }
 
     /**
-     * Renvoie une chaine traitée pour être passé dans l'url
+     * Renvoie une chaine traitee pour être passee dans l'url
      * (enlève les accents, gère les espaces...)
      * @param $chaine
      * @return mixed
      */
-    private function traitementChaineUrl($chaine) {
+    protected function traitementChaineUrl($chaine) {
         $str =  str_replace(",", "", str_replace(" ", "_", str_replace("'", "", $chaine)));
         //$str = strtr($str, 'ÁÀÂÄÃÅÇÉÈÊËÍÏÎÌÑÓÒÔÖÕÚÙÛÜÝ', 'AAAAAACEEEEEIIIINOOOOOUUUUY');
         //$str = strtr($str, 'áàâäãåçéèêëíìîïñóòôöõúùûüýÿ', 'aaaaaaceeeeiiiinooooouuuuyy');
@@ -160,12 +169,12 @@ class MakeMenuCommand extends ContainerAwareCommand
     }
 
     /**
-     * Renvoie la chaine correspondant à la langue donnée
+     * Renvoie la chaine correspondant a la langue donnee
      * @param $str
      * @param string $locale
      * @return string
      */
-    function getLangueLib($str, $locale='') {
+    protected function getLangueLib($str, $locale='') {
         if (empty ($locale)) {
             $locale = $this->SITE_LANGUE;
         }

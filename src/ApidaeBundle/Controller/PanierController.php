@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Panier controller.
  * Gestion des paniers (liste de favoris)
  *
- * @Route("/panier")
+ * @package ApidaeBundle\Controller
  */
 class PanierController extends Controller {
     public static $COUNT_COOKIE = 0;
@@ -74,7 +74,7 @@ class PanierController extends Controller {
     }
 
     /**
-     * Renvoie une liste de panier associé à un user connecté ou la liste de favoris d'un user non connecté
+     * Renvoie une liste de panier associe a un user connecte ou la liste de favoris d'un user non connecte
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
@@ -190,7 +190,7 @@ class PanierController extends Controller {
 
 
     /**
-     * Ajoute un objet au panier. $idPanier correspond à une sélection créée par l'utilisateur enregistré/connecté.
+     * Ajoute un objet au panier. $idPanier correspond a une selection creee par l'utilisateur enregistre/connecte.
      * @param $idObjet
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
@@ -263,7 +263,7 @@ class PanierController extends Controller {
     }
 
     /**
-     * Renvoi un panier détaillé
+     * Renvoi un panier detaille
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
@@ -284,7 +284,7 @@ class PanierController extends Controller {
     }
 
     /**
-     * Créé un cookie
+     * Cree un cookie
      * @return array
      */
     private function setCookie() {

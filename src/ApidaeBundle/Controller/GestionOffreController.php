@@ -25,7 +25,7 @@ class GestionOffreController extends Controller
 {
 
     /**
-     * Modifie les informations d'un objet d'après son id
+     * Modifie les informations d'un objet d'apres son id
      *
      * @param $offreId
      * @param Request $request
@@ -66,7 +66,7 @@ class GestionOffreController extends Controller
     }
 
     /**
-     * Recherche d'une offre d'après des mots clés
+     * Recherche d'une offre d'apres des mots cles
      *
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\Response

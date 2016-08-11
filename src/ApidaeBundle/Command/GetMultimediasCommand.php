@@ -9,13 +9,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * La commande GetMultimediasCommand gère la récupération de tous les multimedias et les enregistre en local
+ * La commande GetMultimediasCommand gere la recuperation de tous les multimedias et les enregistre en local
  *
  * Class GetMultimediasCommand
  * @package ApidaeBundle\Command
  */
-class GetMultimediasCommand extends ContainerAwareCommand
-{
+class GetMultimediasCommand extends ContainerAwareCommand {
+
+    /**
+     * Configuration de la commande
+     */
     protected function configure()
     {
         $this
@@ -23,6 +26,12 @@ class GetMultimediasCommand extends ContainerAwareCommand
             ->setDescription('Traitement des données Apidae');
     }
 
+    /**
+     * Execution de la commande
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $em = $this->getApplication()->getKernel()->getContainer()->get('doctrine')->getManager();
@@ -68,7 +77,7 @@ class GetMultimediasCommand extends ContainerAwareCommand
      * @param $url
      * @param $ids
      */
-    private function traitementImage($url,$ids){
+    protected function traitementImage($url,$ids){
         $file = "/home/www/vhosts/swad.fr/apidae.swad.fr/src/ApidaeBundle/Resources/public/imgApidae/";
         //$file = "/var/www/local/Symfony/projetApidae/web/bundles/apidae/imgApidae/";
         $array = explode('/',$url);
@@ -84,11 +93,11 @@ class GetMultimediasCommand extends ContainerAwareCommand
     }
 
     /**
-     * Récupère et Enregistre l'image dans le dossier
+     * Recupere et Enregistre l'image dans le dossier
      * @param $path
      * @param $url
      */
-    private function copierImage($path, $url) {
+    protected function copierImage($path, $url) {
         if($this->urlExists($url)) {
             //$img = file_get_contents($url);
             //$img = fopen($url, "r");
@@ -101,11 +110,11 @@ class GetMultimediasCommand extends ContainerAwareCommand
     }
 
     /**
-     * Vérifie si l'url est bonne
+     * Verifie si l'url est bonne
      * @param $url
      * @return bool
      */
-    private function urlExists($url){
+    protected function urlExists($url){
         $headers=get_headers($url);
         return stripos($headers[0],"200 OK")?true:false;
     }

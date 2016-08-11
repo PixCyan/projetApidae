@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Gestion des fonctionnalités utilisateurs (Recherches) et affichages (liste, fiche détaillée)
+ * Gestion des fonctionnalites utilisateurs (Recherches) et affichages (liste, fiche détaillée)
  *
  * Class DefaultController
  * @package ApidaeBundle\Controller
@@ -31,7 +31,7 @@ class DefaultController extends Controller
     //0 = FR, 1 = EN
     private $lan = 0;
     /**
-     * Renvoi la page d'accueil avec les suggestions
+     * Renvoie la page d'accueil avec les suggestions
      * @return Response
      */
     public function indexAction(Request $request) {
@@ -53,7 +53,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoie la fiche détaillée d'un objetApidae d'après son id
+     * Renvoie la fiche détaillee d'un objetApidae d'apres son id
      * @param $id
      * @return Response
      */
@@ -79,7 +79,7 @@ class DefaultController extends Controller
                 'user' => $user));
     }
     /**
-     * Effectue une recherche d'après des mots clés donnés dans la barre de recherche
+     * Effectue une recherche d'apres des mots cles donnes dans la barre de recherche
      * @param Request $request
      * @return Response
      */
@@ -140,7 +140,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Affiche la liste de tous les objets d'une categorie donnée (Catégories définies par le menu)
+     * Affiche la liste de tous les objets d'une categorie donnee (Catégories définies par le menu)
      *
      * @param $typeObjet
      * @param $categorieId
@@ -225,7 +225,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoie la liste de tous les objets "Evènement" selon la période donnée
+     * Renvoie la liste de tous les objets "Evenement" selon la periode donnee
      * @param $periode
      * @return Response
      */
@@ -261,7 +261,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Effectue une recherche d'après les filtres cochés
+     * Effectue une recherche d'apres les filtres coches
      * @param Request $request
      * @param $typeObjet
      * @param $categorieId
@@ -415,7 +415,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoi un tableau de données JSON pour la requête Ajax
+     * Renvoi un tableau de donnees JSON pour la requete Ajax
      * @param $nouvelleListe
      * @param $idSelection
      * @return array
@@ -459,7 +459,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Get tous les services liés aux objets de la liste actuelle
+     * Get tous les services lies aux objets de la liste actuelle
      * @param rechercheActuelle
      * @return array
      */
@@ -492,7 +492,7 @@ class DefaultController extends Controller
         return $mp;
     }
     /**
-     * Get tous les classements (labels qualité) liés aux objets de la liste donnée
+     * Get tous les classements (labels qualité) lies aux objets de la liste donnee
      * @param $rechercheActuelle
      * @return ArrayCollection
      */
@@ -509,7 +509,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Get tous les services de tourisme adapté liés aux objets de la liste donnée
+     * Get tous les services de tourisme adapte lies aux objets de la liste donnee
      * @param $rechercheActuelle
      * @return ArrayCollection
      */
@@ -526,7 +526,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Retourne un tableau de categories liés à la liste d'objets passé en paramètre et dont le type de categorie est "TypeHabitation"
+     * Retourne un tableau de categories lies a la liste d'objets passe en parametre et dont le type de categorie est "TypeHabitation"
      * @param $rechercheActuelle
      * @return ArrayCollection
      */
@@ -543,7 +543,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Retourne un tableau d'id d'après un tableau d'objets Apidae
+     * Retourne un tableau d'id d'apres un tableau d'objets Apidae
      * @param $objets
      * @return array
      */
@@ -556,7 +556,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Retourne un ArrayCollection des objets auxquelles sont liées les categories/services/labels données en param
+     * Retourne un ArrayCollection des objets auxquelles sont liees les categories/services/labels donnees en param
      * @param $type
      * @param $listeActuelle
      * @param $filtres
@@ -592,7 +592,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoie la liste des objets correspondant à des services(paiement/service/tourisme adapté) et une sélection donnés
+     * Renvoie la liste des objets correspondant a des services(paiement/service/tourisme adapté) et une selection donnes
      * @param $em
      * @param $filtres
      * @param $objetsActuelle
@@ -621,7 +621,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoie la liste des objets correspondant à des labels qualité et une sélection donnés
+     * Renvoie la liste des objets correspondant a des labels qualite et une selection donnes
      * @param $em
      * @param $filtres
      * @param $objetsActuelle
@@ -641,7 +641,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoie la liste des objets correspondant à des categories et une sélection donnés
+     * Renvoie la liste des objets correspondant a des categories et une selection donnes
      * @param $em
      * @param $filtres
      * @param $objetsActuelle
@@ -661,7 +661,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoie une chaine traitée pour être passé dans l'url
+     * Renvoie une chaine traitee pour etre passee dans l'url
      * (enlève les accents, gère les espaces...)
      * @param $chaine
      * @return mixed
@@ -691,7 +691,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoie un tableau d'ids concernant les services donnés
+     * Renvoie un tableau d'ids concernant les services donnes
      * @param $services
      * @return array
      */
@@ -704,7 +704,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoie un tableau d'ids concernant les categories données
+     * Renvoie un tableau d'ids concernant les categories donnees
      * @param $categories
      * @return array
      */
@@ -717,7 +717,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Renvoie un tableau d'ids concernant les labels qualité donnés
+     * Renvoie un tableau d'ids concernant les labels qualite donnes
      * @param $classements
      * @return array
      */
@@ -758,7 +758,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Retourne une liste de paniers (listes de favoris) si l'utilisateur connecté en possède
+     * Retourne une liste de paniers (listes de favoris) si l'utilisateur connecte en possede
      * Sinon rennvoi null
      * @param Request $request
      * @return Panier|\ApidaeBundle\Entity\Panier[]|array|mixed|null|object
@@ -786,7 +786,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Créé un cookie et l'enregistre en BDD
+     * Cree un cookie et l'enregistre en BDD
      * @return array
      */
     private function setCookie() {
@@ -803,7 +803,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * Méthode de test
+     * Methode de test
      * @param Request $request
      * @return Response
      */

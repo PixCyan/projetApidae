@@ -30,10 +30,10 @@ use ApidaeBundle\Entity\Ouverture;
 use ApidaeBundle\Entity\TypePublic;
 
 /**
- * La commande Traitement gère les données des exports Apidae.
- * Charge les fichiers objets JSON etles Sélections créées sur la plateforme.
- * Traite les fichiers objet un par un dans l'ordre d'apparition dans les séléctions Apidae
+ * La commande Traitement gere les donnees des exports Apidae. Charge les fichiers objets JSON et les selections creees sur la plateforme. Traite les fichiers objet un par un dans l'ordre d'apparition dans les selections Apidae
  *
+ * Class GetMultimediasCommand
+ * @package ApidaeBundle\Command
  * @Doctrine\ORM\Mapping\Entity
  * @Doctrine\ORM\Mapping\Table(name="traitement")
  */
@@ -170,7 +170,7 @@ class Traitement extends ContainerAwareCommand {
      * @param $chaineInformations
      * @param $languesSite
      */
-    private function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite) {
+    protected function traitementObjetApidae($selectionApidae, $data, $chaineType, $chaineInformations, $languesSite) {
         $this->total++;
         $typeObjet = $data->type;
         //print($typeObjet);
@@ -729,35 +729,35 @@ class Traitement extends ContainerAwareCommand {
     }
 
     /**
-     * Cherche l'élément référence souhaité dans le fichier créer en début de traitement et le retourne
+     * Cherche l'element reference souhaite dans le fichier creer en debut de traitement et le retourne
      * @param $type
      * @param $id
      * @return mixed
      */
-    private function traitementReference($type, $id) {
+    protected function traitementReference($type, $id) {
         $key = $id.$type;
         return $this->fichierRef->$key;
     }
 
     /**
-     * Recherche l'élément référence souhaité, traite son libellé et le renvoie
+     * Recherche l'element référence souhaite, traite son libelle et le renvoie
      * @param $id
      * @param $languesSite
      * @return string
      */
-    private function traitementFamilleCritere($id, $languesSite) {
+    protected function traitementFamilleCritere($id, $languesSite) {
         $v = $this->traitementReference("FamilleCritere", $id);
         return $this->traitementLibelleLangues($languesSite, $v);
     }
 
     /**
-     * Recherche l'élément référence de type service souhaité, traite son libellé et ajoute le service en BDD si non existant
+     * Recherche l'element reference de type service souhaite, traite son libelle et ajoute le service en BDD si non existant
      * @param $tab
      * @param $i
      * @param $service
      * @param $languesSite
      */
-    private function traitementServices($tab, $i, $service, $languesSite) {
+    protected function traitementServices($tab, $i, $service, $languesSite) {
         if(isset($tab->services[$i]->id)) {
             $v = $this->traitementReference("PrestationService", $tab->services[$i]->id);
             $lib = $this->traitementLibelleLangues($languesSite, $v);
@@ -786,7 +786,7 @@ class Traitement extends ContainerAwareCommand {
      * @param $v
      * @param $languesSite
      */
-    private function traitementServiceDetails($service, $v, $languesSite) {
+    protected function traitementServiceDetails($service, $v, $languesSite) {
         if(isset($v->familleCritere)) {
             $type = $this->traitementFamilleCritere($v->familleCritere->id, $languesSite);
             $service->setSerFamilleCritere($type);
@@ -802,7 +802,7 @@ class Traitement extends ContainerAwareCommand {
      * @param $objetCatRef
      * @param $objetApidae
      */
-    private function traitementCategorieDetails($catLibelle, $objetCatRef, $objetApidae) {
+    protected function traitementCategorieDetails($catLibelle, $objetCatRef, $objetApidae) {
         //On vérifie si la catégorie existe déjà
         $catExist = $this->em->getRepository(Categorie::class)->findOneByCatId($objetCatRef->id);
         if($catExist == null) {
@@ -818,13 +818,13 @@ class Traitement extends ContainerAwareCommand {
     }
 
     /**
-     * Met à jour les informations et les relations objet d'une categorie
+     * Met a jour les informations et les relations objet d'une categorie
      * @param $catLibelle
      * @param $categorie
      * @param $objetCatRef
      * @param $objetApidae
      */
-    private function updateCategorie($catLibelle,$categorie, $objetCatRef, $objetApidae) {
+    protected function updateCategorie($catLibelle,$categorie, $objetCatRef, $objetApidae) {
         $categorie->setCatId($objetCatRef->id);
         $categorie->setCatLibelle($catLibelle);
         $categorie->setCatRefType($objetCatRef->elementReferenceType);
@@ -839,12 +839,12 @@ class Traitement extends ContainerAwareCommand {
     }
 
     /**
-     * Traite le type d'une categorie en cherchant l'élément référence correspondant
+     * Traite le type d'une categorie en cherchant l'element reference correspondant
      * @param $tab
      * @param $objetApidae
      * @param $languesSite
      */
-    private function traitementTypeCategories($tab, $objetApidae, $languesSite) {
+    protected function traitementTypeCategories($tab, $objetApidae, $languesSite) {
         foreach($tab as $categorie) {
             $v = $this->traitementReference($categorie->elementReferenceType, $categorie->id);
             $lanLib =$this->traitementLibelleLangues($languesSite, $v);
@@ -854,7 +854,7 @@ class Traitement extends ContainerAwareCommand {
 
     /**
      * Traite les informations et les relations objet d'un multimedia
-     * Met à jour si le multimedia existe déjà sinon le créé en BDD
+     * Met a jour si le multimedia existe deja sinon le cree en BDD
      * @param $multi
      * @param $languesSite
      * @param $i
@@ -862,7 +862,7 @@ class Traitement extends ContainerAwareCommand {
      * @param $objetApidae
      * @param $update
      */
-    private function updateMultimedia($multi, $languesSite, $i, $data, $objetApidae, $update) {
+    protected function updateMultimedia($multi, $languesSite, $i, $data, $objetApidae, $update) {
         $multi->setIdMultimedia($data->illustrations[$i]->identifiant);
         if(isset($data->illustrations[$i]->nom)) {
             $lib = $this->traitementLibelleLangues($languesSite, $data->illustrations[$i]->nom);
@@ -904,7 +904,7 @@ class Traitement extends ContainerAwareCommand {
 
     /**
      * Traite les informations et les relations objet d'une traduction
-     * Met à jour si elle existe sinon la créé en BDD
+     * Met a jour si elle existe sinon la cree en BDD
      * @param $traduction
      * @param $data
      * @param $chaineLangue
@@ -912,7 +912,7 @@ class Traitement extends ContainerAwareCommand {
      * @param $objetApidae
      * @param $update
      */
-    private function updateTraduction($traduction, $data, $chaineLangue, $langueTrad, $objetApidae, $update) {
+    protected function updateTraduction($traduction, $data, $chaineLangue, $langueTrad, $objetApidae, $update) {
         //Presentation
         if(isset($data->presentation)) {
             $presentation = $data->presentation;
@@ -958,14 +958,14 @@ class Traitement extends ContainerAwareCommand {
 
     /**
      * Traite les informations et les relations objet d'un objetApidae
-     * Met à jour s'il existe sinon le créé en BDD
+     * Met a jour s'il existe sinon le cree en BDD
      * @param $objetApidae
      * @param $data
      * @param $selectionApidae
      * @param $languesSite
      * @param $update
      */
-    private function updateObjetApidae($objetApidae, $data, $selectionApidae,$languesSite, $update) {
+    protected function updateObjetApidae($objetApidae, $data, $selectionApidae,$languesSite, $update) {
         if(isset($data->localisation->geolocalisation)) {
             $geo = $data->localisation->geolocalisation;
             if(isset($geo->geoJson->coordinates)) {
@@ -1001,12 +1001,12 @@ class Traitement extends ContainerAwareCommand {
 
     /**
      * Traite les informations et les relations d'un service
-     * Met à jour s'il existe sinon le créé en BDD
+     * Met a jour s'il existe sinon le cree en BDD
      * @param $service
      * @param $objetApidae
      * @param $update
      */
-    private function updateService($service, $objetApidae, $update) {
+    protected function updateService($service, $objetApidae, $update) {
         if(!$service->getObjets()->contains($objetApidae)) {
             //Associe le service à la traduction :
             $service->addObjetApidae($objetApidae);
@@ -1025,13 +1025,13 @@ class Traitement extends ContainerAwareCommand {
     }
 
     /**
-     * Traite les informations et les relations objet d'un équipeemnt
-     * Met à jour s'il existe sinon le créé en BDD
+     * Traite les informations et les relations objet d'un equipeemnt
+     * Met a jour s'il existe sinon le cree en BDD
      * @param $equipement
      * @param $objetApidae
      * @param $update
      */
-    private function updateEquipement($equipement, $objetApidae, $update) {
+    protected function updateEquipement($equipement, $objetApidae, $update) {
         if(!$equipement->getObjetsApidae()->contains($objetApidae) ) {
             //Associe l'équipement à la traduction
             $equipement->addObjetApidae($objetApidae);
@@ -1051,7 +1051,7 @@ class Traitement extends ContainerAwareCommand {
 
     /**
      * Traite les informations et les relations objet d'un type de client
-     * Met à jour s'il existe sinon le créé en BDD
+     * Met a jour s'il existe sinon le cree en BDD
      * @param $typeClient
      * @param $i
      * @param $tab
@@ -1059,7 +1059,7 @@ class Traitement extends ContainerAwareCommand {
      * @param $objetApidae
      * @param $update
      */
-    private function updateTypeCLient($typeClient, $i, $tab, $languesSite, $objetApidae, $update) {
+    protected function updateTypeCLient($typeClient, $i, $tab, $languesSite, $objetApidae, $update) {
         $typeClient->setTypId($tab->typesClientele[$i]->id);
         if(isset($tab->typesClientele[$i])) {
             $v = $this->traitementReference($tab->typesClientele[$i]->elementReferenceType, $tab->typesClientele[$i]->id);
@@ -1100,14 +1100,14 @@ class Traitement extends ContainerAwareCommand {
 
     /**
      * Traite les informations et les relations objet d'un tarif
-     * Met à jour s'il existe sinon le créé en BDD
+     * Met a jour s'il existe sinon le cree en BDD
      * @param $tarifType
      * @param $tarif
      * @param $tab
      * @param $objetApidae
      * @param $update
      */
-    public function traitementInfosTarif($tarifType, $tarif, $tab, $objetApidae, $update) {
+    protected function traitementInfosTarif($tarifType, $tarif, $tab, $objetApidae, $update) {
         $infosTarifs = $this->em->getRepository(InformationsTarif::class)->findOneBy(
             array("objetApidae"=> $objetApidae, "tarifType" => $tarifType));
         if($infosTarifs == null) {
@@ -1150,13 +1150,13 @@ class Traitement extends ContainerAwareCommand {
     }
 
     /**
-     * Traite les informations et les relations obejt d'un type d'activité
-     * Met à jour s'il existe sinon le créé en BDD
+     * Traite les informations et les relations obejt d'un type d'activite
+     * Met a jour s'il existe sinon le cree en BDD
      * @param $tab
      * @param $languesSite
      * @param $objetApidae
      */
-    public function traitementActiviteTypes($tab, $languesSite, $objetApidae) {
+    protected function traitementActiviteTypes($tab, $languesSite, $objetApidae) {
         $act =  $this->em->getRepository(ActiviteType::class)->findOneByIdActiviteType($tab->id);
         $update = true;
         if($act == null) {
@@ -1182,12 +1182,12 @@ class Traitement extends ContainerAwareCommand {
     }
 
     /**
-     * Traite plusieurs chaines de caractère pour créé un libellé sous la forme : "@Fr:Test@En:Toto"
+     * Traite plusieurs chaines de caractere pour créé un libelle sous la forme : "@Fr:Test@En:Toto"
      * @param $languesSite
      * @param $objet
      * @return string
      */
-    private function traitementLibelleLangues($languesSite, $objet) {
+    protected function traitementLibelleLangues($languesSite, $objet) {
         $chaineFinale= "";
         //pour chaque langue :
         foreach($languesSite as $key => $val) {
