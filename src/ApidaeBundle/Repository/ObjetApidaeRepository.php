@@ -5,6 +5,7 @@ namespace ApidaeBundle\Repository;
 use ApidaeBundle\Entity\ObjetApidae;
 use ApidaeBundle\Entity\Categorie;
 use Doctrine\ORM\EntityRepository;
+use DoctrineExtensions\Query\Mysql\Regexp;
 
 /**
  * ObjetApidaeRepository
@@ -19,6 +20,23 @@ class ObjetApidaeRepository extends EntityRepository {
     //public function innerJoin($join, $alias, $conditionType = null, $condition = null, $indexBy = null);
 
     /**
+     * Rnvoie tous les objets dont la regex donné correpond au nom
+     * @param $regex
+     * @return array
+     */
+    public function getObjetByNom($regex) {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->where('REGEXP(o.nom, :regexp) = true')
+        ->setParameter('regexp', $regex);
+        $query = $qb->getQuery()->getResult();
+        return $query;
+
+    }
+
+    /**
      * Renvoie les ids de tous les objets
      * @return array
      */
@@ -30,8 +48,6 @@ class ObjetApidaeRepository extends EntityRepository {
         $query = $qb->getQuery()->getArrayResult();
         return $query;
     }
-
-
 
     /**
      * Renvoie tous les objets correspondant à la liste de categorie donnée

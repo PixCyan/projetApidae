@@ -1,5 +1,6 @@
 <div class="package-list-item-wrapper on-page-result-page" id="listesItems">
 {% for objet in objets %}
+    {% if  objet is not null %}
     <div class="package-list-item clearfix">
         <div class="image">
             {% if objet.multimedias is not empty %}
@@ -46,6 +47,7 @@
             </div>
         </div>
     </div>
+    {% endif %}
 {% endfor %}
 </div>
 <div hidden>

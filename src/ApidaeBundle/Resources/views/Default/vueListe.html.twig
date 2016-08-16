@@ -31,19 +31,25 @@
                                         <div class="sidebar-mini-search">
                                             <div class="input-group">
                                                 <form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
+                                                    <input type="text" name="champsRecherche" id="rechercheSimple" placeholder="ex : Lac" />
+                                                    <input type="submit" value="{{ 'Rechercher'|trans }}" />
+                                                </form>
+                                                <!-- <form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
                                                     <input type="text" class="form-control" placeholder="ex : Lac">
                                                     <span class="input-group-btn">
                                                         <button class="btn btn-primary" type="button"><i class="fa fa-search"></i></button>
                                                     </span>
-                                                </form>
+                                                </form> -->
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <!--<form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
-                                    <label for="rechercheSimple">{{ 'Rechercher'|trans }}</label><input type="text" name="champsRecherche" id="rechercheSimple" placeholder="ex : Lac" />
+                                <!-- ok
+                                <form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
+                                    <label for="rechercheSimple">{{ 'Rechercher'|trans }}</label>
+                                    <input type="text" name="champsRecherche" id="rechercheSimple" placeholder="ex : Lac" />
                                     <input type="submit" value="{{ 'Rechercher'|trans }}" />
-                                </form>-->
+                                </form> -->
                             </div>
                         </div>
                         {% if typeObjet != "Evénements" %}
