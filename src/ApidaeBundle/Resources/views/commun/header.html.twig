@@ -74,8 +74,7 @@
 
                 <div class="row">
 
-                    <div class="col-sm-10">
-
+                    <div class="col-sm-9">
                         <div id="navbar" class="collapse navbar-collapse navbar-arrow">
                             <ul class="nav navbar-nav" id="responsive-menu">
                                 <li><a href="{{ path('index') }}"> {{ 'Accueil'|trans }}</a></li>
@@ -125,11 +124,23 @@
                         </div><!--/.nav-collapse -->
                     </div>
 
-                    <div class="col-sm-2">
-
-                        <div class="navbar-phone">
-                            TODO RECHERCHE
-                        </div>
+                    <div class="col-sm-3">
+                        <!--<form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
+                            <div class="input-group">
+                                <input type="text" class="form-control" placeholder="ex : Lac">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-primary" type="button">{{ 'Rechercher'|trans }}</button>
+                                </span>
+                            </div>
+                        </form> -->
+                            <form id="form_recherche_menu" action="{{ path('rechercheSimple') }}" method="get">
+                                <div class="input-group">
+                                    <input type="text" name="champsRecherche" class="form-control" id="rechercheSimple" placeholder="ex : Lac" />
+                                    <span class="input-group-btn">
+                                        <input class="btn btn-primary" type="submit" value="{{ 'Rechercher'|trans }}" />
+                                    </span>
+                                </div>
+                            </form>
 
                     </div>
 

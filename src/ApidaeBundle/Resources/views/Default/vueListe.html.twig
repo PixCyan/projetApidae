@@ -30,26 +30,24 @@
                                     <div class="sidebar-module-inner">
                                         <div class="sidebar-mini-search">
                                             <div class="input-group">
+                                                <form id="form_recherche_menu" action="{{ path('rechercheSimple') }}" method="get">
+                                                    <div class="input-group">
+                                                        <input type="text" name="champsRecherche" class="form-control" id="rechercheSimple" placeholder="ex : Lac" />
+                                                        <span class="input-group-btn">
+                                                            <input class="btn btn-primary" type="submit" value="{{ 'Rechercher'|trans }}" />
+                                                        </span>
+                                                    </div>
+                                                </form>
+                                                <!--
                                                 <form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
                                                     <input type="text" name="champsRecherche" id="rechercheSimple" placeholder="ex : Lac" />
                                                     <input type="submit" value="{{ 'Rechercher'|trans }}" />
                                                 </form>
-                                                <!-- <form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
-                                                    <input type="text" class="form-control" placeholder="ex : Lac">
-                                                    <span class="input-group-btn">
-                                                        <button class="btn btn-primary" type="button"><i class="fa fa-search"></i></button>
-                                                    </span>
-                                                </form> -->
+                                                 -->
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                <!-- ok
-                                <form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
-                                    <label for="rechercheSimple">{{ 'Rechercher'|trans }}</label>
-                                    <input type="text" name="champsRecherche" id="rechercheSimple" placeholder="ex : Lac" />
-                                    <input type="submit" value="{{ 'Rechercher'|trans }}" />
-                                </form> -->
                             </div>
                         </div>
                         {% if typeObjet != "Evénements" %}
@@ -101,10 +99,12 @@
                     <h4 class="modal-title">Choisissez une liste</h4>
                 </div>
                 <div class="modal-body">
-                    {% if paniers|length >= 1 %}
+                    {% if paniers|length > 1 %}
                         {% for panier in paniers %}
                             <h5 class="choixPanier" id="{{ panier.id }}" data-dismiss="modal">{{ panier.panLibelle }}</h5>
                         {% endfor %}
+                    {% else %}
+                        <h5 class="choixPanier" id="{{ paniers.id }}" data-dismiss="modal">{{ paniers.panLibelle }}</h5>
                     {% endif %}
 
                 </div>

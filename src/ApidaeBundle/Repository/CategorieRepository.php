@@ -11,6 +11,11 @@ use ApidaeBundle\Entity\Categorie;
  */
 class CategorieRepository extends \Doctrine\ORM\EntityRepository {
 
+    /**
+     * Renvoie les catégories correspondant à la liste d'id donné
+     * @param $ids
+     * @return array
+     */
     public function getCategoriesByids($ids) {
         return $this->createQueryBuilder('c')
             ->where('c.catId IN (:ids)')
@@ -19,6 +24,24 @@ class CategorieRepository extends \Doctrine\ORM\EntityRepository {
             ->getArrayResult();
     }
 
+    /**
+     * Nombre de categories étant affiliées à la liste d'objet Apidae donnée pour une liste de services donnée.
+     * @param $idsObjets
+     * @param $idsCategories
+     * @return array
+     */
+    public  function getCountServicesByIdsObjets($idsObjets, $idsCategories) {
+    $em = $this->getEntityManager();
+    $qb = $em->createQueryBuilder();
+    $qb->select('s')
+        ->from('ApidaeBundle:Service', 's')
+        ->innerJoin('s.objetsApidae', 'o')
+        ->where('s.serId IN (?1)')
+        ->andWhere('o.idObj IN (?2)')
+        ->setParameters(array(1 => $idsCategories, 2 => $idsObjets));
+    $query = $qb->getQuery()->getResult();
+    return count($query);
+}
 
 
 

@@ -142,6 +142,7 @@ class DefaultController extends Controller
         $countClassements = $em->getRepository(ObjetApidae::class)->getCountObjetHasLabels($this->getIdsClassements($labelsQualite), $selection->getIdSelectionApidae(), $idsObjets);
         $countCategories = $em->getRepository(ObjetApidae::class)->getCountObjetHasCategories($this->getIdsCategories($typesHabitation), $selection->getIdSelectionApidae(), $idsObjets);
 */
+
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objets,
                 'langue' => $langue,
@@ -831,14 +832,30 @@ class DefaultController extends Controller
         $filtres = $request->getSession()->get('filtres');
         //$objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
         //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
-
         //$objet = $em->getRepository(ObjetApidae::class)->find(353);
 
-        $res = $em->getRepository(ObjetApidae::class)->getObjetByNom( "L(a|à|á|â|ã|ä|å|À|Á|Â|Ä|Å)(c|ç|Ç)");
+        //$res = $em->getRepository(ObjetApidae::class)->getObjetByNom( "L(a|à|á|â|ã|ä|å|À|Á|Â|Ä|Å)(c|ç|Ç)");
         //echo gettype($res);
-        var_dump($res);
+        //var_dump($res);
 
-        return $this->render('ApidaeBundle:Default:test.html.twig', array('objets' => $res));
+        $session = $request->getSession();
+        $objetsIds = $session->get('listeObjets');
+        if (is_array($objetsIds) && count($objetsIds) > 0) {
+            $nouvelleListe = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
+        } else {
+            $nouvelleListe = [];
+        }
+
+        $services = $this->getServicesFromObjets($nouvelleListe);
+        $tab = [];
+        foreach($services as $s) {
+            $tab[] = $s->getSerId();
+        }
+
+
+        $count = $em->getRepository(Service::class)->getCountServicesByIdsObjets($objetsIds, $tab);
+
+        return $this->render('ApidaeBundle:Default:test.html.twig', array('objets' => $count));
     }
 
 

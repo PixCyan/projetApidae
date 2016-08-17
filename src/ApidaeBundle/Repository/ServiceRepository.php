@@ -10,11 +10,36 @@ namespace ApidaeBundle\Repository;
  */
 class ServiceRepository extends \Doctrine\ORM\EntityRepository
 {
+    /**
+     * Renvoie les objets affiliés à une liste de servcies donnée.
+     * @param $ids
+     * @return array
+     */
     public function getObjetsByids($ids) {
         return $this->createQueryBuilder('s')
             ->where('s.id IN (:ids)')
             ->setParameter('ids', $ids)
             ->getQuery()
             ->getResult();
+    }
+
+
+    /**
+     * Nombre de services étant affiliés à la liste d'objet Apidae donnée pour une liste de services donnée.
+     * @param $idsObjets
+     * @param $idsServices
+     * @return array
+     */
+    public  function getCountServicesByIdsObjets($idsObjets, $idsServices) {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('s')
+            ->from('ApidaeBundle:Service', 's')
+            ->innerJoin('s.objetsApidae', 'o')
+            ->where('s.serId IN (?1)')
+            ->andWhere('o.idObj IN (?2)')
+            ->setParameters(array(1 => $idsServices, 2 => $idsObjets));
+        $query = $qb->getQuery()->getResult();
+        return count($query);
     }
 }

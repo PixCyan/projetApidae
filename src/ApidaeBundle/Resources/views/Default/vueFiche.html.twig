@@ -41,7 +41,9 @@
                             </div>
                             <div class="col-md-6" role="main">
                                 <div class="detail-content">
+                                    {% if is_granted('ROLE_SUPER_ADMIN') %}
                                     <a href="{{ path('modifierOffre', {'offreId': objet.idObjet }) }}" class="btn btn-primary btn-sm boutonModifier"> {{ 'Modifier'|trans }}</a>
+                                    {% endif %}
                                     <div class="section-title text-left">
                                         <h4>{{ "Adresse"|trans }}</h4>
                                     </div>

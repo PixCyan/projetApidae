@@ -47,3 +47,11 @@ body {
 .optsFavoris {
     margin : 5px;
 }
+
+.choixPanier, .nav > li {
+    cursor: pointer;
+}
+
+#form_recherche_menu {
+    margin-top : 10px;
+}

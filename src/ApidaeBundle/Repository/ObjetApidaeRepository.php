@@ -316,4 +316,5 @@ class ObjetApidaeRepository extends EntityRepository {
         $query = $qb->getQuery()->getResult();
         return $query;
     }
+
 }
