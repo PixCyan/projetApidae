@@ -33,17 +33,15 @@ class CategorieRepository extends \Doctrine\ORM\EntityRepository {
     public  function getCountServicesByIdsObjets($idsObjets, $idsCategories) {
     $em = $this->getEntityManager();
     $qb = $em->createQueryBuilder();
-    $qb->select('s')
-        ->from('ApidaeBundle:Service', 's')
-        ->innerJoin('s.objetsApidae', 'o')
-        ->where('s.serId IN (?1)')
+    $qb->select('c')
+        ->from('ApidaeBundle:Categorie', 'c')
+        ->innerJoin('c.objets', 'o')
+        ->where('c.catId IN (?1)')
         ->andWhere('o.idObj IN (?2)')
         ->setParameters(array(1 => $idsCategories, 2 => $idsObjets));
     $query = $qb->getQuery()->getResult();
     return count($query);
-}
-
-
+    }
 
     //---- Requetes ancien menu
 
