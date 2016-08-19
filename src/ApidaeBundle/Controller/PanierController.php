@@ -79,7 +79,6 @@ class PanierController extends Controller {
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
     public function listePanierAction(Request $request) {
-        //TODO liste de panier pour un USER
         $user = $this->getUser();
         if($user) {
             //Cherche la liste de panier d'un utilisateur connecté

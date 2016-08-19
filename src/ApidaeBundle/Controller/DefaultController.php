@@ -196,7 +196,6 @@ class DefaultController extends Controller
             $typesHabitation =[];
         }
 
-        //TODO changer en donnant la trad dans BDD
         $explodeChaine = explode('_', $libelleCategorie);
         $categorieNom = "";
         $i = 0;
@@ -249,7 +248,6 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         $langue = $request->getLocale();
         $langue = $em->getRepository('ApidaeBundle:Langue')->findOneBy(['lanShortCut' => ucwords($langue)]);
-        //TODO listeEvenement
         $eventRepository =  $em->getRepository(Evenement::class);
         $evenements = $periode == 1 ? $eventRepository->getAujourdhui2() : $eventRepository->getInterval($periode);
         //Gestion des varibales de session

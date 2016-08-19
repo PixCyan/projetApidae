@@ -35,7 +35,7 @@ class SejourPackage extends ObjetApidae
 
     public function setCapacite($tab)
     {
-        // TODO: Implement setCapacite() method.
+        //void
     }
 }
 
