@@ -7,31 +7,42 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 use JMS\Serializer\Annotation as JMS;
 
-/** @Entity
+/**
+ * Activite Cette classe regrtoupe et traite toutes les informations concernant les objets touristiques de type :
+ * "ACTIVITE", "PATRIMOINE_CULTUREL"
+ *
+ * @Entity
  * @JMS\ExclusionPolicy("all")
  */
 class Activite extends ObjetApidae
 {
     /**
-     * @var string
+     * La duree de la seance
      *
+     * @var string
      * @ORM\Column(name="dureeSeance", type="string", length=255, nullable=true)
      */
     private $dureeSeance;
 
     /**
-     * @var string
      *
+     * Le nombres de jours ou l'activite est disponibles
+     *
+     * @var string
      * @ORM\Column(name="nbJours", type="string", length=255, nullable=true)
      */
     private $nbJours;
 
     /**
+     * Les differentes durees disponibles si plusieurs sont disponibles
+     *
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Duree", mappedBy="activites")
      */
     protected $durees;
 
     /**
+     * Le type d'activite auquel l'objet est rattache
+     *
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ActiviteType",  inversedBy="activites")
      */
     protected $activiteType;
@@ -124,6 +135,10 @@ class Activite extends ObjetApidae
         $this->activiteType = $activiteType;
     }
 
+    /**
+     * Traites les informations du tableau donne pour definir les informations de l'objet
+     * @param $tab
+     */
     public function setCapacite($tab)
     {
         if(isset($tab['dureeSeance']) && $tab['dureeSeance'] != null) {

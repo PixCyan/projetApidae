@@ -7,6 +7,9 @@ use Doctrine\ORM\Mapping\Entity;
 use JMS\Serializer\Annotation as JMS;
 
 /**
+ * Hebergement Cette classe regroupe et traite toutes les informations concernant les objets touristiques de type :
+ * "HOTELLERIE", "HOTELLERIE_PLEIN_AIR", "HEBERGEMENT_LOCATIF", "HEBERGEMENT_COLLECTIF",
+ *
  * @Entity
  *
  * @JMS\ExclusionPolicy("all")
@@ -16,6 +19,7 @@ class Hebergement extends ObjetApidae
 {
 
     /**
+     * Le nombre de chambres classees
      * @var string
      *
      * @ORM\Column(name="nbChambresClassees", type="string", length=255, nullable=true)
@@ -23,6 +27,7 @@ class Hebergement extends ObjetApidae
     private $nbChambresClassees;
 
     /**
+     * La capacite d'hebergement
      * @var int
      *
      * @ORM\Column(name="capaciteHebergement", type="integer", nullable=true)
@@ -30,6 +35,7 @@ class Hebergement extends ObjetApidae
     private $capaciteHebergement;
 
     /**
+     * Le nombre de chambres declarees hotelier
      * @var int
      *
      * @ORM\Column(name="nbChambresDeclareesHotelier", type="integer", nullable=true)
@@ -37,6 +43,7 @@ class Hebergement extends ObjetApidae
     private $nbChambresDeclareesHotelier;
 
     /**
+     * Le nombre total de personnes possible
      * @var int
      *
      * @ORM\Column(name="nbTotalPersonnes", type="integer", nullable=true)
@@ -44,6 +51,7 @@ class Hebergement extends ObjetApidae
     private $nbTotalPersonnes;
 
     /**
+     * Le nombre de chambres simples
      * @var int
      *
      * @ORM\Column(name="nbChambresSimples", type="integer", nullable=true)
@@ -51,6 +59,7 @@ class Hebergement extends ObjetApidae
     private $nbChambresSimples;
 
     /**
+     * Le nombre de chambres doubles
      * @var int
      *
      * @ORM\Column(name="nbChambresDoubles", type="integer", nullable=true)
@@ -58,6 +67,7 @@ class Hebergement extends ObjetApidae
     private $nbChambresDoubles;
 
     /**
+     * Le nombre de suites
      * @var int
      *
      * @ORM\Column(name="nbSuites", type="integer", nullable=true)
@@ -65,6 +75,7 @@ class Hebergement extends ObjetApidae
     private $nbSuites;
 
     /**
+     * Le nombre de chambres à mobilier réduit
      * @var int
      *
      * @ORM\Column(name="nbChambresMobiliteReduite", type="integer", nullable=true)
@@ -72,6 +83,7 @@ class Hebergement extends ObjetApidae
     private $nbChambresMobiliteReduite;
 
     /**
+     * Naturisme autorise
      * @var bool
      *
      * @ORM\Column(name="naturisme", type="boolean", nullable=true)
@@ -79,6 +91,7 @@ class Hebergement extends ObjetApidae
     private $naturisme;
 
     /**
+     * La capacite totale de l'hebergement
      * @var int
      *
      * @ORM\Column(name="capaciteTotale", type="integer", nullable=true)
@@ -86,6 +99,7 @@ class Hebergement extends ObjetApidae
     private $capaciteTotale;
 
     /**
+     * La capacite total pour "jeunesse sport"
      * @var int
      *
      * @ORM\Column(name="capaciteTotaleJeunesseSport", type="integer", nullable=true)
@@ -93,6 +107,7 @@ class Hebergement extends ObjetApidae
     private $capaciteTotaleJeunesseSport;
 
     /**
+     * Le nombre d'hebergements pour une personne
      * @var int
      *
      * @ORM\Column(name="nbHebergementsUnePersonne", type="integer", nullable=true)
@@ -100,6 +115,7 @@ class Hebergement extends ObjetApidae
     private $nbHebergementsUnePersonne;
 
     /**
+     * Le nombre de lits doubles
      * @var int
      *
      * @ORM\Column(name="nbLitsDoubles", type="integer",  nullable=true)
@@ -107,6 +123,7 @@ class Hebergement extends ObjetApidae
     private $nbLitsDoubles;
 
     /**
+     * Le nombre de lits simples
      * @var int
      *
      * @ORM\Column(name="nbLitsSimples", type="integer", nullable=true)
@@ -114,6 +131,7 @@ class Hebergement extends ObjetApidae
     private $nbLitsSimples;
 
     /**
+     * Surface de l'hebergement
      * @var int
      *
      * @ORM\Column(name="surface", type="integer", nullable=true)
@@ -121,6 +139,7 @@ class Hebergement extends ObjetApidae
     private $surface;
 
     /**
+     * Numero d'etage si l'hebergement contient des etages
      * @var string
      *
      * @ORM\Column(name="numeroEtage", type="string", length=255, nullable=true)
@@ -128,6 +147,7 @@ class Hebergement extends ObjetApidae
     private $numeroEtage;
 
     /**
+     * Le nombre de pieces
      * @var int
      *
      * @ORM\Column(name="nbPieces", type="integer", nullable=true)
@@ -135,6 +155,7 @@ class Hebergement extends ObjetApidae
     private $nbPieces;
 
     /**
+     * La capacite max possible
      * @var int
      *
      * @ORM\Column(name="capaciteMaxPossible", type="integer", nullable=true)
@@ -559,6 +580,10 @@ class Hebergement extends ObjetApidae
         $this->capaciteMaxPossible = $capaciteMaxPossible;
     }
 
+    /**
+     * Traites les informations du tableau donne pour definir les informations de l'objet
+     * @param $tab
+     */
     public function setCapacite($tab) {
         //var_dump($tab);
         if(isset($tab->naturisme)) {

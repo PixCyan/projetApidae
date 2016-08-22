@@ -7,7 +7,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Index;
 
 /**
- * Equipement
+ * Equipement Cette classe regroupe et traite toues les informations concernant les "équipements" lies aux objets touristiques.
+ * Les equipements concernent des elements allant d'installations exterieures (ex : parking) au mobilier ou objets à disposition
+ * des voyageurs/vacanciers.
  *
  * @ORM\Table(name="equipement")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\EquipementRepository")
@@ -24,12 +26,14 @@ class Equipement
     private $id;
 
     /**
+     * ID Apidae de l'equipement
      * @var int
      * @ORM\Column(name="equId", type="integer", unique=true)
      */
     private $equId;
 
     /**
+     * Libelle de l'equipement
      * @var string
      *
      * @ORM\Column(name="equLibelle", type="string", length=255, nullable=true)
@@ -37,6 +41,7 @@ class Equipement
     private $equLibelle;
 
     /**
+     * Informations supplementaires concernant l'equipement
      * @var string
      *
      * @ORM\Column(name="equInfosSup", type="string", length=255, nullable=true)
@@ -44,6 +49,7 @@ class Equipement
     private $equInfosSup;
 
     /**
+     * Sous-type auquel appartient l'equipement selon le schema de la plateforme Apidae
      * @var string
      *
      * @ORM\Column(name="equType", type="string", length=255)
@@ -51,11 +57,16 @@ class Equipement
     private $equType;
 
     /**
-    * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="equipements", cascade={"merge"})
-    * @ORM\JoinColumn(nullable=false)
+     * Les objets touristiques auxquels l'equipement est rattache
+     *
+     * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="equipements", cascade={"merge"})
+     * @ORM\JoinColumn(nullable=false)
     */
     private $objetsApidae;
 
+    /**
+     * Equipement constructor.
+     */
     public function __construct() {
         //initialisation des collections
         $this->objetsApidae = new ArrayCollection();

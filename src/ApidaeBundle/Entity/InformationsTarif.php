@@ -5,7 +5,8 @@ namespace ApidaeBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * InformationsTarif
+ * InformationsTarif Cette classe regroupe et traite toutes les informations concernant les differents types de tarifs
+ * associés aux "TarifType" disponibles pour chaque objets touristiques.
  *
  * @ORM\Table(name="informations_tarif")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\InformationsTarifRepository")
@@ -22,6 +23,7 @@ class InformationsTarif
     private $id;
 
     /**
+     * La devise utilise
      * @var string
      *
      * @ORM\Column(name="tarDevise", type="string", length=255)
@@ -29,6 +31,7 @@ class InformationsTarif
     private $tarDevise;
 
     /**
+     * Les informations importantes/supplementaires
      * @var string
      *
      * @ORM\Column(name="tarIndication", type="string", length=255, nullable=true)
@@ -36,6 +39,7 @@ class InformationsTarif
     private $tarIndication;
 
     /**
+     * Le tarif minimal
      * @var string
      *
      * @ORM\Column(name="tarMin", type="string", length=255, nullable=true)
@@ -43,6 +47,7 @@ class InformationsTarif
     private $tarMin;
 
     /**
+     * Le tarif maximal
      * @var string
      *
      * @ORM\Column(name="tarMax", type="string", length=255, nullable=true)
@@ -50,12 +55,14 @@ class InformationsTarif
     private $tarMax;
 
     /**
+     * Les objets touristiques auxquels ce tarif est rattache
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="tarifs")
      * @ORM\JoinColumn(nullable=false)
      */
     private $objetApidae;
 
     /**
+     * Le type de tarif auquel ce tarif  est rattache
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\TarifType", inversedBy="infosTarif")
      * @ORM\JoinColumn(nullable=false)
      */

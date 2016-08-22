@@ -7,7 +7,8 @@ use Doctrine\ORM\Mapping\Index;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * TraductionObjetApidae
+ * TraductionObjetApidae Cette classe regroupe et traite toutes les informations concernant les traductions pour chaque objet touristique et pour
+ * chaque langue disponible sur le site.
  * @JMS\ExclusionPolicy("all")
  *
  * @ORM\Table(name="traduction_objet_apidae")

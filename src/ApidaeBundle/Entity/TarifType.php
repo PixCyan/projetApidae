@@ -6,7 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Tarif
+ * Tarif Cette classe regroupe et traite toutes les informations concernant les types de tarifs appliqués aux
+ * objets touristiques
  *
  * @ORM\Table(name="tarifType")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\TarifTypeRepository")
@@ -23,6 +24,7 @@ class TarifType
     private $id;
 
     /**
+     * ID Apidae du type de tarif
      * @var int
      *
      * @ORM\Column(name="id_tarif", type="integer", length=255, unique=true)
@@ -30,6 +32,8 @@ class TarifType
     private $idTarif;
 
     /**
+     * Ordre d'importance
+     *
      * @var int
      *
      * @ORM\Column(name="tarOrdre", type="integer", length=255)
@@ -37,6 +41,7 @@ class TarifType
     private $ordre;
 
     /**
+     * Libelle du type de tarif
      * @var string
      *
      * @ORM\Column(name="tarLibelle", type="string", length=255)
@@ -44,11 +49,15 @@ class TarifType
     private $tarLibelle;
 
     /**
+     * Informations de tarifs auxquelles est relie le type de tarif
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\InformationsTarif", mappedBy="tarifType")
      * @ORM\JoinColumn(nullable=false)
      */
     private $infosTarif;
 
+    /**
+     * TarifType constructor.
+     */
     public function __construct() {
         $this->infosTarif = new ArrayCollection();
     }

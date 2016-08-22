@@ -6,7 +6,8 @@ use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * Multimedia
+ * Multimedia Cette classe regroupe et traite toutes les informations concernant les multimedias rattachés aux objets touristiques.
+ *
  * @JMS\ExclusionPolicy("all")
  *
  * @ORM\Table(name="multimedia")
@@ -25,6 +26,7 @@ class Multimedia
 
 
     /**
+     * ID Apidae du multimedia
      * @var int
      *
      * @ORM\Column(name="idMultimedia", type="integer", nullable=true)
@@ -36,6 +38,7 @@ class Multimedia
     private $idMultimedia;
 
     /**
+     * Libelle du multimedia
      * @var string
      *
      * @ORM\Column(name="mulLibelle", type="string", length=255, nullable=true)
@@ -43,6 +46,7 @@ class Multimedia
     private $mulLibelle;
 
     /**
+     * Type du multimedia
      * @var string
      *
      * @ORM\Column(name="mulType", type="string", length=255)
@@ -50,6 +54,7 @@ class Multimedia
     private $mulType;
 
     /**
+     * Url du multimedia non modifie
      * @var string
      *
      * @ORM\Column(name="mulUrl", type="string", length=255, nullable=true)
@@ -58,6 +63,7 @@ class Multimedia
     private $mulUrl;
 
     /**
+     * Url du multimedia pour affichage en liste (max : 100 x 100)
      * @var string
      *
      * @ORM\Column(name="mulUrlListe", type="string", length=255, nullable=true)
@@ -68,6 +74,7 @@ class Multimedia
     private $mulUrlListe;
 
     /**
+     * Url du multimedia pour affichage en fiche detaillee (max : 210 x 210)
      * @var string
      *
      * @ORM\Column(name="mulUrlFiche", type="string", length=255, nullable=true)
@@ -75,6 +82,7 @@ class Multimedia
     private $mulUrlFiche;
 
     /**
+     * Url du multimedia pour affichage en diaporama (max : 1000 x 600)
      * @var string
      *
      * @ORM\Column(name="mulUrlDiapo", type="string", length=255, nullable=true)
@@ -85,6 +93,7 @@ class Multimedia
     private $mulUrlDiapo;
 
     /**
+     * Url blocke
      * @var bool
      *
      * @ORM\Column(name="mulLocked", type="boolean")
@@ -92,6 +101,7 @@ class Multimedia
     private $mulLocked;
 
     /**
+     * Objets touristiques auxquels ce multimedia est rattache
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="multimedias")
      * @ORM\JoinColumn(nullable=false)
      */

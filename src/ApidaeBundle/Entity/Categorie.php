@@ -7,7 +7,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * Categorie
+ * Categorie Cette classe regroupe et traite toutes les informations concernant les categories.
+ * Les categories servent à egrouper des objets touristiques d'un même type définit par un nom de categorie.
+ * Ces categories sont recuperees via les donnees d'Apidae.
  *
  * @JMS\ExclusionPolicy("all")
  *
@@ -26,6 +28,8 @@ class Categorie
     private $id;
 
     /**
+     * ID Apidae de la categorie
+     *
      * @var int
      *
      * @ORM\Column(name="catId", type="integer", length=255, unique=true)
@@ -36,6 +40,8 @@ class Categorie
     private $catId;
 
     /**
+     * Libelle de l'objet
+     *
      * @var string
      *
      * @ORM\Column(name="catLibelle", type="string", length=255)
@@ -46,6 +52,8 @@ class Categorie
     private $catLibelle;
 
     /**
+     * Sous-type auquel appartient la categorie selon le schema de la plateforme Apidae
+     *
      * @var string
      *
      * @ORM\Column(name="catRefType", type="string", length=255)
@@ -53,6 +61,8 @@ class Categorie
     private $catRefType;
 
     /**
+     * Les objets touristiques auxquels la categorie est rattachee
+     *
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="categories", cascade={"persist"})
      */
     private $objets;
@@ -113,7 +123,7 @@ class Categorie
     }
 
     /**
-     *@return un tableau 
+     *@return ArrayCollection
      */
     public function getObjets() {
         return $this->objets;

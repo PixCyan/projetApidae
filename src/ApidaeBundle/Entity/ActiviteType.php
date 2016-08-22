@@ -6,7 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ActiviteType
+ * ActiviteType Cette classe regroupe et traite toutes les informations conernant les types d'activite.
+ * Les types d'activite sont relies aux objets touristiques de type "activite" (voir classe Activite)
  *
  * @ORM\Table(name="activiteType")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\ActiviteTypeRepository")
@@ -14,6 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 class ActiviteType
 {
     /**
+     *
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
@@ -23,6 +25,8 @@ class ActiviteType
     private $id;
 
     /**
+     * ID Apidae du type d'activite
+     *
      * @var int
      *
      * @ORM\Column(name="idActiviteType", type="integer", unique=true)
@@ -30,6 +34,7 @@ class ActiviteType
     private $idActiviteType;
 
     /**
+     * Libelle du type d'activite
      * @var string
      *
      * @ORM\Column(name="libelle", type="string", length=255)
@@ -37,6 +42,8 @@ class ActiviteType
     private $libelle;
 
     /**
+     * Ordre d'importance
+     *
      * @var int
      *
      * @ORM\Column(name="ordre", type="integer")
@@ -44,6 +51,8 @@ class ActiviteType
     private $ordre;
 
     /**
+     * Sous-type auquel appartient le type d'activite selon le schema de la plateforme Apidae
+     *
      * @var string
      *
      * @ORM\Column(name="refType", type="string", length=255)
@@ -51,11 +60,15 @@ class ActiviteType
     private $refType;
 
     /**
+     * Les activites auxquelles ce type est relie
+     *
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Activite", mappedBy="activiteType")
      */
     protected $activites;
 
-
+    /**
+     * ActiviteType constructor.
+     */
     public function __construct()
     {
         //initialisation des collections

@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\Index;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * Langue
+ * Langue Cette classe regroupe et traite toutes les informations concernant les différentes langues utilisees par le site.
  *
  * @JMS\ExclusionPolicy("all")
  *
@@ -27,6 +27,7 @@ class Langue
     private $id;
 
     /**
+     * Code de la langue
      * @var int
      *
      * @ORM\Column(name="codeLangue", type="integer", unique=true)
@@ -37,6 +38,7 @@ class Langue
     private $codeLangue;
 
     /**
+     * Libelle de la langue
      * @var string
      *
      * @ORM\Column(name="lan_Libelle", type="string", length=255)
@@ -47,6 +49,7 @@ class Langue
     private $lanLibelle;
 
     /**
+     * Diminutif de la langue
      * @var string
      *
      * @ORM\Column(name="lan_ShortCut", type="string", length=255)
@@ -54,6 +57,7 @@ class Langue
     private $lanShortCut;
 
     /**
+     * TODO
      * @var string
      *
      * @ORM\Column(name="lan_Iso", type="string", length=255)
@@ -61,13 +65,16 @@ class Langue
     private $lanIso;
 
     /**
+     * Les traductions auxquels la langue est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="langue")
      * @ORM\JoinColumn(name="idTrad", referencedColumnName="id", nullable=false)
      */
     private $traductions;
 
 
-
+    /**
+     * Langue constructor.
+     */
     public function __construct() {
         //initialisation des collections
         $this->traductions = new ArrayCollection();
@@ -197,7 +204,7 @@ class Langue
     }
 
     /**
-     *@return un tableau contenant les traductions associés à l'objetApidae
+     *@return ArrayCollection
      */
     public function getTraductions() {
         return $this->traductions;

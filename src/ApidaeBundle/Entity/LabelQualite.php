@@ -8,7 +8,8 @@ use Doctrine\ORM\Mapping\Index;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * LabelQualite
+ * LabelQualite Cette classe regroupe et traite toutes le sinformations concernant les "Labels de Qualité" rattachés à certains
+ * objets touristiques.
  *
  * @JMS\ExclusionPolicy("all")
  *
@@ -28,6 +29,7 @@ class LabelQualite
 
 
     /**
+     * ID Apidae du label
      * @var int
      *
      * @ORM\Column(name="labId", type="integer")
@@ -38,6 +40,7 @@ class LabelQualite
     private $labId;
 
     /**
+     * Libelle du label
      * @var string
      *
      * @ORM\Column(name="labLibelle", type="string", length=255)
@@ -49,6 +52,7 @@ class LabelQualite
     private $labLibelle;
 
     /**
+     * Classement du label
      * @var string
      *
      * @ORM\Column(name="labClassement", type="string", length=255)
@@ -59,12 +63,15 @@ class LabelQualite
     private $labClassement;
 
     /**
+     * Les objets auxquels ce label est rattache
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="labelsQualite")
      * @ORM\JoinColumn(nullable=true)
      */
     private $objetsApidae;
 
-
+    /**
+     * LabelQualite constructor.
+     */
     public function __construct() {
         //initialisation des collections
         $this->objetsApidae = new ArrayCollection();
@@ -144,7 +151,7 @@ class LabelQualite
     }
 
     /**
-     *@return un tableau 
+     *@return ArrayCollection
      */
     public function getObjetsApidae() {
         return $this->objetsApidae;

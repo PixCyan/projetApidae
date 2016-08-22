@@ -6,7 +6,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Duree
+ * Duree Cette classe regroupe et traite toutes les informations concernant les durees des objets touristiques de type
+ * "Activite".
  *
  * @ORM\Table(name="duree")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\DureeRepository")
@@ -23,6 +24,7 @@ class Duree
     private $id;
 
     /**
+     * ID Apidae de la duree
      * @var int
      *
      * @ORM\Column(name="idDuree", type="integer")
@@ -30,6 +32,7 @@ class Duree
     private $idDuree;
 
     /**
+     * Libelle de la duree
      * @var string
      *
      * @ORM\Column(name="libelle", type="string", length=255)
@@ -37,6 +40,7 @@ class Duree
     private $libelle;
 
     /**
+     * Ordre d'importance
      * @var int
      *
      * @ORM\Column(name="ordre", type="integer", length=255)
@@ -44,6 +48,7 @@ class Duree
     private $ordre;
 
     /**
+     * Les activites auxquelles la duree est reliee
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Activite", inversedBy="durees")
      */
     protected $activites;

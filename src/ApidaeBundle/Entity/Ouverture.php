@@ -5,7 +5,8 @@ namespace ApidaeBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Ouverture
+ * Ouverture Cette classe regroupe et traite toutes les informations concernant les heures/dates d'ouvreture pour chaque
+ * objet touristique.
  *
  * @ORM\Table(name="ouverture")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\OuvertureRepository")
@@ -22,6 +23,7 @@ class Ouverture
     private $id;
 
     /**
+     * ID Apidae de l'objet ouverture
      * @var int
      *
      * @ORM\Column(name="idOuverture", type="integer", length=255)
@@ -29,6 +31,7 @@ class Ouverture
     private $idOuverture;
 
     /**
+     * Date de debut d'ouverture
      * @var string
      *
      * @ORM\Column(name="ouvDateDebut", type="string", length=255)
@@ -36,6 +39,7 @@ class Ouverture
     private $ouvDateDebut;
 
     /**
+     * Date de fin d'ouverture
      * @var string
      *
      * @ORM\Column(name="ouvDateFin", type="string", length=255)
@@ -43,6 +47,7 @@ class Ouverture
     private $ouvDateFin;
 
     /**
+     * Informations supplémentaires
      * @var string
      *
      * @ORM\Column(name="ouvInfosSup", type="string", length=255, nullable=true)
@@ -50,6 +55,7 @@ class Ouverture
     private $ouvInfosSup;
 
     /**
+     * Objet Apidae auquel est relie l'ouverture
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="ouvertures")
      * @ORM\JoinColumn(nullable=false)
      */

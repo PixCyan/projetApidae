@@ -7,9 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * Commune
+ * Commune Cette classe regroupe et traite toutes les informations concernant les communes auxquelles sont rataches les
+ * objets touristiques fournit par Apidae.
+ *
  * @JMS\ExclusionPolicy("all")
- * 
  * @ORM\Table(name="commune")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\CommuneRepository")
  */
@@ -25,6 +26,7 @@ class Commune
     private $id;
 
     /**
+     * ID Apidae de la commune
      * @var int
      *
      * @ORM\Column(name="comId", type="integer", unique=true)
@@ -35,6 +37,8 @@ class Commune
     private $comId;
 
     /**
+     * Code postal de la commune
+     *
      * @var string
      *
      * @ORM\Column(name="comCode", type="string", length=255)
@@ -42,6 +46,8 @@ class Commune
     private $comCode;
 
     /**
+     * Nom de la commune
+     *
      * @var string
      *
      * @ORM\Column(name="comNom", type="string", length=255)
@@ -53,6 +59,8 @@ class Commune
 
 
     /**
+     * Objets touristiques auxquels la commune est reliee
+     *
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="commune")
      */
     private $objetsApidae;

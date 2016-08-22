@@ -9,8 +9,10 @@ use JMS\Serializer\Annotation as JMS;
 
 //SINGLE_TABLE or JOINED pour @InheritanceType
 /**
- * @JMS\ExclusionPolicy("all")
+ * ObjetApidae Cette classe regroupe toutes les informations communes pour chaque type d'objet touristique.
+ * Elle a pour filles les classes : "Activite", "Evenement", "Hebergement", "Restaurant"
  *
+ * @JMS\ExclusionPolicy("all")
  * @ORM\InheritanceType("SINGLE_TABLE")
  * @ORM\DiscriminatorColumn(name="discr", type="string")
  * @ORM\DiscriminatorMap({"objetApidae" = "ObjetApidae", "restaurant" = "Restaurant", "hebergement" = "Hebergement",
@@ -29,6 +31,7 @@ abstract class ObjetApidae {
     protected $id;
 
     /**
+     * ID Apidae de l'objet touristique
      * @var int
      *
      * @ORM\Column(name="id_obj", type="integer", unique=true)
@@ -39,6 +42,7 @@ abstract class ObjetApidae {
     protected $idObj;
 
     /**
+     * Nombre d'etoile detenu par l'objet si celui ci est classe
      * @var string
      *
      * @ORM\Column(name="obj_Etoile", type="string", length=255, nullable=true)
@@ -46,6 +50,7 @@ abstract class ObjetApidae {
     protected $objEtoile;
 
     /**
+     * Type Apidae de l'objet
      * @var string
      *
      * @ORM\Column(name="obj_TypeApidae", type="string", length=255)
@@ -53,6 +58,7 @@ abstract class ObjetApidae {
     protected $objTypeApidae;
 
     /**
+     * Points de geolocalisation
      * @var string
      *
      * @ORM\Column(name="obj_Geolocalisation", type="string", length=255, nullable=true)
@@ -60,6 +66,7 @@ abstract class ObjetApidae {
     protected $objGeolocalisation;
 
     /**
+     * Objet present mis en suggestion ou non
      * @var bool
      *
      * @ORM\Column(name="obj_Suggestion", type="boolean")
@@ -67,6 +74,7 @@ abstract class ObjetApidae {
     protected $objSuggestion;
 
     /**
+     * Date de mise en suggestion si $objSuggestion est "true"
      * @var \DateTime
      *
      * @ORM\Column(name="obj_DateSuggestion", type="datetime", nullable=true)
@@ -74,11 +82,13 @@ abstract class ObjetApidae {
     protected $objDateSuggestion;
 
     /**
+     * ID des Objets touristiques auxquels sont relies cet objet touristique
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\ObjetLie",  mappedBy="objet", cascade={"persist"})
      */
     protected $objetsLies;
 
     /**
+     * Categories auxquelles sont rattachees l'objet touristique
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHascategories")
      *
@@ -88,18 +98,21 @@ abstract class ObjetApidae {
     protected $categories;
 
     /**
+     * Les paniers auxquels sont rattaches l'objet
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Panier", mappedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasPanier")
      */
     protected $paniers;
 
     /**
+     * Selection creees sous la plateforme Apidae auxquelles sont reliees l'objet
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\SelectionApidae", mappedBy="objets", cascade={"merge"})
      * @ORM\JoinTable(name="objetHasSelection")
      */
     protected $selectionsApidae;
 
     /**
+     * Commune à laquelle est relie l'objet
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\Commune", inversedBy="objetsApidae", cascade={"persist"})
      *
      * @JMS\Expose
@@ -108,6 +121,7 @@ abstract class ObjetApidae {
     protected $commune;
 
     /**
+     * Adresse de l'objet
      * @var string
      *
      * @ORM\Column(name="adresse", type="string", length=255)
@@ -115,6 +129,7 @@ abstract class ObjetApidae {
     protected $adresse;
 
     /**
+     * Code postal de l'objet
      * @var string
      *
      * @ORM\Column(name="codePostal", type="string", length=255)
@@ -122,6 +137,7 @@ abstract class ObjetApidae {
     protected $codePostal;
 
     /**
+     * Labels qualites auxquelles sont rattaches l'objet
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\LabelQualite", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasLabelQualite")
      */
@@ -129,6 +145,7 @@ abstract class ObjetApidae {
 
     //----------------------------------------- Changements trad -----------------------------------------------------//
     /**
+     * Nom de l'objet
      * @var string
      *
      * @ORM\Column(name="obj_Nom", type="text", nullable=true)
@@ -139,6 +156,7 @@ abstract class ObjetApidae {
     protected $nom;
 
     /**
+     * Date en clair, informations concernant les dates d'ouvertures
      * @var string
      *
      * @ORM\Column(name="obj_DateEnClair", type="text", nullable=true)
@@ -146,6 +164,7 @@ abstract class ObjetApidae {
     protected $dateEnClair;
 
     /**
+     * Tarif en clair, informations concernant les tarifs
      * @var string
      *
      * @ORM\Column(name="obj_TarifEnClair", type="text",nullable=true)
@@ -156,12 +175,14 @@ abstract class ObjetApidae {
     protected $tarifEnClair;
 
     /**
+     * Les equipements auxquels l'objet est rattache
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Equipement", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasEquipements")
      */
     protected $equipements;
 
     /**
+     * Les services auxquels l'objet est rattache
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Service", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasServices")
      *
@@ -171,11 +192,13 @@ abstract class ObjetApidae {
     protected $services;
 
     /**
+     * Les moyens de communications auxquels l'objet est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\MoyenCommunication", mappedBy="objetApidae", cascade={"persist"})
      */
     protected $moyensCommunications;
 
     /**
+     * Les mutlimedias auxquels l'objet est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Multimedia", mappedBy="objetApidae", cascade={"persist"})
      *
      * @JMS\Expose
@@ -184,21 +207,25 @@ abstract class ObjetApidae {
     protected $multimedias;
 
     /**
+     * Les tarifs auxquels l'objet est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\InformationsTarif", mappedBy="objetApidae", cascade={"persist"})
      */
     protected $tarifs;
 
     /**
+     * Les ouvertures (details) auxquelles l'objet est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Ouverture", mappedBy="objetApidae", cascade={"persist"})
      */
     protected $ouvertures;
 
     /**
+     * Les types de public auxquels l'objet est rattache
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TypePublic", mappedBy="objetsApidae", cascade={"persist"})
      */
     protected $typesPublic;
 
     /**
+     * Les traductions auxquelles l'objet est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="objet", cascade={"persist"})
      *
      * @JMS\Expose
@@ -206,6 +233,9 @@ abstract class ObjetApidae {
      */
     protected $traductions;
 
+    /**
+     * ObjetApidae constructor.
+     */
     public function __construct() {
         //initialisation des collections
         $this->traductions = new ArrayCollection();
@@ -843,6 +873,10 @@ abstract class ObjetApidae {
         $this->tarifs = $tarifs;
     }
 
+    /**
+     * Traites les informations du tableau donne pour definir les informations de l'objet
+     * @param $tab
+     */
     public abstract function setCapacite($tab);
 
     protected function getTradLangue($langue) {

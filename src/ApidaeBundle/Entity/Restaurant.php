@@ -5,11 +5,15 @@ namespace ApidaeBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\Entity;
 
-/** @Entity */
+/**
+ * Restaurant Cette classe regroupe et traite toutes les informations concernant les objets touristiques de type "RESTAURATION"
+ *
+ * @Entity */
 class Restaurant extends ObjetApidae
 {
 
     /**
+     * Nombre maximum de couverts
      * @var int
      *
      * @ORM\Column(name="nbMaxCouverts", type="integer", length=255, nullable=true)
@@ -17,6 +21,7 @@ class Restaurant extends ObjetApidae
     private $nbMaxCouverts;
 
     /**
+     * Nombre de couverts en terrasse
      * @var int
      *
      * @ORM\Column(name="nbCouvertsTerrasse", type="integer", nullable=true)
@@ -24,6 +29,7 @@ class Restaurant extends ObjetApidae
     private $nbCouvertsTerrasse;
 
     /**
+     * Nombre de salles
      * @var int
      *
      * @ORM\Column(name="nbSalles", type="integer", nullable=true)
@@ -102,6 +108,10 @@ class Restaurant extends ObjetApidae
         return $this->nbSalles;
     }
 
+    /**
+     * Traites les informations du tableau donne pour definir les informations de l'objet
+     * @param $tab
+     */
     public function setCapacite($tab) {
         if(isset($tab->nombreMaximumCouverts)) {
             $this->setNbMaxCouverts($tab->nombreMaximumCouverts);

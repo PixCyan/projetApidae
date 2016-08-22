@@ -7,7 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * Panier
+ * Panier Cette classe sert à traiter et regrouper toutes les informations concernant les objets touristiques rattachés à un panier
+ * (ou "liste de favoris")
  *
  * @JMS\ExclusionPolicy("all")
  *
@@ -30,6 +31,7 @@ class Panier
     private $id;
 
     /**
+     * Libelle du panier
      * @var string
      *
      * @ORM\Column(name="panLibelle", type="string", length=255)
@@ -40,18 +42,21 @@ class Panier
     private $panLibelle;
 
     /**
+     * Objets touristiques relies au panier
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="paniers")
      * @ORM\JoinColumn(nullable=true)
      */
     private $objets;
 
     /**
+     * Utilisateur proprietaire du panier
      * @ORM\ManyToOne(targetEntity="UserBundle\Entity\UserApidae", inversedBy="paniers")
      * @ORM\JoinColumn(nullable=true)
      */
     private $user;
 
     /**
+     * ID du cookie si le panier a ete cree sans aucune session active
      * @var int
      *
      * @ORM\Column(name="idCookie", type="integer", nullable=true)

@@ -7,7 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Index;
 
 /**
- * SelectionApidae
+ * SelectionApidae Cette classe regroupe et traite toutes les informations concernant les selections creees sur la plateforme Apidae.
  *
  * @ORM\Table(name="selection_apidae")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\SelectionApidaeRepository")
@@ -24,6 +24,7 @@ class SelectionApidae
     private $id;
 
     /**
+     * ID Apidae de la selection
      * @var int
      *
      * @ORM\Column(name="idSelectionApidae", type="integer", unique=true)
@@ -31,6 +32,7 @@ class SelectionApidae
     private $idSelectionApidae;
 
     /**
+     * Libelle de la selection
      * @var string
      *
      * @ORM\Column(name="selLibelle", type="string", length=255)
@@ -38,12 +40,15 @@ class SelectionApidae
     private $selLibelle;
 
     /**
+     * Objets touristiques auxquels la selection est rattachee
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="selectionsApidae", cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
     private $objets;
 
-
+    /**
+     * SelectionApidae constructor.
+     */
     public function __construct() {
         $this->objets = new ArrayCollection();
     }
@@ -125,7 +130,7 @@ class SelectionApidae
     }
 
     /**
-     *@return un tableau 
+     *@return ArrayCollection
      */
     public function getObjets() {
         return $this->objets;

@@ -7,7 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Index;
 
 /**
- * TypePublic
+ * TypePublic Cette classe regroupe et traite toutes les informations concernant les différents types de public pouvant
+ * être lies aux objets touristiques.
  *
  * @ORM\Table(name="type_public")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\TypePublicRepository")

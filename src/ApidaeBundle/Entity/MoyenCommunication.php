@@ -5,7 +5,8 @@ namespace ApidaeBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * MoyenCommunication
+ * MoyenCommunication Cette classe regroupe et traite toutes les informations concernant les différents moyens de communications
+ * permettant un contact avec les prestataires des objets touristiques auxquels ils sont rattachés.
  *
  * @ORM\Table(name="moyen_communication")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\MoyenCommunicationRepository")
@@ -22,6 +23,7 @@ class MoyenCommunication
     private $id;
 
     /**
+     * ID Apidae du moyen de communication
      * @var int
      *
      * @ORM\Column(name="idMoyCom", type="integer")
@@ -29,6 +31,7 @@ class MoyenCommunication
     private $idMoyCom;
 
     /**
+     * Libelle du moyen de communication
      * @var string
      *
      * @ORM\Column(name="moyComLibelle", type="string", length=255, nullable=true)
@@ -36,6 +39,7 @@ class MoyenCommunication
     private $moyComLibelle;
 
     /**
+     * Coordonnees
      * @var string
      *
      * @ORM\Column(name="moyComCoordonnees", type="string", length=255)
@@ -43,6 +47,7 @@ class MoyenCommunication
     private $moyComCoordonnees;
 
     /**
+     * Les objets touristiques auxquels ce moyen de communication est rattache
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="moyensCommunications", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */

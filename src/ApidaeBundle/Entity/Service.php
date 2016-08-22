@@ -8,7 +8,9 @@ use Doctrine\ORM\Mapping\Index;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * Service
+ * Service Cette classe regroupe et traite toutes les informations concernant les services rattaches aux objets touristiques.
+ * (modes de paiement, prestations service, tourisme adapte)
+ *
  * @JMS\ExclusionPolicy("all")
  *
  * @ORM\Table(name="service")
@@ -26,6 +28,7 @@ class Service
     private $id;
 
     /**
+     * ID Apidae du service
      * @var int
      * @ORM\Column(name="serId", type="integer", unique=true)
      *
@@ -35,6 +38,7 @@ class Service
     private $serId;
 
     /**
+     * Libelle du service
      * @var string
      *
      * @ORM\Column(name="serLibelle", type="string", length=255)
@@ -45,6 +49,7 @@ class Service
     private $serLibelle;
 
     /**
+     * Informations supplementaires
      * @var string
      *
      * @ORM\Column(name="serInfosSup", type="string", length=255, nullable=true)
@@ -52,6 +57,7 @@ class Service
     private $serInfosSup;
 
     /**
+     * Sous-categorie Apidae
      * @var string
      *
      * @ORM\Column(name="serType", type="string", length=255, nullable=true)
@@ -59,6 +65,7 @@ class Service
     private $serType;
 
     /**
+     * Sous-categorie Apidae
      * @var string
      *
      * @ORM\Column(name="serFamilleCritere", type="string", length=255, nullable=true)
@@ -66,11 +73,15 @@ class Service
     private $serFamilleCritere;
 
     /**
+     * Objets touristiques auxquels est rattache le service
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="services", cascade={"merge"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $objetsApidae;
 
+    /**
+     * Service constructor.
+     */
     public function __construct() {
         //initialisation des collections
         $this->objetsApidae = new ArrayCollection();
