@@ -7,8 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping\Index;
 
 /**
- * Equipement Cette classe regroupe et traite toues les informations concernant les "équipements" lies aux objets touristiques.
- * Les equipements concernent des elements allant d'installations exterieures (ex : parking) au mobilier ou objets à disposition
+ * Equipement Cette classe regroupe et traite toutes les informations concernant les "équipements" lies aux objets touristiques.
+ * Les equipements concernent des elements allant d'installations exterieures (ex : parking) au mobilier et/ou objets à disposition
  * des voyageurs/vacanciers.
  *
  * @ORM\Table(name="equipement")

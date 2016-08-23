@@ -142,6 +142,11 @@ class DefaultController extends Controller
         $countClassements = $em->getRepository(ObjetApidae::class)->getCountObjetHasLabels($this->getIdsClassements($labelsQualite), $selection->getIdSelectionApidae(), $idsObjets);
         $countCategories = $em->getRepository(ObjetApidae::class)->getCountObjetHasCategories($this->getIdsCategories($typesHabitation), $selection->getIdSelectionApidae(), $idsObjets);
 */
+        $paniers = $this->getPaniers($request);
+        if(count($paniers) == 1 && is_array($paniers)) {
+            echo "la";
+            $paniers = $paniers[0];
+        }
 
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objets,
@@ -149,7 +154,7 @@ class DefaultController extends Controller
                 'typeObjet' => 'Recherche : '.end($keywords),
                 'user' => $user,
                 'services' => $services,
-                'paniers' => $this->getPaniers($request)));
+                'paniers' => $paniers));
     }
 
     /**

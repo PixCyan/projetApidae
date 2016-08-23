@@ -8,8 +8,6 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * Categorie Cette classe regroupe et traite toutes les informations concernant les categories.
- * Les categories servent à egrouper des objets touristiques d'un même type définit par un nom de categorie.
- * Ces categories sont recuperees via les donnees d'Apidae.
  *
  * @JMS\ExclusionPolicy("all")
  *
@@ -40,7 +38,7 @@ class Categorie
     private $catId;
 
     /**
-     * Libelle de l'objet
+     * Libelle de l'entite
      *
      * @var string
      *

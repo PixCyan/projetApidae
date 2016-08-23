@@ -23,7 +23,7 @@ class Ouverture
     private $id;
 
     /**
-     * ID Apidae de l'objet ouverture
+     * ID Apidae de l'entite ouverture
      * @var int
      *
      * @ORM\Column(name="idOuverture", type="integer", length=255)
@@ -92,7 +92,7 @@ class Ouverture
      *
      * @param string $ouvInfosSup
      *
-     * @return Service
+     * @return Ouverture
      */
     public function setOuvInfosSup($ouvInfosSup)
     {

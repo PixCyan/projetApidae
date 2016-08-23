@@ -29,6 +29,7 @@ class TraductionObjetApidae
     private $id;
 
     /**
+     * Description courte
      * @var string
      *
      * @ORM\Column(name="tra_DescriptionCourte", type="text", nullable=true)
@@ -39,6 +40,7 @@ class TraductionObjetApidae
     private $traDescriptionCourte;
 
     /**
+     * Description longue
      * @var string
      *
      * @ORM\Column(name="tra_DescriptionLongue", type="text", nullable=true)
@@ -46,6 +48,7 @@ class TraductionObjetApidae
     private $traDescriptionLongue;
 
     /**
+     * Description personnalisee (enrichissement de l'objet touristique par un admin)
      * @var string
      *
      * @ORM\Column(name="tra_DescriptionPersonnalisee", type="text", nullable=true)
@@ -53,6 +56,7 @@ class TraductionObjetApidae
     private $traDescriptionPersonnalisee;
 
     /**
+     * Bons plans (ex : "Tous les vendredi formule petit déj à 2 euros") (enrichissement de l'objet touristique par un admin)
      * @var string
      *
      * @ORM\Column(name="tra_BonsPlans", type="text", nullable=true)
@@ -60,6 +64,7 @@ class TraductionObjetApidae
     private $traBonsPlans;
 
     /**
+     * Informations supplémentaires (enrichissement de l'objet touristique par un admin)
      * @var string
      *
      * @ORM\Column(name="tra_InfosSup", type="text", nullable=true)
@@ -67,12 +72,15 @@ class TraductionObjetApidae
     private $traInfosSup;
 
     /**
+     * ObjetApidae propriétaire de cette entite
+     *
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="traductions")
      * @ORM\JoinColumn(nullable = false)
      */
     private $objet;
 
     /**
+     * Langue rattachee a cette entite
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\Langue", inversedBy="traductions")
      * @ORM\JoinColumn(nullable = false)
      *

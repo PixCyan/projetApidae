@@ -25,12 +25,14 @@ class TypePublic
     private $id;
 
     /**
+     * ID Apidae de l'entite
      * @var int
      * @ORM\Column(name="typId", type="integer", unique=true)
      */
     private $typId;
 
     /**
+     * Libelle de l'entite
      * @var string
      *
      * @ORM\Column(name="typLibelle", type="string", length=255, nullable=true)
@@ -38,6 +40,7 @@ class TypePublic
     private $typLibelle;
 
     /**
+     * Sous-categorie Apidae
      * @var string
      *
      * @ORM\Column(name="familleCritere", type="string", length=255, nullable=true)
@@ -45,6 +48,7 @@ class TypePublic
     private $familleCritere;
 
     /**
+     * Nombre minimum
      * @var string
      *
      * @ORM\Column(name="min", type="string", length=255, nullable=true)
@@ -52,6 +56,7 @@ class TypePublic
     private $min;
 
     /**
+     * Nombre maximum
      * @var string
      *
      * @ORM\Column(name="max", type="string", length=255, nullable=true)
@@ -59,6 +64,7 @@ class TypePublic
     private $max;
 
     /**
+     * ObjetApidae auxquels est rattachee l'entite
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="typesPublic", cascade={"merge"})
      * @ORM\JoinColumn(nullable=false)
      */
@@ -194,7 +200,7 @@ class TypePublic
      * Set traIdTraduction
      *
      *
-     * @return Equipement
+     * @return TypePublic
      */
     public function setTraduction(TraductionObjetApidae $traduction)
     {

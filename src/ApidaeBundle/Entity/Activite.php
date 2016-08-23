@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping\Entity;
 use JMS\Serializer\Annotation as JMS;
 
 /**
- * Activite Cette classe regrtoupe et traite toutes les informations concernant les objets touristiques de type :
+ * Activite Cette classe regroupe et traite toutes les informations concernant les objets touristiques de type :
  * "ACTIVITE", "PATRIMOINE_CULTUREL"
  *
  * @Entity
@@ -41,7 +41,7 @@ class Activite extends ObjetApidae
     protected $durees;
 
     /**
-     * Le type d'activite auquel l'objet est rattache
+     * Le type d'activite auquel l'entite est rattachee
      *
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ActiviteType",  inversedBy="activites")
      */

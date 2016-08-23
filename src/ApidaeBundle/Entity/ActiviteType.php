@@ -76,14 +76,14 @@ class ActiviteType
     }
 
     /**
-     * Ajoute/lie une traduction à l'objet
+     * Ajoute/lie une traduction à l'entite
      */
     public function addActivite(Activite $activite) {
         $this->activites[] = $activite;
     }
 
     /**
-     * Supprime une traduction lié à l'objet
+     * Supprime une traduction lié à l'entite
      */
     public function removeActivite(Activite $activite) {
         $this->activites->removeElement($activite);

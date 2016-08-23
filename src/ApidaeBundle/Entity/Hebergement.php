@@ -8,7 +8,7 @@ use JMS\Serializer\Annotation as JMS;
 
 /**
  * Hebergement Cette classe regroupe et traite toutes les informations concernant les objets touristiques de type :
- * "HOTELLERIE", "HOTELLERIE_PLEIN_AIR", "HEBERGEMENT_LOCATIF", "HEBERGEMENT_COLLECTIF",
+ * "HOTELLERIE", "HOTELLERIE_PLEIN_AIR", "HEBERGEMENT_LOCATIF", "HEBERGEMENT_COLLECTIF"
  *
  * @Entity
  *
@@ -581,7 +581,7 @@ class Hebergement extends ObjetApidae
     }
 
     /**
-     * Traites les informations du tableau donne pour definir les informations de l'objet
+     * Traites les informations du tableau donne pour definir les informations de l'entite
      * @param $tab
      */
     public function setCapacite($tab) {

@@ -5,8 +5,8 @@ namespace ApidaeBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * InformationsTarif Cette classe regroupe et traite toutes les informations concernant les differents types de tarifs
- * associés aux "TarifType" disponibles pour chaque objets touristiques.
+ * InformationsTarif Cette classe regroupe et traite toutes les informations concernant les differents tarifs
+ * associés aux "TarifType" (ex :"menu enfant") disponibles pour chaque objets touristiques.
  *
  * @ORM\Table(name="informations_tarif")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\InformationsTarifRepository")

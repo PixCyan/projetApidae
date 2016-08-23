@@ -42,7 +42,7 @@ abstract class ObjetApidae {
     protected $idObj;
 
     /**
-     * Nombre d'etoile detenu par l'objet si celui ci est classe
+     * Nombre d'etoile detenu par l'objet touristique si celui ci est classe
      * @var string
      *
      * @ORM\Column(name="obj_Etoile", type="string", length=255, nullable=true)
@@ -50,7 +50,7 @@ abstract class ObjetApidae {
     protected $objEtoile;
 
     /**
-     * Type Apidae de l'objet
+     * Type Apidae de l'objet touristique
      * @var string
      *
      * @ORM\Column(name="obj_TypeApidae", type="string", length=255)
@@ -66,7 +66,7 @@ abstract class ObjetApidae {
     protected $objGeolocalisation;
 
     /**
-     * Objet present mis en suggestion ou non
+     * Entite mise en suggestion ou non
      * @var bool
      *
      * @ORM\Column(name="obj_Suggestion", type="boolean")
@@ -82,13 +82,13 @@ abstract class ObjetApidae {
     protected $objDateSuggestion;
 
     /**
-     * ID des Objets touristiques auxquels sont relies cet objet touristique
+     * ID des Objets touristiques auxquels est reliee cette entite
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\ObjetLie",  mappedBy="objet", cascade={"persist"})
      */
     protected $objetsLies;
 
     /**
-     * Categories auxquelles sont rattachees l'objet touristique
+     * Categories auxquelles est reliee cette entite
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Categorie", inversedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHascategories")
      *
@@ -98,21 +98,21 @@ abstract class ObjetApidae {
     protected $categories;
 
     /**
-     * Les paniers auxquels sont rattaches l'objet
+     * Les paniers auxquels est reliee cette entite
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Panier", mappedBy="objets", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasPanier")
      */
     protected $paniers;
 
     /**
-     * Selection creees sous la plateforme Apidae auxquelles sont reliees l'objet
+     * Selection creees sous la plateforme Apidae auxquelles est reliee cette entite
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\SelectionApidae", mappedBy="objets", cascade={"merge"})
      * @ORM\JoinTable(name="objetHasSelection")
      */
     protected $selectionsApidae;
 
     /**
-     * Commune à laquelle est relie l'objet
+     * Commune à laquelle est relie l'entite
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\Commune", inversedBy="objetsApidae", cascade={"persist"})
      *
      * @JMS\Expose
@@ -121,7 +121,7 @@ abstract class ObjetApidae {
     protected $commune;
 
     /**
-     * Adresse de l'objet
+     * Adresse de l'entite
      * @var string
      *
      * @ORM\Column(name="adresse", type="string", length=255)
@@ -129,7 +129,7 @@ abstract class ObjetApidae {
     protected $adresse;
 
     /**
-     * Code postal de l'objet
+     * Code postal de l'entite
      * @var string
      *
      * @ORM\Column(name="codePostal", type="string", length=255)
@@ -137,7 +137,7 @@ abstract class ObjetApidae {
     protected $codePostal;
 
     /**
-     * Labels qualites auxquelles sont rattaches l'objet
+     * Labels qualites auxquelles sont rattaches l'entite
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\LabelQualite", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasLabelQualite")
      */
@@ -145,7 +145,7 @@ abstract class ObjetApidae {
 
     //----------------------------------------- Changements trad -----------------------------------------------------//
     /**
-     * Nom de l'objet
+     * Nom de l'entite
      * @var string
      *
      * @ORM\Column(name="obj_Nom", type="text", nullable=true)
@@ -175,14 +175,14 @@ abstract class ObjetApidae {
     protected $tarifEnClair;
 
     /**
-     * Les equipements auxquels l'objet est rattache
+     * Les equipements auxquels l'entite est rattache
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Equipement", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasEquipements")
      */
     protected $equipements;
 
     /**
-     * Les services auxquels l'objet est rattache
+     * Les services auxquels l'entite est rattache
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\Service", inversedBy="objetsApidae", cascade={"persist"})
      * @ORM\JoinTable(name="objetHasServices")
      *
@@ -192,13 +192,13 @@ abstract class ObjetApidae {
     protected $services;
 
     /**
-     * Les moyens de communications auxquels l'objet est rattache
+     * Les moyens de communications auxquels l'entite est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\MoyenCommunication", mappedBy="objetApidae", cascade={"persist"})
      */
     protected $moyensCommunications;
 
     /**
-     * Les mutlimedias auxquels l'objet est rattache
+     * Les mutlimedias auxquels l'entite est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Multimedia", mappedBy="objetApidae", cascade={"persist"})
      *
      * @JMS\Expose
@@ -207,25 +207,25 @@ abstract class ObjetApidae {
     protected $multimedias;
 
     /**
-     * Les tarifs auxquels l'objet est rattache
+     * Les tarifs auxquels l'entite est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\InformationsTarif", mappedBy="objetApidae", cascade={"persist"})
      */
     protected $tarifs;
 
     /**
-     * Les ouvertures (details) auxquelles l'objet est rattache
+     * Les ouvertures (details) auxquelles l'entite est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\Ouverture", mappedBy="objetApidae", cascade={"persist"})
      */
     protected $ouvertures;
 
     /**
-     * Les types de public auxquels l'objet est rattache
+     * Les types de public auxquels l'entite est rattache
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\TypePublic", mappedBy="objetsApidae", cascade={"persist"})
      */
     protected $typesPublic;
 
     /**
-     * Les traductions auxquelles l'objet est rattache
+     * Les traductions auxquelles l'entite est rattache
      * @ORM\OneToMany(targetEntity="ApidaeBundle\Entity\TraductionObjetApidae", mappedBy="objet", cascade={"persist"})
      *
      * @JMS\Expose
@@ -255,49 +255,49 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Ajoute/lie une traduction à l'objet
+     * Ajoute/lie une traduction à l'entite
      */
     public function addTraduction(TraductionObjetApidae $traduction) {
         $this->traductions[] = $traduction;
     }
 
     /**
-     * Supprime une traduction lié à l'objet
+     * Supprime une traduction lié à l'entite
      */
     public function removeTraduction(TraductionObjetApidae $traduction) {
         $this->traductions->removeElement($traduction);
     }
 
     /**
-     * Ajoute/lie un label de qualite à l'objet
+     * Ajoute/lie un label de qualite à l'entite
      */
     public function addLabelQualite(LabelQualite $labelQualite) {
         $this->labelsQualite[] = $labelQualite;
     }
 
     /**
-     * Supprime un label de qualite à l'objet
+     * Supprime un label de qualite à l'entite
      */
     public function removeLabelQualite(LabelQualite $labelQualite) {
         $this->labelsQualite->removeElement($labelQualite);
     }
 
     /**
-     * Ajoute/lie un objetApidae à l'objet
+     * Ajoute/lie un objetApidae à l'entite
      */
     public function addObjetLie(ObjetLie $objetLie) {
         $this->objetsLies[] = $objetLie;
     }
 
     /**
-     * Supprime un objetApidae à l'objet
+     * Supprime un objetApidae à l'entite
      */
     public function removeObjetLie(ObjetLie $objetLie) {
         $this->objetsLies->removeElement($objetLie);
     }
 
     /**
-     * Ajoute/lie une categorie à l'objet
+     * Ajoute/lie une categorie à l'entite
      */
     public function addCategorie(Categorie $categorie) {
         $this->categories[] = $categorie;
@@ -305,14 +305,14 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Supprime une categorie à l'objet
+     * Supprime une categorie à l'entite
      */
     public function removeCategorie(Categorie $categorie) {
         $this->categories->removeElement($categorie);
     }
 
     /**
-     * Ajoute/lie un panier à l'objet
+     * Ajoute/lie un panier à l'entite
      */
     public function addPanier(Panier $panier) {
         $this->paniers[] = $panier;
@@ -320,14 +320,14 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Supprime un panier à l'objet
+     * Supprime un panier à l'entite
      */
     public function removePanier(Panier $panier) {
         $this->paniers->removeElement($panier);
     }
 
     /**
-     * Ajoute/lie une sélection d'objets (définie sur le site) à l'objet
+     * Ajoute/lie une sélection d'objets touristiques(définie sur le site) à l'entite
      */
     public function addSelectionApidae(SelectionApidae $selection) {
         $this->selectionsApidae[] = $selection;
@@ -335,7 +335,7 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Supprime une sélection d'objets (définie sur le site) à l'objet
+     * Supprime une sélection d'objets touristiques(définie sur le site) à l'entite
      */
     public function removeSelectionApidae(SelectionApidae $selection) {
         $this->selectionsApidae->removeElement($selection);
@@ -345,7 +345,7 @@ abstract class ObjetApidae {
 
 
     /**
-     * Ajoute/lie un type de public à l'objet
+     * Ajoute/lie un type de public à l'entite
      */
     public function addTypePublic(TypePublic $type) {
         $this->typesPublic[] = $type;
@@ -353,14 +353,14 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Supprime un type de public lié à l'objet
+     * Supprime un type de public lié à l'entite
      */
     public function removeTypePublic(TypePublic $type) {
         $this->typesPublic->removeElement($type);
     }
 
     /**
-     * Ajoute/lie un equipement à l'objet
+     * Ajoute/lie un equipement à l'entite
      */
     public function addEquipement(Equipement $equipement) {
         $this->equipements[] = $equipement;
@@ -368,14 +368,14 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Supprime un equipement lié à l'objet
+     * Supprime un equipement lié à l'entite
      */
     public function removeEquipement(Equipement $equipement) {
         $this->equipements->removeElement($equipement);
     }
 
     /**
-     * Ajoute/lie un service à l'objet
+     * Ajoute/lie un service à l'entite
      */
     public function addService(Service $service) {
         $this->services[] = $service;
@@ -383,14 +383,14 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Supprime un service lié à l'objet
+     * Supprime un service lié à l'entite
      */
     public function removeService(Service $service) {
         $this->services->removeElement($service);
     }
 
     /**
-     * Ajoute/lie un  moyen de communication à l'objet
+     * Ajoute/lie un  moyen de communication à l'entite
      */
     public function addMoyenCommunication(MoyenCommunication $moyenCommunication) {
         $this->moyensCommunications[] = $moyenCommunication;
@@ -398,14 +398,14 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Supprime un moyen de communication lié à l'objet
+     * Supprime un moyen de communication lié à l'entite
      */
     public function removeMoyenCommunication(MoyenCommunication $moyenCommunication) {
         $this->moyensCommunications->removeElement($moyenCommunication);
     }
 
     /**
-     * Ajoute/lie un media de communication à l'objet
+     * Ajoute/lie un media de communication à l'entite
      */
     public function addMultimedia(Multimedia $multimedia) {
         $this->multimedias[] = $multimedia;
@@ -413,14 +413,14 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Supprime un media lié à l'objet
+     * Supprime un media lié à l'entite
      */
     public function removeMultimedia(Multimedia $multimedia) {
         $this->multimedias->removeElement($multimedia);
     }
 
     /**
-     * Ajoute/lie un tarif à l'objet
+     * Ajoute/lie un tarif à l'entite
      */
     public function addInfoTarif(InformationsTarif $tarif) {
         $this->tarifs[] = $tarif;
@@ -428,7 +428,7 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Supprime un tarif lié à l'objet
+     * Supprime un tarif lié à l'entite
      */
     public function removeInfoTarif(InformationsTarif $tarif) {
         $this->tarifs->removeElement($tarif);
@@ -436,7 +436,7 @@ abstract class ObjetApidae {
 
 
     /**
-     * Ajoute/lie une ouverture à l'objet
+     * Ajoute/lie une ouverture à l'entite
      */
     public function addOuverture(Ouverture $ouverture) {
         $this->ouvertures[] = $ouverture;
@@ -444,7 +444,7 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Supprime une ouverture lié à l'objet
+     * Supprime une ouverture lié à l'entite
      */
     public function removeOuverture(Ouverture $ouverture) {
         $this->ouvertures->removeElement($ouverture);
@@ -492,28 +492,6 @@ abstract class ObjetApidae {
     public function getObjEtoile()
     {
         return $this->objEtoile;
-    }
-
-    /**
-     * Set adresse
-     *
-     * @return ObjetApidae
-     */
-    public function setObjAdresse(Adresse $objAdresse)
-    {
-        $this->adresse = $objAdresse;
-
-        return $this;
-    }
-
-    /**
-     * Get objAdresse
-     *
-     * @return string
-     */
-    public function getObjAdresse()
-    {
-        return $this->adresse;
     }
 
     /**
@@ -613,42 +591,42 @@ abstract class ObjetApidae {
     }
 
     /**
-     *@return array contenant les traductions associés à l'objetApidae
+     *@return ArrayCollection
      */
     public function getTraductions() {
         return $this->traductions;
     }
 
     /**
-     *@return array tableau contenant les objetsLies associés à l'objetApidae
+     *@return ArrayCollection
      */
     public function getObjetsLies() {
         return $this->objetsLies;
     }
 
     /**
-     *@return array tableau contenant les labels associés à l'objetApidae
+     *@return ArrayCollection
      */
     public function getLabelsQualite() {
         return $this->labelsQualite;
     }
 
     /**
-     *@return array tableau contenant les categories associés à l'objetApidae
+     *@return ArrayCollection
      */
     public function getCategories() {
         return $this->categories;
     }
 
     /**
-     *@return array tableau contenant les paniers associés à l'objetApidae
+     *@return ArrayCollection
      */
     public function getPaniers() {
         return $this->paniers;
     }
 
     /**
-     *@return un tableau contenant les selectionApidae associés à l'objetApidae
+     *@return ArrayCollection
      */
     public function getSelectionsApidae() {
         return $this->selectionsApidae;
@@ -701,9 +679,6 @@ abstract class ObjetApidae {
     {
         $this->codePostal = $codePostal;
     }
-
-
-    //--- changements
 
     /**
      * @return string
@@ -874,7 +849,7 @@ abstract class ObjetApidae {
     }
 
     /**
-     * Traites les informations du tableau donne pour definir les informations de l'objet
+     * Traites les informations du tableau donne pour definir les informations de l'entite
      * @param $tab
      */
     public abstract function setCapacite($tab);

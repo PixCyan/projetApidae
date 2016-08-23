@@ -63,7 +63,7 @@ class LabelQualite
     private $labClassement;
 
     /**
-     * Les objets auxquels ce label est rattache
+     * Les objets touristiques auxquels ce label est rattache
      * @ORM\ManyToMany(targetEntity="ApidaeBundle\Entity\ObjetApidae", mappedBy="labelsQualite")
      * @ORM\JoinColumn(nullable=true)
      */

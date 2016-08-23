@@ -112,7 +112,7 @@ class Evenement extends ObjetApidae
     }
 
     /**
-     * Traites les informations du tableau donne pour definir les informations de l'objet
+     * Traites les informations du tableau donne pour definir les informations de l'entite
      * @param $tab
      */
     public function setCapacite($tab)

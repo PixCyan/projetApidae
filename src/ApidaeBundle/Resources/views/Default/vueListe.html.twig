@@ -103,10 +103,11 @@
                         {% for panier in paniers %}
                             <h5 class="choixPanier" id="{{ panier.id }}" data-dismiss="modal">{{ panier.panLibelle }}</h5>
                         {% endfor %}
-                    {% else %}
+                    {% elseif paniers|length == 1%}
                         <h5 class="choixPanier" id="{{ paniers.id }}" data-dismiss="modal">{{ paniers.panLibelle }}</h5>
+                    {% else %}
+                        <p> Vous n'avez actuellement aucune liste de favoris, créez une nouvelle liste pour y ajouter des offres.</p>
                     {% endif %}
-
                 </div>
                 <div class="modal-footer">
                     {% if user is not empty %}

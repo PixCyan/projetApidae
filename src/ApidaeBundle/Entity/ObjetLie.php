@@ -5,7 +5,7 @@ namespace ApidaeBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ObjetLie Cette classe regroupe les informations concernant les "Objets Lies". Ces objets sont des objets touristiques
+ * ObjetLie Cette classe regroupe les informations concernant les "Objets Lies". Ces entités sont des objets touristiques
  * rattachés à d'autres objets touristiques.
  *
  * @ORM\Table(name="objet_lie")

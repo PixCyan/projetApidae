@@ -6,8 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Duree Cette classe regroupe et traite toutes les informations concernant les durees des objets touristiques de type
- * "Activite".
+ * Duree Cette classe regroupe et traite toutes les informations concernant les durees des "Activite".
  *
  * @ORM\Table(name="duree")
  * @ORM\Entity(repositoryClass="ApidaeBundle\Repository\DureeRepository")
@@ -62,14 +61,14 @@ class Duree
     }
 
     /**
-     * Ajoute/lie une traduction à l'objet
+     * Ajoute/lie une traduction à l'entite
      */
     public function addActivite(Activite $a) {
         $this->activites[] = $a;
     }
 
     /**
-     * Supprime une traduction lié à l'objet
+     * Supprime une traduction lié à l'entite
      */
     public function removeActivite(Activite $a) {
         $this->activites->removeElement($a);
