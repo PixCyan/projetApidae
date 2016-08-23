@@ -39,10 +39,9 @@ class Service
 
     /**
      * Libelle du service
+     *
      * @var string
-     *
      * @ORM\Column(name="serLibelle", type="string", length=255)
-     *
      * @JMS\Expose
      * @JMS\Type("string")
      */
