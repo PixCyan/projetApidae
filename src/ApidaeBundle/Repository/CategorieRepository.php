@@ -30,7 +30,7 @@ class CategorieRepository extends \Doctrine\ORM\EntityRepository {
      * @param $idsCategories
      * @return array
      */
-    public  function getCountServicesByIdsObjets($idsObjets, $idsCategories) {
+    public  function getCountCategoriesByIdsObjets($idsObjets, $idsCategories) {
     $em = $this->getEntityManager();
     $qb = $em->createQueryBuilder();
     $qb->select('c')
@@ -38,6 +38,7 @@ class CategorieRepository extends \Doctrine\ORM\EntityRepository {
         ->innerJoin('c.objets', 'o')
         ->where('c.catId IN (?1)')
         ->andWhere('o.idObj IN (?2)')
+        ->groupBy('o.idObj')
         ->setParameters(array(1 => $idsCategories, 2 => $idsObjets));
     $query = $qb->getQuery()->getResult();
     return count($query);

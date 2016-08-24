@@ -25,21 +25,23 @@ class ServiceRepository extends \Doctrine\ORM\EntityRepository
 
 
     /**
-     * Nombre de services étant affiliés à la liste d'objet Apidae donnée pour une liste de services donnée.
+     * Nombre de services étant affiliés à la liste d'objet Apidae donnée
      * @param $idsObjets
      * @param $idsServices
      * @return array
      */
-    public  function getCountServicesByIdsObjets($idsObjets, $idsServices) {
+    public function getCountServicesByIdsObjets($idsObjets, $idsServices) {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
-        $qb->select('s')
-            ->from('ApidaeBundle:Service', 's')
-            ->innerJoin('s.objetsApidae', 'o')
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.services', 's')
             ->where('s.serId IN (?1)')
             ->andWhere('o.idObj IN (?2)')
+            ->groupBy('o.idObj')
             ->setParameters(array(1 => $idsServices, 2 => $idsObjets));
         $query = $qb->getQuery()->getResult();
         return count($query);
     }
+
 }

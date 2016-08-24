@@ -1,5 +1,5 @@
 <div class="sidebar-module">
-    <h6 class="sidebar-title">{{ 'Classements'|trans }} <span id="titreClassement">({{  countClassements }})</span></h6>
+    <h6 class="sidebar-title">{{ 'Classements'|trans }} <span id="titreClassement">{% if countClassements is defined %}({{  countClassements }}){% endif %}</span></h6>
     {% for l in labels %}
         <div class="sidebar-module-inner">
             <div class="checkbox-block">

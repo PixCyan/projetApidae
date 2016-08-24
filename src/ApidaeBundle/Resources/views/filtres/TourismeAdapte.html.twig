@@ -1,5 +1,5 @@
 <div class="sidebar-module">
-    <h6 class="sidebar-title"> {{ 'Tourisme adapté'|trans }} <span id="titreTourisme">({{ countTourisme }})</span></h6>
+    <h6 class="sidebar-title"> {{ 'Tourisme adapté'|trans }} <span id="titreTourisme">{% if countTourisme is defined %}({{ countTourisme }}){% endif %}</span></h6>
     {% for s in tourismeAdapte %}
         <div class="sidebar-module-inner">
             <div class="checkbox-block">

@@ -11,6 +11,7 @@ use ApidaeBundle\Entity\Service;
 use ApidaeBundle\Entity\TraductionObjetApidae;
 use ApidaeBundle\Form\RechercheObjetForm;
 use ApidaeBundle\Fonctions\Fonctions;
+use ApidaeBundle\Repository\ServiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use ApidaeBundle\Entity\ObjetApidae;
@@ -107,7 +108,7 @@ class DefaultController extends Controller
             foreach($a_regexp as $regex) {
                 //"([^[:alpha:]]|$)" .
                 $regex = $regex." ";
-                print($regex);
+                //print($regex);
                  //Recherche de résultat pour un mot clé donné ($regex) appel au repository personnalisé
                 $res = $em->getRepository(ObjetApidae::class)->getObjetByNom($regex);
                 if($i+1 == count($a_regexp) && count($a_regexp) != 1 && $res) {
@@ -130,10 +131,26 @@ class DefaultController extends Controller
                 'notice',
                 'Aucun objet apidae ne correspond à votre recherche.'
             );
-            $services = array();
+            $services = [];
+            $modesPaiement = [];
+            $classements = [];
+            $categories = [];
+            $tourisme = [];
+            $typesHabitation =[];
+            $idsObbjets = [];
         } else {
             $services = $this->getServicesFromObjets($objets);
-            $session->set('listeObjets', $this->getIdsObjetsFromObjets($objets));
+            $modesPaiement = $this->getModesPaimentFromObjets($objets);
+            $classements = $this->getClassementsFromObjets($objets);
+            $categories = $this->getTypeHabitationFromObjets($objets);
+            $tourisme = $this->getTourismeAdapteFromObjets($objets);
+            if($test = $this->getTypeHabitationFromObjets($objets)){
+                $typesHabitation = $test;
+            } else {
+                $typesHabitation =[];
+            }
+            $idsObbjets = $this->getIdsObjetsFromObjets($objets);
+            $session->set('listeObjets', $idsObbjets);
         }
 
         /*$countPaiements = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($modesPaiement), $selection->getIdSelectionApidae(), $idsObjets);
@@ -142,6 +159,27 @@ class DefaultController extends Controller
         $countClassements = $em->getRepository(ObjetApidae::class)->getCountObjetHasLabels($this->getIdsClassements($labelsQualite), $selection->getIdSelectionApidae(), $idsObjets);
         $countCategories = $em->getRepository(ObjetApidae::class)->getCountObjetHasCategories($this->getIdsCategories($typesHabitation), $selection->getIdSelectionApidae(), $idsObjets);
 */
+        echo count($this->getIdsServices($services));
+        if($idsObbjets) {
+            //services
+            $countServices = $em->getRepository(Service::class)->getCountServicesByIdsObjets($this->getIdsServices($services), $idsObbjets);
+            $countPaiements = $em->getRepository(Service::class)->getCountServicesByIdsObjets($this->getIdsServices($modesPaiement), $idsObbjets);
+            $countTourismes = $em->getRepository(Service::class)->getCountServicesByIdsObjets($this->getIdsServices($tourisme), $idsObbjets);
+            //labels
+            $countClassements = $em->getRepository(LabelQualite::class)->getCountLabelsByIdsObjets($this->getIdsClassements($classements), $idsObbjets);
+            //categories
+            $countCategories = $em->getRepository(Categorie::class)->getCountCategoriesByIdsObjets($this->getIdsCategories($categories), $idsObbjets);
+        } else {
+            //services
+            $countServices = [];
+            $countPaiements = [];
+            $countTourismes = [];
+            //labels
+            $countClassements = [];
+            //categories
+            $countCategories = [];
+        }
+
         $paniers = $this->getPaniers($request);
         if(count($paniers) == 1 && is_array($paniers)) {
             echo "la";
@@ -154,6 +192,16 @@ class DefaultController extends Controller
                 'typeObjet' => 'Recherche : '.end($keywords),
                 'user' => $user,
                 'services' => $services,
+                'modesPaiement' => $modesPaiement,
+                'labels' => $classements,
+                'tourismeAdapte' => $tourisme,
+                'typesHabitation' => $typesHabitation,
+                'categories' => $categories,
+                'countPaiements' => $countPaiements,
+                'countServices' => $countServices,
+                'countTourisme' => $countTourismes,
+                'countClassements' => $countClassements,
+                'countCategories' => $countCategories,
                 'paniers' => $paniers));
     }
 
@@ -221,6 +269,12 @@ class DefaultController extends Controller
         $countClassements = $em->getRepository(ObjetApidae::class)->getCountObjetHasLabels($this->getIdsClassements($labelsQualite), $selection->getIdSelectionApidae(), $idsObjets);
         $countCategories = $em->getRepository(ObjetApidae::class)->getCountObjetHasCategories($this->getIdsCategories($typesHabitation), $selection->getIdSelectionApidae(), $idsObjets);
 
+        $paniers = $this->getPaniers($request);
+        if(count($paniers) == 1 && is_array($paniers)) {
+            echo "la";
+            $paniers = $paniers[0];
+        }
+
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $objets,
                 'langue' => $langue,
@@ -238,7 +292,7 @@ class DefaultController extends Controller
                 'countTourisme' => $countTourismes,
                 'countClassements' => $countClassements,
                 'countCategories' => $countCategories,
-                'paniers' => $this->getPaniers($request)));
+                'paniers' => $paniers));
     }
 
     /**
@@ -268,12 +322,18 @@ class DefaultController extends Controller
         $session->set('filtres', $filtres);
 
         $typeObjet = "Evénements";
+
+        $paniers = $this->getPaniers($request);
+        if(count($paniers) == 1 && is_array($paniers)) {
+            echo "la";
+            $paniers = $paniers[0];
+        }
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
             array('objets' => $evenements,
                 'langue' => $langue,
                 'typeObjet' => $typeObjet,
                 'user' => $user,
-                'paniers' => $this->getPaniers($request)));
+                'paniers' => $paniers));
     }
 
     /**

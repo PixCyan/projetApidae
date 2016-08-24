@@ -30,11 +30,12 @@
                                     <div class="sidebar-module-inner">
                                         <div class="sidebar-mini-search">
                                             <div class="input-group">
-                                                <form id="form_recherche_menu" action="{{ path('rechercheSimple') }}" method="get">
+                                                <form id="form_recherche" action="{{ path('rechercheSimple') }}" method="get">
                                                     <div class="input-group">
                                                         <input type="text" name="champsRecherche" class="form-control" id="rechercheSimple" placeholder="ex : Lac" />
                                                         <span class="input-group-btn">
-                                                            <input class="btn btn-primary" type="submit" value="{{ 'Rechercher'|trans }}" />
+                                                            <!-- <input class="btn btn-primary" type="submit" value="{{ 'Rechercher'|trans }}" /> -->
+                                                            <button form="form_recherche" class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
                                                         </span>
                                                     </div>
                                                 </form>

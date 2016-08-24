@@ -17,7 +17,7 @@ class LabelQualiteRepository extends \Doctrine\ORM\EntityRepository
      * @param $idsLabels
      * @return array
      */
-    public  function getCountServicesByIdsObjets($idsObjets, $idsLabels) {
+    public  function getCountLabelsByIdsObjets($idsObjets, $idsLabels) {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('l')
@@ -25,6 +25,7 @@ class LabelQualiteRepository extends \Doctrine\ORM\EntityRepository
             ->innerJoin('l.objetsApidae', 'o')
             ->where('l.labId IN (?1)')
             ->andWhere('o.idObj IN (?2)')
+            ->groupBy('o.idObj')
             ->setParameters(array(1 => $idsLabels, 2 => $idsObjets));
         $query = $qb->getQuery()->getResult();
         return count($query);
