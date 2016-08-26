@@ -30,7 +30,7 @@ class ServiceRepository extends \Doctrine\ORM\EntityRepository
      * @param $idsServices
      * @return array
      */
-    public function getCountServicesByIdsObjets($idsObjets, $idsServices) {
+    public function getCountServicesByIdsObjets($idsServices, $idsObjets) {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('o')

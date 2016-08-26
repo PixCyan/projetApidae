@@ -153,13 +153,8 @@ class DefaultController extends Controller
             $session->set('listeObjets', $idsObbjets);
         }
 
-        /*$countPaiements = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($modesPaiement), $selection->getIdSelectionApidae(), $idsObjets);
-        $countServices = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($services), $selection->getIdSelectionApidae(), $idsObjets);
-        $countTourismes = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($tourismeAdapte), $selection->getIdSelectionApidae(), $idsObjets);
-        $countClassements = $em->getRepository(ObjetApidae::class)->getCountObjetHasLabels($this->getIdsClassements($labelsQualite), $selection->getIdSelectionApidae(), $idsObjets);
-        $countCategories = $em->getRepository(ObjetApidae::class)->getCountObjetHasCategories($this->getIdsCategories($typesHabitation), $selection->getIdSelectionApidae(), $idsObjets);
-*/
-        echo count($this->getIdsServices($services));
+        //echo count($this->getIdsServices($services));
+        //var_dump($this->getIdsServices($services));
         if($idsObbjets) {
             //services
             $countServices = $em->getRepository(Service::class)->getCountServicesByIdsObjets($this->getIdsServices($services), $idsObbjets);
@@ -202,6 +197,7 @@ class DefaultController extends Controller
                 'countTourisme' => $countTourismes,
                 'countClassements' => $countClassements,
                 'countCategories' => $countCategories,
+                'idSelection' => 0,
                 'paniers' => $paniers));
     }
 
@@ -404,13 +400,14 @@ class DefaultController extends Controller
             $filtres = $session->get('filtres');
             $objetsIds = $session->get('listeObjets');
             if (is_array($objetsIds) && count($objetsIds) > 0) {
+                //récupération de la liste de recherche actuelle
                 $listeActuelle = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
             } else {
                 $listeActuelle = [];
             }
             if(!empty($listeActuelle)) {
                 /* Récupérer les objets qui sont liés à la categorie d'id ctaegorieId
-                peuvent être soit categorie/service/labelQualite */
+                peuvent être de type categorie/service/labelQualite */
                 $c = $em->getRepository(Categorie::class)->findOneByCatId($categorieId);
                 if($c && ($typeObjet == 'categories')) {
                     if(!isset($filtres["categories"][$c->getCatId()])) {
@@ -420,6 +417,7 @@ class DefaultController extends Controller
                 } else {
                     $s = $em->getRepository(Service::class)->findOneBySerId($categorieId);
                     if($s && ($typeObjet == "services" || $typeObjet == "paiements" || $typeObjet == "tourismes")) {
+                        echo "TEST ";
                         if($typeObjet == "paiements" && !isset($filtres["paiements"][$s->getSerId()])) {
                             $filtres["paiements"][$s->getSerId()] = $s->getSerId();
 
@@ -685,14 +683,18 @@ class DefaultController extends Controller
     private function comparerServices($em, $filtres, $objetsActuelle, $selection, $type){
         $typeFiltre = [];
         if($type == "services") {
-            $typeFiltre = $filtres["services"];
+                $typeFiltre = $filtres["services"];
         } elseif($type == "paiements") {
             $typeFiltre = $filtres["paiements"];
         } elseif($type == "tourismes") {
             $typeFiltre = $filtres["tourismes"];
         }
         $objets = new ArrayCollection();
-        $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsServiceSelection($typeFiltre, $selection));
+        if($selection == 0) {
+            $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->objetsInServicesAndIdsObjet($typeFiltre, $this->getIdsObjetsFromObjets($objetsActuelle)));
+        } else {
+            $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsServiceSelection($typeFiltre, $selection));
+        }
         $tmp = new ArrayCollection();
         foreach($objets as $o){
             if($objetsActuelle->contains($o) && !$tmp->contains($o)) {
@@ -712,7 +714,13 @@ class DefaultController extends Controller
      */
     private function comparerClassements($em, $filtres, $objetsActuelle, $selection) {
         $objets = new ArrayCollection();
-        $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsLabelsSelection($filtres["classements"], $selection));
+        if($selection == 0) {
+            $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->objetsInLabelsAndIdsObjet($filtres["classements"], $this->getIdsObjetsFromObjets($objetsActuelle)));
+        } else {
+            $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsLabelsSelection($filtres["classements"], $selection));
+        }
+
+
         $tmp = new ArrayCollection();
         foreach($objets as $o){
             if($objetsActuelle->contains($o) && !$tmp->contains($o)) {
@@ -732,7 +740,12 @@ class DefaultController extends Controller
      */
     private function comparerCategories($em, $filtres, $objetsActuelle, $selection) {
         $objets = new ArrayCollection();
-        $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($filtres["categories"], $selection));
+        if($selection == 0) {
+            $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->objetsInCatAndIdsObjet($filtres["categories"], $this->getIdsObjetsFromObjets($objetsActuelle)));
+        } else {
+            $objets = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsCategorieSelection($filtres["categories"], $selection));
+        }
+
         $tmp = new ArrayCollection();
         foreach($objets as $o){
             if($objetsActuelle->contains($o) && !$tmp->contains($o)) {

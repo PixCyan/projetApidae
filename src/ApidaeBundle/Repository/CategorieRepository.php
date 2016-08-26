@@ -30,7 +30,7 @@ class CategorieRepository extends \Doctrine\ORM\EntityRepository {
      * @param $idsCategories
      * @return array
      */
-    public  function getCountCategoriesByIdsObjets($idsObjets, $idsCategories) {
+    public  function getCountCategoriesByIdsObjets($idsCategories, $idsObjets) {
     $em = $this->getEntityManager();
     $qb = $em->createQueryBuilder();
     $qb->select('c')

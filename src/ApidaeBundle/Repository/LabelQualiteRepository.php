@@ -17,7 +17,7 @@ class LabelQualiteRepository extends \Doctrine\ORM\EntityRepository
      * @param $idsLabels
      * @return array
      */
-    public  function getCountLabelsByIdsObjets($idsObjets, $idsLabels) {
+    public  function getCountLabelsByIdsObjets($idsLabels, $idsObjets) {
         $em = $this->getEntityManager();
         $qb = $em->createQueryBuilder();
         $qb->select('l')

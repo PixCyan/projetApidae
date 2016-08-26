@@ -84,13 +84,77 @@ class ObjetApidaeRepository extends EntityRepository {
             ->getResult();
     }
 
+    //-- Recherche par mots-cles
+    /**
+     * Renvoie une liste d'objet apidae ayant les categories donnés parmi une liste d'idsObjet donnée
+     * @param $idsCategories
+     * @param $idsObjets
+     * @return array
+     */
+    public function objetsInCatAndIdsObjet($idsCategories, $idsObjets)
+    {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.categories', 'c')
+            ->where('c.catId IN (?1)')
+            ->andWhere('o.idObj IN (?2)')
+            ->groupBy('o.idObj')
+            ->setParameters(array(1 => $idsCategories, 2 => $idsObjets));
+        $query = $qb->getQuery()->getResult();
+        return $query;
+    }
 
+    /**
+     * Renvoie une liste d'objet apidae ayant les services donnés parmi une liste d'idsObjet donnée
+     * @param $idsServices
+     * @param $idsObjets
+     * @return array
+     */
+    public function objetsInServicesAndIdsObjet($idsServices, $idsObjets)
+    {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.services', 's')
+            ->where('s.serId IN (?1)')
+            ->andWhere('o.idObj IN (?2)')
+            ->groupBy('o.idObj')
+            ->setParameters(array(1 => $idsServices, 2 => $idsObjets));
+        $query = $qb->getQuery()->getResult();
+        return $query;
+    }
+
+    /**
+     * Renvoie une liste d'objet apidae ayant les labels donnés parmi une liste d'idsObjet donnée
+     * @param $idsLabels
+     * @param $idSelection
+     * @return array
+     */
+    public function objetsInLabelsAndIdsObjet($idsLabels, $idSelection)
+    {
+        $em = $this->getEntityManager();
+        $qb = $em->createQueryBuilder();
+        $qb->select('o')
+            ->from('ApidaeBundle:ObjetApidae', 'o')
+            ->innerJoin('o.labelsQualite', 'l')
+            ->where('l.labId IN (?1)')
+            ->andWhere('o.idObj IN (?2)')
+            ->groupBy('o.idObj')
+            ->setParameters(array(1 => $idsLabels, 2 => $idSelection));
+        $query = $qb->getQuery()->getResult();
+        return $query;
+    }
+
+
+    //--- Recherche par sélection
     /**
      * Renvoie une liste d'objet apidae ayant la categorie donnée et la selection donnée
      * @param $idsCategories
      * @param $idSelection
-     * @return \Doctrine\ORM\Query
-     * @internal param $idCategorie
+     * @return array
      */
     public function getObjetsCategorieSelection($idsCategories, $idSelection) {
         $em = $this->getEntityManager();
