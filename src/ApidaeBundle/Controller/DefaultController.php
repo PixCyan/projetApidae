@@ -177,7 +177,6 @@ class DefaultController extends Controller
 
         $paniers = $this->getPaniers($request);
         if(count($paniers) == 1 && is_array($paniers)) {
-            echo "la";
             $paniers = $paniers[0];
         }
 
@@ -267,7 +266,6 @@ class DefaultController extends Controller
 
         $paniers = $this->getPaniers($request);
         if(count($paniers) == 1 && is_array($paniers)) {
-            echo "la";
             $paniers = $paniers[0];
         }
 
@@ -321,7 +319,6 @@ class DefaultController extends Controller
 
         $paniers = $this->getPaniers($request);
         if(count($paniers) == 1 && is_array($paniers)) {
-            echo "la";
             $paniers = $paniers[0];
         }
         return $this->render('ApidaeBundle:Default:vueListe.html.twig',
@@ -417,7 +414,6 @@ class DefaultController extends Controller
                 } else {
                     $s = $em->getRepository(Service::class)->findOneBySerId($categorieId);
                     if($s && ($typeObjet == "services" || $typeObjet == "paiements" || $typeObjet == "tourismes")) {
-                        echo "TEST ";
                         if($typeObjet == "paiements" && !isset($filtres["paiements"][$s->getSerId()])) {
                             $filtres["paiements"][$s->getSerId()] = $s->getSerId();
 
@@ -506,11 +502,23 @@ class DefaultController extends Controller
 
         $idsObjets = $this->getIdsObjetsFromObjets($nouvelleListe);
 
-        $countPaiements = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($modesPaiement), $idSelection, $idsObjets);
-        $countServices = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($services), $idSelection, $idsObjets);
-        $countTourismes = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($tourisme), $idSelection, $idsObjets);
-        $countClassements = $em->getRepository(ObjetApidae::class)->getCountObjetHasLabels($this->getIdsClassements($classements), $idSelection, $idsObjets);
-        $countCategories = $em->getRepository(ObjetApidae::class)->getCountObjetHasCategories($this->getIdsCategories($categories), $idSelection, $idsObjets);
+        if($idSelection == 0) {
+            //services
+            $countServices = $em->getRepository(Service::class)->getCountServicesByIdsObjets($this->getIdsServices($services), $idsObjets);
+            $countPaiements = $em->getRepository(Service::class)->getCountServicesByIdsObjets($this->getIdsServices($modesPaiement), $idsObjets);
+            $countTourismes = $em->getRepository(Service::class)->getCountServicesByIdsObjets($this->getIdsServices($tourisme), $idsObjets);
+            //labels
+            $countClassements = $em->getRepository(LabelQualite::class)->getCountLabelsByIdsObjets($this->getIdsClassements($classements), $idsObjets);
+            //categories
+            $countCategories = $em->getRepository(Categorie::class)->getCountCategoriesByIdsObjets($this->getIdsCategories($categories), $idsObjets);
+        } else {
+            $countPaiements = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($modesPaiement), $idSelection, $idsObjets);
+            $countServices = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($services), $idSelection, $idsObjets);
+            $countTourismes = $em->getRepository(ObjetApidae::class)->getCountObjetHasServices($this->getIdsServices($tourisme), $idSelection, $idsObjets);
+            $countClassements = $em->getRepository(ObjetApidae::class)->getCountObjetHasLabels($this->getIdsClassements($classements), $idSelection, $idsObjets);
+            $countCategories = $em->getRepository(ObjetApidae::class)->getCountObjetHasCategories($this->getIdsCategories($categories), $idSelection, $idsObjets);
+        }
+
 
         $objetsTableau = $serializer->serialize($nouvelleListe, 'json');
         $services = $serializer->serialize($services, 'json');
@@ -535,7 +543,7 @@ class DefaultController extends Controller
     /**
      * Get tous les services lies aux objets de la liste actuelle
      * @param rechercheActuelle
-     * @return array
+     * @return ArrayCollection
      */
     private function getServicesFromObjets($rechercheActuelle) {
         $services = new ArrayCollection();
