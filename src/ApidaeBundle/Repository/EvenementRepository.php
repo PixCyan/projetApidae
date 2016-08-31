@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class EvenementRepository extends \Doctrine\ORM\EntityRepository {
 
     /**
-     * Renvoie la liste des évènements ouverts poiur la date actuelle
+     * Renvoie la liste des évènements ouverts pour la date actuelle
      * @return array
      */
     public function getAujourdhui() {

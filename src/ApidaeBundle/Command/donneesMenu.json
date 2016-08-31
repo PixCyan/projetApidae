@@ -163,7 +163,7 @@
 		]
 	},
 	{
-		"libelle" : "@Fr:Patrimoine; Musées, Galeries@En:Historic patrimony, Museums, Galleries@",
+		"libelle" : "@Fr:Patrimoine, Musées, Galeries@En:Historic patrimony, Museums, Galleries@",
 		"typeObjet" : "@Fr:Activites@En:Activites@",
 		"selectionApidae" : [
 			{

@@ -60,7 +60,7 @@ class MakeMenuCommand extends ContainerAwareCommand
                     $objets = $this->traitementSelection($value->selectionApidae);
                 } elseif(isset($value->periode)) {
                     if($value->periode == 1) {
-                        $objets = $this->em->getRepository(Evenement::class)->getAujourdhui2();
+                        $objets = $this->em->getRepository(Evenement::class)->getAujourdhui();
                     } else {
                         $objets = $this->em->getRepository(Evenement::class)->getInterval($value->periode);
                     }
