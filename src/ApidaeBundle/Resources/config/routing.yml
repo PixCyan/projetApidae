@@ -2,6 +2,10 @@ test:
     path: /test
     defaults: { _controller: ApidaeBundle:Default:tests }
 
+urlNotification:
+  path: /url-notification-export
+  defaults: { _controller: ApidaeBundle:Default:recuperationExport}
+
 indexAccueil:
     path : /accueil
     defaults: { _controller: ApidaeBundle:Default:index }

@@ -485,6 +485,30 @@ class DefaultController extends Controller
     }
 
     /**
+     * Recuperation du nouvel export et répond à la notification
+     * @param Request $request
+     * @return Response
+     */
+    public function recuperationExportAction(Request $request) {
+        //Get pour le test TODO repasser en post quand fini
+        if ($request->getMethod() == 'GET') {
+            $statut = $request->get('statut');
+            $ponctuel = $request->get('ponctuel');
+            $reinitialisation = $this->get('request')->request->get('reinitialisation');
+            $datas = [];
+            if($statut == "SUCCES") {
+                $datas["ponctuel"] = $ponctuel;
+                $datas["reinitialisation"] = $reinitialisation;
+                $datas["urlRecuperation"] = $request->get('urlRecuperation');
+                $datas["urlRecuperation"] = $request->get('urlConfirmation');
+            }
+        }
+
+
+        return $this->render('ApidaeBundle:Default:test.html.twig', array('datas' => $datas));
+    }
+
+    /**
      * Renvoi un tableau de donnees JSON pour la requete Ajax
      * @param $nouvelleListe
      * @param $idSelection
@@ -904,6 +928,9 @@ class DefaultController extends Controller
         PanierController::setCOUNTCOOKIE(PanierController::$COUNT_COOKIE++);
         return array('cookie' => $cookie, 'panier' => $panier);
     }
+
+
+
 
     /**
      * Methode de test
