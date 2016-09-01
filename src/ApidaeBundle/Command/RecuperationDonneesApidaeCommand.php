@@ -46,7 +46,7 @@ class RecuperationDonneesApidaeCommand extends ContainerAwareCommand {
                 //TODO lancer la commande
             } elseif($_POST['statut'] == "ERROR") {
                 //envoi d'un email
-                $this->notificationMail();
+                //$this->notificationMail();
             }
         }
     }

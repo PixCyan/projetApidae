@@ -913,33 +913,19 @@ class DefaultController extends Controller
     public function testsAction(Request $request) {
         $em = $this->getDoctrine()->getManager();
         //print_r($request->getSession()->get('filtres'));
-        $filtres = $request->getSession()->get('filtres');
-        //$objs = new ArrayCollection($em->getRepository(ObjetApidae::class)->getObjetsByids($request->getSession()->get('listeIntermediaire')));
-        //$objs = $em->getRepository(ObjetApidae::class)->getTest($this->getObjetsServ($filtres["services"]), 40518);
-        //$objet = $em->getRepository(ObjetApidae::class)->find(353);
 
-        //$res = $em->getRepository(ObjetApidae::class)->getObjetByNom( "L(a|à|á|â|ã|ä|å|À|Á|Â|Ä|Å)(c|ç|Ç)");
-        //echo gettype($res);
-        //var_dump($res);
+            $message = \Swift_Message::newInstance()
+                ->setSubject('[ERROR] Récupération du fichier de données Apidae')
+                ->setFrom('send@example.com')
+                ->setTo('nadiaraffenne@gmail.com')
+                ->setContentType('text/html')
+                ->setBody(
+                    $this->container->get('templating')->render(
+                        'Emails/test.html.twig'
+                    ));
+            $this->container->get('mailer')->send($message);
 
-        $session = $request->getSession();
-        $objetsIds = $session->get('listeObjets');
-        if (is_array($objetsIds) && count($objetsIds) > 0) {
-            $nouvelleListe = $em->getRepository(ObjetApidae::class)->getObjetsByids($objetsIds);
-        } else {
-            $nouvelleListe = [];
-        }
-
-        $services = $this->getServicesFromObjets($nouvelleListe);
-        $tab = [];
-        foreach($services as $s) {
-            $tab[] = $s->getSerId();
-        }
-
-
-        $count = $em->getRepository(Service::class)->getCountServicesByIdsObjets($objetsIds, $tab);
-
-        return $this->render('ApidaeBundle:Default:test.html.twig', array('objets' => $count));
+        return $this->render('ApidaeBundle:Default:test.html.twig', array('objets' => "test"));
     }
 
 
