@@ -12,7 +12,7 @@ $("document").ready(function() {
             console.log("checked");
             $.ajax({
                 type : 'POST',
-                url  : 'http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name')  + "/" + $('#selectionId').text() + "/true",
+                url  : 'http://apidae.swad.fr/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name')  + "/" + $('#selectionId').text() + "/true",
                 //url : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
@@ -28,7 +28,7 @@ $("document").ready(function() {
             console.log("unckecked");
             $.ajax({
                 type: 'POST',
-                url: 'http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/' + $(this).val() + "/" + $(this).attr('name') + "/" + $('#selectionId').text()+ "/false" ,
+                url: 'http://apidae.swad.fr/fr/recuperationJson/' + $(this).val() + "/" + $(this).attr('name') + "/" + $('#selectionId').text()+ "/false" ,
                 //url : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
                 contentType: "application/json; charset=utf-8",
                 dataType: 'json',
@@ -46,7 +46,7 @@ $("document").ready(function() {
         var Status = $(this).val();
         $.ajax({
             type: 'POST',
-            url: 'http://apidae.swad.fr/web/app_dev.php/fr/recuperationJson/0/0/' + $('#selectionId').text()+ "/reset" ,
+            url: 'http://apidae.swad.fr/fr/recuperationJson/0/0/' + $('#selectionId').text()+ "/reset" ,
             //url : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
             contentType: "application/json; charset=utf-8",
             dataType: 'json',
@@ -68,10 +68,10 @@ $("document").ready(function() {
     });
 
     $(".choixPanier").click(function() {
-        console.log('http://apidae.swad.fr/web/app_dev.php/fr/panier/ajouterObjet/'+ objetFavori +'/'+ $(this).attr('id'));
+        console.log('http://apidae.swad.fr/fr/panier/ajouterObjet/'+ objetFavori +'/'+ $(this).attr('id'));
         $.ajax({
          type: 'POST',
-         url: 'http://apidae.swad.fr/web/app_dev.php/fr/panier/ajouterObjet/'+ objetFavori +'/'+ $(this).attr('id'),
+         url: 'http://apidae.swad.fr/fr/panier/ajouterObjet/'+ objetFavori +'/'+ $(this).attr('id'),
          //url : 'http://local.dev/Symfony/projetApidae/web/app_dev.php/fr/recuperationJson/'  + $(this).val()  + "/" + $(this).attr('name'),
          contentType: "application/json; charset=utf-8",
          beforeSend: function () {
@@ -84,8 +84,8 @@ $("document").ready(function() {
     });
 
     $(".choixNew").click(function() {
-        console.log('http://apidae.swad.fr/web/app_dev.php/fr/panier/nouveau/'+ objetFavori);
-        window.location.href = 'http://apidae.swad.fr/web/app_dev.php/fr/panier/nouveau/'+ objetFavori;
+        console.log('http://apidae.swad.fr/fr/panier/nouveau/'+ objetFavori);
+        window.location.href = 'http://apidae.swad.fr/fr/panier/nouveau/'+ objetFavori;
     });
 
 });
@@ -132,7 +132,7 @@ function getObjets(data) {
         }
 
         //--- Informations réduites objet :
-        $(divContentObjet).append('<h5>' + getLangueLib(objets[index].nom, langue) + '<button class="btn"><i class="fa fa-heart-o"></i></button></h5>').appendTo($('#divObj'+ index));
+        $(divContentObjet).append('<h5>' + getLangueLib(objets[index].nom, langue) + '<a href="#"><button class="btn favoris" id="'+objets[index].id_obj+'"><i class=\"fa fa-heart-o\"></i></button></a></h5>').appendTo($('#divObj'+ index));
         $(divRow).appendTo($('#divContObj'+ index));
 
         if(objets[index].commune) {

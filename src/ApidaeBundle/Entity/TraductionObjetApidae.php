@@ -72,6 +72,27 @@ class TraductionObjetApidae
     private $traInfosSup;
 
     /**
+     * Désigne si l'on affiche la description personnalise ou non
+     * @var bool
+     * @ORM\Column(name="objShowDescrPerso", type="boolean")
+     */
+    private $objShowDescrPerso;
+
+    /**
+     * Désigne si l'on affiche les bons plans ou non
+     * @var bool
+     * @ORM\Column(name="objShowBonsPlans", type="boolean")
+     */
+    private $objShowBonsPlans;
+
+    /**
+     * Désigne si l'on affiche les informations supplémentaires
+     * @var bool
+     * @ORM\Column(name="objShowInfoSUp", type="boolean")
+     */
+    private $objShowInfoSUp;
+
+    /**
      * ObjetApidae propriétaire de cette entite
      *
      * @ORM\ManyToOne(targetEntity="ApidaeBundle\Entity\ObjetApidae", inversedBy="traductions")
@@ -219,5 +240,52 @@ class TraductionObjetApidae
         $this->langue = $langue;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isObjShowDescrPerso()
+    {
+        return $this->objShowDescrPerso;
+    }
+
+    /**
+     * @param boolean $objShowDescrPerso
+     */
+    public function setObjShowDescrPerso($objShowDescrPerso)
+    {
+        $this->objShowDescrPerso = $objShowDescrPerso;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isObjShowBonsPlans()
+    {
+        return $this->objShowBonsPlans;
+    }
+
+    /**
+     * @param boolean $objShowBonsPlans
+     */
+    public function setObjShowBonsPlans($objShowBonsPlans)
+    {
+        $this->objShowBonsPlans = $objShowBonsPlans;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isObjShowInfoSUp()
+    {
+        return $this->objShowInfoSUp;
+    }
+
+    /**
+     * @param boolean $objShowInfoSUp
+     */
+    public function setObjShowInfoSUp($objShowInfoSUp)
+    {
+        $this->objShowInfoSUp = $objShowInfoSUp;
+    }
 }
 

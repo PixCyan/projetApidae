@@ -73,6 +73,7 @@ abstract class ObjetApidae {
      */
     protected $objSuggestion;
 
+
     /**
      * Date de mise en suggestion si $objSuggestion est "true"
      * @var \DateTime
