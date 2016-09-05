@@ -24,7 +24,6 @@ $("document").ready(function() {
                 }
             });
         } else {
-            //TODO if unchecked
             console.log("unckecked");
             $.ajax({
                 type: 'POST',
@@ -78,6 +77,7 @@ $("document").ready(function() {
          console.log('en attente');
          },
          success: function (data) {
+             objetFavori = undefined;
             console.log('Fin');
          }
          });
@@ -132,7 +132,7 @@ function getObjets(data) {
         }
 
         //--- Informations réduites objet :
-        $(divContentObjet).append('<h5>' + getLangueLib(objets[index].nom, langue) + '<a href="#"><button class="btn favoris" id="'+objets[index].id_obj+'"><i class=\"fa fa-heart-o\"></i></button></a></h5>').appendTo($('#divObj'+ index));
+        $(divContentObjet).append('<h5>' + getLangueLib(objets[index].nom, langue) + '<a href="#"><button class="btn favoris" id="'+objets[index].id_obj+'" data-toggle="modal" data-target="#choix_panier"><i class=\"fa fa-heart-o\"></i></button></a></h5>').appendTo($('#divObj'+ index));
         $(divRow).appendTo($('#divContObj'+ index));
 
         if(objets[index].commune) {

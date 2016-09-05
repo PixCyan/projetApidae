@@ -73,11 +73,18 @@ class DefaultController extends Controller
         if(!$objetApidae) {
             throw $this->createNotFoundException('Cette offre n\'existe pas.');
         }
+
+        $paniers = $this->getPaniers($request);
+        if(count($paniers) == 1 && is_array($paniers)) {
+            $paniers = $paniers[0];
+        }
+
         return $this->render('ApidaeBundle:Default:vueFiche.html.twig',
             array('objet' => $objetApidae,
                 'trad' => $trad,
                 'langue' => $langue,
-                'user' => $user));
+                'user' => $user,
+                'paniers' => $paniers));
     }
     /**
      * Effectue une recherche d'apres des mots cles donnes dans la barre de recherche

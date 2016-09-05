@@ -49,14 +49,24 @@ body {
     margin : 5px;
 }
 
-.choixPanier, .nav > li {
+.choixPanier, .nav > li, .slick-slide {
     cursor: pointer;
 }
+
+.slick-active {
+    cursor: default;
+}
+
 
 #form_recherche_menu {
     margin-top : 10px;
 }
 
 .flecheBas {
+    float : right;
+}
+
+.fav-fiche {
+   background-color: white;
     float : right;
 }

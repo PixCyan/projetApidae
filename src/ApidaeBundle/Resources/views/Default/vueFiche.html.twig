@@ -41,6 +41,7 @@
                             </div>
                             <div class="col-md-6" role="main">
                                 <div class="detail-content">
+                                    <a href="#" ><button class="btn favoris fav-fiche" id="{{ objet.idObjet }}" data-toggle="modal" data-target="#choix_panier"><i class="fa fa-heart-o"></i></button></a>
                                     {% if is_granted('ROLE_SUPER_ADMIN') %}
                                     <a href="{{ path('modifierOffre', {'offreId': objet.idObjet }) }}" class="btn btn-primary btn-sm boutonModifier"> {{ 'Modifier'|trans }}</a>
                                     {% endif %}
@@ -177,6 +178,35 @@
 
             </div>
         </div>
+    </div>
+</div>
+<div id="choix_panier" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Choisissez une liste</h4>
+            </div>
+            <div class="modal-body">
+                {% if paniers|length > 1 %}
+                    {% for panier in paniers %}
+                        <h5 class="choixPanier" id="{{ panier.id }}" data-dismiss="modal">{{ panier.panLibelle }}</h5>
+                    {% endfor %}
+                {% elseif paniers|length == 1%}
+                    <h5 class="choixPanier" id="{{ paniers.id }}" data-dismiss="modal">{{ paniers.panLibelle }}</h5>
+                {% else %}
+                    <p> Vous n'avez actuellement aucune liste de favoris, créez une nouvelle liste pour y ajouter des offres.</p>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                {% if user is not empty %}
+                    <button type="button" class="btn btn-default choixNew" data-dismiss="modal">{{ 'Créer une nouvelle liste'|trans }}</button>
+                {% endif %}
+                <button type="button" class="btn btn-default" data-dismiss="modal">{{ 'Annuler'|trans }}</button>
+            </div>
+        </div>
+
     </div>
 </div>
 
