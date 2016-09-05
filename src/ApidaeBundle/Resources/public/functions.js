@@ -61,10 +61,11 @@ $("document").ready(function() {
         });
     });
 
-    $(".favoris").click(function() {
+    $(document).on('click', '.favoris', function() {
         objetFavori = $(this).attr('id');
         console.log(objetFavori);
     });
+
 
     $(".choixPanier").click(function() {
         console.log('http://apidae.swad.fr/fr/panier/ajouterObjet/'+ objetFavori +'/'+ $(this).attr('id'));
