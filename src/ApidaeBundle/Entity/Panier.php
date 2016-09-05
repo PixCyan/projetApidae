@@ -70,6 +70,7 @@ class Panier
 
     /**
      * Ajoute/lie un objetApidae à la categorie
+     * @param ObjetApidae $objet
      */
     public function addObjet(ObjetApidae $objet) {
         $this->objets[] = $objet;
@@ -78,6 +79,7 @@ class Panier
 
     /**
      * Supprime objetApidae de la categorie
+     * @param ObjetApidae $objet
      */
     public function removeObjet(ObjetApidae $objet) {
         $this->objets->removeElement($objet);

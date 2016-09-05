@@ -62,6 +62,7 @@ class Duree
 
     /**
      * Ajoute/lie une traduction à l'entite
+     * @param Activite $a
      */
     public function addActivite(Activite $a) {
         $this->activites[] = $a;
@@ -69,6 +70,7 @@ class Duree
 
     /**
      * Supprime une traduction lié à l'entite
+     * @param Activite $a
      */
     public function removeActivite(Activite $a) {
         $this->activites->removeElement($a);

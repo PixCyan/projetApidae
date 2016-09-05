@@ -82,6 +82,7 @@ class Langue
 
     /**
      * Ajoute/lie une traduction à l'entite
+     * @param TraductionObjetApidae $traduction
      */
     public function addTraduction(TraductionObjetApidae $traduction) {
         $this->traductions[] = $traduction;
@@ -90,6 +91,7 @@ class Langue
 
     /**
      * Supprime une traduction lié à l'entite
+     * @param TraductionObjetApidae $traduction
      */
     public function removeTraduction(TraductionObjetApidae $traduction) {
         $this->traductions->removeElement($traduction);

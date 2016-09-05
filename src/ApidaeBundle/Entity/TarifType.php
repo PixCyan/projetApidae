@@ -64,6 +64,7 @@ class TarifType
 
     /**
      * Ajoute/lie une infoTarif
+     * @param InformationsTarif $t
      */
     public function addInfoTarif(InformationsTarif $t) {
         $this->infosTarif[] = $t;
@@ -71,6 +72,7 @@ class TarifType
 
     /**
      * Supprime une infoTarif
+     * @param InformationsTarif $t
      */
     public function removeInfoTarif(InformationsTarif $t) {
         $this->infosTarif->removeElement($t);

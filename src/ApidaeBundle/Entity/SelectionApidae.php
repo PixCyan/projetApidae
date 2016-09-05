@@ -55,6 +55,7 @@ class SelectionApidae
 
     /**
      * Ajoute/lie un objetApidae
+     * @param ObjetApidae $objet
      */
     public function addObjetApidae(ObjetApidae $objet) {
         $this->objets[] = $objet;
@@ -63,6 +64,7 @@ class SelectionApidae
 
     /**
      * Supprime objetApidae
+     * @param ObjetApidae $objet
      */
     public function removeObjetApidae(ObjetApidae $objet) {
         $this->objets->removeElement($objet);

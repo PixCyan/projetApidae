@@ -257,6 +257,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie une traduction à l'entite
+     * @param TraductionObjetApidae $traduction
      */
     public function addTraduction(TraductionObjetApidae $traduction) {
         $this->traductions[] = $traduction;
@@ -264,6 +265,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime une traduction lié à l'entite
+     * @param TraductionObjetApidae $traduction
      */
     public function removeTraduction(TraductionObjetApidae $traduction) {
         $this->traductions->removeElement($traduction);
@@ -271,6 +273,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie un label de qualite à l'entite
+     * @param LabelQualite $labelQualite
      */
     public function addLabelQualite(LabelQualite $labelQualite) {
         $this->labelsQualite[] = $labelQualite;
@@ -278,6 +281,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime un label de qualite à l'entite
+     * @param LabelQualite $labelQualite
      */
     public function removeLabelQualite(LabelQualite $labelQualite) {
         $this->labelsQualite->removeElement($labelQualite);
@@ -285,6 +289,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie un objetApidae à l'entite
+     * @param ObjetLie $objetLie
      */
     public function addObjetLie(ObjetLie $objetLie) {
         $this->objetsLies[] = $objetLie;
@@ -292,6 +297,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime un objetApidae à l'entite
+     * @param ObjetLie $objetLie
      */
     public function removeObjetLie(ObjetLie $objetLie) {
         $this->objetsLies->removeElement($objetLie);
@@ -299,6 +305,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie une categorie à l'entite
+     * @param Categorie $categorie
      */
     public function addCategorie(Categorie $categorie) {
         $this->categories[] = $categorie;
@@ -307,6 +314,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime une categorie à l'entite
+     * @param Categorie $categorie
      */
     public function removeCategorie(Categorie $categorie) {
         $this->categories->removeElement($categorie);
@@ -314,6 +322,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie un panier à l'entite
+     * @param Panier $panier
      */
     public function addPanier(Panier $panier) {
         $this->paniers[] = $panier;
@@ -322,6 +331,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime un panier à l'entite
+     * @param Panier $panier
      */
     public function removePanier(Panier $panier) {
         $this->paniers->removeElement($panier);
@@ -329,6 +339,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie une sélection d'objets touristiques(définie sur le site) à l'entite
+     * @param SelectionApidae $selection
      */
     public function addSelectionApidae(SelectionApidae $selection) {
         $this->selectionsApidae[] = $selection;
@@ -337,6 +348,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime une sélection d'objets touristiques(définie sur le site) à l'entite
+     * @param SelectionApidae $selection
      */
     public function removeSelectionApidae(SelectionApidae $selection) {
         $this->selectionsApidae->removeElement($selection);
@@ -347,6 +359,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie un type de public à l'entite
+     * @param TypePublic $type
      */
     public function addTypePublic(TypePublic $type) {
         $this->typesPublic[] = $type;
@@ -355,6 +368,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime un type de public lié à l'entite
+     * @param TypePublic $type
      */
     public function removeTypePublic(TypePublic $type) {
         $this->typesPublic->removeElement($type);
@@ -362,6 +376,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie un equipement à l'entite
+     * @param Equipement $equipement
      */
     public function addEquipement(Equipement $equipement) {
         $this->equipements[] = $equipement;
@@ -370,6 +385,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime un equipement lié à l'entite
+     * @param Equipement $equipement
      */
     public function removeEquipement(Equipement $equipement) {
         $this->equipements->removeElement($equipement);
@@ -377,6 +393,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie un service à l'entite
+     * @param Service $service
      */
     public function addService(Service $service) {
         $this->services[] = $service;
@@ -385,6 +402,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime un service lié à l'entite
+     * @param Service $service
      */
     public function removeService(Service $service) {
         $this->services->removeElement($service);
@@ -392,6 +410,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie un  moyen de communication à l'entite
+     * @param MoyenCommunication $moyenCommunication
      */
     public function addMoyenCommunication(MoyenCommunication $moyenCommunication) {
         $this->moyensCommunications[] = $moyenCommunication;
@@ -400,6 +419,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime un moyen de communication lié à l'entite
+     * @param MoyenCommunication $moyenCommunication
      */
     public function removeMoyenCommunication(MoyenCommunication $moyenCommunication) {
         $this->moyensCommunications->removeElement($moyenCommunication);
@@ -407,6 +427,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie un media de communication à l'entite
+     * @param Multimedia $multimedia
      */
     public function addMultimedia(Multimedia $multimedia) {
         $this->multimedias[] = $multimedia;
@@ -415,6 +436,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime un media lié à l'entite
+     * @param Multimedia $multimedia
      */
     public function removeMultimedia(Multimedia $multimedia) {
         $this->multimedias->removeElement($multimedia);
@@ -422,6 +444,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie un tarif à l'entite
+     * @param InformationsTarif $tarif
      */
     public function addInfoTarif(InformationsTarif $tarif) {
         $this->tarifs[] = $tarif;
@@ -430,6 +453,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime un tarif lié à l'entite
+     * @param InformationsTarif $tarif
      */
     public function removeInfoTarif(InformationsTarif $tarif) {
         $this->tarifs->removeElement($tarif);
@@ -438,6 +462,7 @@ abstract class ObjetApidae {
 
     /**
      * Ajoute/lie une ouverture à l'entite
+     * @param Ouverture $ouverture
      */
     public function addOuverture(Ouverture $ouverture) {
         $this->ouvertures[] = $ouverture;
@@ -446,6 +471,7 @@ abstract class ObjetApidae {
 
     /**
      * Supprime une ouverture lié à l'entite
+     * @param Ouverture $ouverture
      */
     public function removeOuverture(Ouverture $ouverture) {
         $this->ouvertures->removeElement($ouverture);

@@ -77,6 +77,7 @@ class TypePublic
 
     /**
      * Ajoute/lie un objetApidae à la categorie
+     * @param ObjetApidae $tradObjet
      */
     public function addObjetApidae(ObjetApidae $tradObjet) {
         $this->objetsApidae[] = $tradObjet;
@@ -84,6 +85,7 @@ class TypePublic
 
     /**
      * Supprime objetApidae de la categorie
+     * @param ObjetApidae $tradObjet
      */
     public function removeObjetApidae(ObjetApidae $tradObjet) {
         $this->objetsApidae->removeElement($tradObjet);
@@ -194,19 +196,6 @@ class TypePublic
     public function getMax()
     {
         return $this->max;
-    }
-
-    /**
-     * Set traIdTraduction
-     *
-     *
-     * @return TypePublic
-     */
-    public function setTraduction(TraductionObjetApidae $traduction)
-    {
-        $this->traduction = $traduction;
-
-        return $this;
     }
 
     /**

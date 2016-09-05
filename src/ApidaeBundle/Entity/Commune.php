@@ -72,6 +72,7 @@ class Commune
 
     /**
      * Ajoute/lie un objet Apidae à l'adresse
+     * @param ObjetApidae $obj
      */
     public function addObjetApidae(ObjetApidae $obj) {
         $this->objetsApidae[] = $obj;
@@ -79,6 +80,7 @@ class Commune
 
     /**
      * Supprime un objet Apidae lié à l'adresse
+     * @param ObjetApidae $obj
      */
     public function removeObjetApidae(ObjetApidae $obj) {
         $this->objetsApidae->removeElement($obj);

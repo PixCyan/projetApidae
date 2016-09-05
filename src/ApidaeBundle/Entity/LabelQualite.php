@@ -79,6 +79,7 @@ class LabelQualite
 
     /**
      * Ajoute/lie un objetApidae
+     * @param ObjetApidae $objet
      */
     public function addObjetApidae(ObjetApidae $objet) {
         $this->objetsApidae[] = $objet;
@@ -86,6 +87,7 @@ class LabelQualite
 
     /**
      * Supprime un objetApidae
+     * @param ObjetApidae $objet
      */
     public function removeObjetApidae(ObjetApidae $objet) {
         $this->objetsApidae->removeElement($objet);

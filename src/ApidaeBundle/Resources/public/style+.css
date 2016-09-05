@@ -38,11 +38,13 @@ body {
 }
 
 #traduction_objet_apidae_objet_objSuggestion, #traduction_objet_apidae_obj_show_descr_perso,
-#traduction_objet_apidae_obj_show_bons_plans, #traduction_objet_apidae_obj_show_info_sup {
+#traduction_objet_apidae_obj_show_bons_plans, #traduction_objet_apidae_obj_show_info_sup,
+#traduction_objet_apidae_objShowDescr {
     float : initial;
     width : initial;
     display : inline-block;
     opacity : initial;
+    margin-left : 10px;
 }
 
 .optsFavoris {

@@ -72,6 +72,13 @@ class TraductionObjetApidae
     private $traInfosSup;
 
     /**
+     * Désigne si l'on affiche la description fournie par Apidae ou non
+     * @var bool
+     * @ORM\Column(name="objShowDescr", type="boolean")
+     */
+    private $objShowDescr;
+
+    /**
      * Désigne si l'on affiche la description personnalise ou non
      * @var bool
      * @ORM\Column(name="objShowDescrPerso", type="boolean")
@@ -287,5 +294,22 @@ class TraductionObjetApidae
     {
         $this->objShowInfoSUp = $objShowInfoSUp;
     }
+
+    /**
+     * @return boolean
+     */
+    public function isObjShowDescr()
+    {
+        return $this->objShowDescr;
+    }
+
+    /**
+     * @param boolean $objShowDescr
+     */
+    public function setObjShowDescr($objShowDescr)
+    {
+        $this->objShowDescr = $objShowDescr;
+    }
+
 }
 

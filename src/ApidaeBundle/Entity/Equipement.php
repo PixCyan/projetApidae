@@ -74,6 +74,7 @@ class Equipement
 
     /**
      * Ajoute/lie un objetApidae à la categorie
+     * @param ObjetApidae $tradObjet
      */
     public function addObjetApidae(ObjetApidae $tradObjet) {
         $this->objetsApidae[] = $tradObjet;
@@ -81,6 +82,7 @@ class Equipement
 
     /**
      * Supprime objetApidae de la categorie
+     * @param ObjetApidae $tradObjet
      */
     public function removeObjetApidae(ObjetApidae $tradObjet) {
         $this->objetsApidae->removeElement($tradObjet);

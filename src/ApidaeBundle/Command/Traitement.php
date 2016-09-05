@@ -932,6 +932,7 @@ class Traitement extends ContainerAwareCommand {
                 $traduction->setTraDescriptionLongue(null);
             }
         }
+
         if(!$objetApidae->getTraductions()->contains($traduction)) {
             //Associe la traduction à l'objet
             $objetApidae->addTraduction($traduction);
@@ -944,6 +945,8 @@ class Traitement extends ContainerAwareCommand {
         if($update) {
             $this->em->merge($traduction);
         } else {
+            //Défini la description Apidae comme active par défaut
+            $traduction->setObjShowDescr(true);
             $traduction->setTraDescriptionPersonnalisee(null);
             $traduction->setTraBonsPlans(null);
             $traduction->setTraInfosSup(null);

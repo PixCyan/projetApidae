@@ -86,12 +86,21 @@
                         </div>
                     </div>
 
-                    {% if trad.traDescriptionLongue is not empty %}
+                    {% if trad.traDescriptionLongue is not empty and trad.objShowDescr == true %}
                         <div id="section-1" class="detail-content">
                             <div class="section-title text-left">
                                 <h4>{{ "Description"|trans }}</h4>
                             </div>
                             <p>{{ trad.traDescriptionLongue }}</p>
+                        </div>
+                    {% endif %}
+
+                    {% if trad.traDescriptionPersonnalisee is not empty and trad.objShowDescrPerso == true %}
+                        <div id="section-12" class="detail-content">
+                            <div class="section-title text-left">
+                                <h4>{{ "Description personnalisée"|trans }}</h4>
+                            </div>
+                            <p>{{ trad.traDescriptionPersonnalisee }}</p>
                         </div>
                     {% endif %}
 
@@ -160,15 +169,15 @@
                         {% include "ApidaeBundle:evenement:contenuEvenement.html.twig" %}
                     {%  endif %}
 
-                    {% if trad.traInfosSup is not empty or trad.traInfosSup is not empty %}
+                    {% if trad.objShowBonsPlans == true or trad.objShowInfoSUp == true %}
                         <div id="section-3" class="detail-content">
                             <div class="section-title text-left">
-                                <h4>{{ 'Informations supplémentaires'|trans }} : {{ trad.traInfosSup }}</h4>
+                                <h4>{{ 'Informations supplémentaires'|trans }}</h4>
                             </div>
-                            {% if trad.traInfosSup is not empty %}
+                            {% if trad.objShowInfoSUp == true and trad.traInfosSup is not empty %}
                                 <p>{{ 'Informations supplémentaires'|trans }} : {{ trad.traInfosSup }} </p>
                             {% endif %}
-                            {% if trad.traInfosSup is not empty %}
+                            {% if trad.objShowBonsPlans == true and trad.traBonsPlans is not empty %}
                                 <p>{{ 'Bons plans'|trans }} : {{ trad.traBonsPlans }} </p>
                             {% endif %}
                         </div>

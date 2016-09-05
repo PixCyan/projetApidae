@@ -77,6 +77,7 @@ class ActiviteType
 
     /**
      * Ajoute/lie une traduction à l'entite
+     * @param Activite $activite
      */
     public function addActivite(Activite $activite) {
         $this->activites[] = $activite;
@@ -84,6 +85,7 @@ class ActiviteType
 
     /**
      * Supprime une traduction lié à l'entite
+     * @param Activite $activite
      */
     public function removeActivite(Activite $activite) {
         $this->activites->removeElement($activite);
